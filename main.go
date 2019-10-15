@@ -1,10 +1,13 @@
 package main
 
 import (
-	"fmt"
+	"github.com/colbyleiske/cse138_assignment2/kvstore"
+
 )
 
 func main() {
+	dal := kvstore.KVDAL{}
+	s := kvstore.NewStore(&dal)
 
-	fmt.Println("First go")
+	s.DAL().Delete()
 }

@@ -16,12 +16,13 @@ func main() {
 
 	srv := &http.Server{
 		Handler: router,
-		Addr:    "localhost:8000",
+		Addr:    "localhost:13800",
 		//Unsure of the timeouts he would want for this
 		//WriteTimeout: 15 * time.Second,
 		//ReadTimeout:  15 * time.Second,
 	}
 
+	log.Println("Starting up...")
 	log.Fatal(srv.ListenAndServe())
 
 }

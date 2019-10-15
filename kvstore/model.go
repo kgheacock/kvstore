@@ -6,11 +6,11 @@ type Store struct {
 
 type DataAccessLayer interface {
 	//Add
-	Delete ()
+	Delete(key string) error
 	//Potential Update
 }
 
-func NewStore( dal DataAccessLayer) *Store {
+func NewStore(dal DataAccessLayer) *Store {
 	return &Store{dal: dal}
 }
 

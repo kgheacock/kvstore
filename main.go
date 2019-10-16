@@ -4,12 +4,12 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/colbyleiske/cse138_assignment2/kvstore"
-	"github.com/colbyleiske/cse138_assignment2/router"
+	"./kvstore"
+	"./router"
 )
 
 func main() {
-	dal := kvstore.KVDAL{}
+	dal := kvstore.KVDAL{Store: make(map[string]string)}
 	kvStore := kvstore.NewStore(&dal)
 
 	router := router.CreateRouter(kvStore)

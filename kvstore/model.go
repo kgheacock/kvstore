@@ -5,9 +5,11 @@ type Store struct {
 }
 
 type DataAccessLayer interface {
-	//Add
 	Delete(key string) error
-	//Potential Update
+
+	Put(key string, value string) error
+
+	Get(key string) error
 }
 
 func NewStore(dal DataAccessLayer) *Store {

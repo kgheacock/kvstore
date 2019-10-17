@@ -60,7 +60,7 @@ func (s *Store) PutHandler(w http.ResponseWriter, r *http.Request) {
 		data := Data{}
 		err := decoder.Decode(&data)
 
-		if err != nil {
+		if err == nil {
 			if data.Value == "" {
 				errMsg.Error = "Value is missing"
 				errMsg.Message = "Error in PUT"
@@ -94,19 +94,23 @@ func (s *Store) GetHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key, ok := vars["key"]
 	getMsg := GetMessage{}
-	getMsg.Exists = ok
+
 	if !ok {
-		getMsg.Value = "Key does not exist"
-		getMsg.Message = "Error in GET"
-		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("Method GET not supported"))
+		w.WriteHeader(http.StatusMethodNotAllowed)
 	} else {
 		val, err := s.DAL().Get(key)
-		if err == nil {
-			panic(err)
+		if err != nil {
+			getMsg.Exists = false
+			getMsg.Value = "Key does not exist"
+			getMsg.Message = "Error in GET"
+			w.WriteHeader(http.StatusNotFound)
+		} else {
+			getMsg.Exists = true
+			getMsg.Value = val
+			getMsg.Message = "Retrieved successfully"
+			w.WriteHeader(http.StatusOK)
 		}
-		getMsg.Value = val
-		getMsg.Message = "Retrieved successfully"
-		w.WriteHeader(http.StatusOK)
 	}
 	json.NewEncoder(w).Encode(getMsg)
 }

@@ -6,18 +6,22 @@ import (
 
 //KVDAL is a key value data-access layer
 type KVDAL struct {
-	Store map[string]string
+	Store map[string]string // data structure
 }
 
 //Put here
-func (k *KVDAL) Put(key string, value string) error {
+func (k *KVDAL) Put(key string, value string) (string, error) {
 	fmt.Println("Putting", key)
+	_, ok := k.Store[key]
 	k.Store[key] = value
-	return nil
+	if ok {
+		return "replaced", nil
+	}
+	return "added", nil
 }
 
 //Get here
-func (k *KVDAL) Get(key string) error {
+func (k *KVDAL) Get(key string) (string, error) {
 	fmt.Println("Getting", key)
 	value, ok := k.Store[key]
 	if ok {
@@ -25,7 +29,7 @@ func (k *KVDAL) Get(key string) error {
 	} else {
 		fmt.Printf("Not Value")
 	}
-	return nil
+	return value, nil
 }
 
 //Delete here
@@ -35,8 +39,7 @@ func (k *KVDAL) Delete(key string) error {
 	if ok {
 		delete(k.Store, key)
 		fmt.Println("Deleted ", key)
-	} else {
-		fmt.Printf("No value")
+		return nil
 	}
-	return nil
+	return fmt.Errorf("Key Not Valid")
 }

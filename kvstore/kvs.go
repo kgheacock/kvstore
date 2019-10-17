@@ -3,7 +3,7 @@ package kvstore
 import (
 	"encoding/json"
 	"net/http"
-
+	"./errormessages"
 	"github.com/gorilla/mux"
 )
 
@@ -12,33 +12,41 @@ type Data struct {
 	Value string `json:"value"`
 }
 
-//Message is a message to output when valid
-type Message struct {
-	Message  string `json:"message"`
-	Replaced bool   `json:"replaced"`
-}
-
-//ErrorMessage is a message to output when errors occur
-type ErrorMessage struct {
-	Error   string `json:"error"`
-	Message string `json:"message"`
-}
-
-//GetMessage handles all get messages
-type GetMessage struct {
-	Exists  bool   `json:"doesExist"`
-	Message string `json:"message"`
-	Value   string `json:"value"`
-}
-
 //DeleteHandler here
 func (s *Store) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
+	decoder := json.NewDecoder(r.Body)
 	key, ok := vars["key"]
-	if !ok {
-		w.Write([]byte("something something bad request"))
+	errMsg := DeleteFailure{} //For failure formatting
+	delMsg := DeleteSuccess{} //For success put formatting
+	if !ok { //Key is not in URL
+		errMsg.Exists = false
+		errMsg.Error = "No key"
+		errMsg.Message = "Error in DELETE"
+		w.WriteHeader(http.StatusNotFound) //404
+		json.NewEncoder(w).Enode(errMsg)
+	} else if len(key) > 50 { //Key too long
+		errMsg.Exists = false
+		errMsg.Error = "Key is too long"
+		errMsg.Message = "Error in DELETE"
+		w.WriteHeader(http.StatusBadRequest) //400
+		json.NewEncoder(w).Encode(errMsg)
+	} else { //Some key present in URL
+		val, err := s.DAL().Get(key)
+		if err != nil { //Error
+			errMsg.Exists = false
+			errMsg.Error = "Key does not exist"
+			errMsg.Message = "Error in DELETE"
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(errMsg)
+		} else { //Key exists in KVS
+			delMsg.Exists = true
+			delMsg.Message = "Deleted successfully"
+			w.WriteHeader(http.StatusOK)
+			s.DAL().Delete(key)
+			json.NewEncoder(w).Encode(delMsg)
+		}
 	}
-	s.DAL().Delete(key)
 }
 
 //PutHandler puts a key into the store

@@ -22,14 +22,12 @@ func (k *KVDAL) Put(key string, value string) (string, error) {
 
 //Get here
 func (k *KVDAL) Get(key string) (string, error) {
-	fmt.Println("Getting", key)
 	value, ok := k.Store[key]
 	if ok {
-		fmt.Println("Got ", value)
-	} else {
-		fmt.Printf("Not Value")
+		return value, nil
 	}
-	return value, nil
+
+	return "", fmt.Errorf("No value for key")
 }
 
 //Delete here

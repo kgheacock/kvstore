@@ -7,11 +7,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-//Data is the json repsonse
-type Data struct {
-	Value string `json:"value"`
-}
-
 //DeleteHandler here
 func (s *Store) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -54,7 +49,8 @@ func (s *Store) PutHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	decoder := json.NewDecoder(r.Body)
 	key, ok := vars["key"]
-	errMsg := ErrorMessage{}
+	errMsg := PutFailure{}
+	putMsg := PutSuccess{}
 
 	if !ok {
 		w.WriteHeader(http.StatusBadRequest)
@@ -76,21 +72,20 @@ func (s *Store) PutHandler(w http.ResponseWriter, r *http.Request) {
 				json.NewEncoder(w).Encode(errMsg)
 			} else {
 				valStr, err := s.DAL().Put(key, data.Value)
-				msg := Message{}
 
 				if err != nil {
 					panic(err)
 				} else {
 					if valStr == "added" {
-						msg.Message = "Added successfully"
-						msg.Replaced = false
+						putMsg.Message = "Added successfully"
+						putMsg.Replaced = false
 						w.WriteHeader(http.StatusCreated)
 					} else if valStr == "updated" {
-						msg.Message = "Updated successfully"
-						msg.Replaced = true
+						putMsg.Message = "Updated successfully"
+						putMsg.Replaced = true
 						w.WriteHeader(http.StatusOK)
 					}
-					json.NewEncoder(w).Encode(msg)
+					json.NewEncoder(w).Encode(putMsg)
 				}
 			}
 		}
@@ -101,7 +96,8 @@ func (s *Store) PutHandler(w http.ResponseWriter, r *http.Request) {
 func (s *Store) GetHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key, ok := vars["key"]
-	getMsg := GetMessage{}
+	getMsg := GetSuccess{}
+	errMsg := GetFailure{}
 
 	if !ok {
 		w.Write([]byte("Method GET not supported"))
@@ -109,9 +105,9 @@ func (s *Store) GetHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		val, err := s.DAL().Get(key)
 		if err != nil {
-			getMsg.Exists = false
-			getMsg.Value = "Key does not exist"
-			getMsg.Message = "Error in GET"
+			errMsg.Exists = false
+			errMsg.Error = "Key does not exist"
+			errMsg.Message = "Error in GET"
 			w.WriteHeader(http.StatusNotFound)
 		} else {
 			getMsg.Exists = true

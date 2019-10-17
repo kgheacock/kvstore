@@ -79,7 +79,7 @@ func (s *Store) PutHandler(w http.ResponseWriter, r *http.Request) {
 						putMsg.Message = "Added successfully"
 						putMsg.Replaced = false
 						w.WriteHeader(http.StatusCreated)
-					} else if valStr == "updated" {
+					} else if valStr == "replaced" {
 						putMsg.Message = "Updated successfully"
 						putMsg.Replaced = true
 						w.WriteHeader(http.StatusOK)
@@ -108,12 +108,13 @@ func (s *Store) GetHandler(w http.ResponseWriter, r *http.Request) {
 			errMsg.Error = "Key does not exist"
 			errMsg.Message = "Error in GET"
 			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(errMsg)
 		} else {
 			getMsg.Exists = true
 			getMsg.Value = val
 			getMsg.Message = "Retrieved successfully"
 			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(getMsg)
 		}
 	}
-	json.NewEncoder(w).Encode(getMsg)
 }

@@ -5,30 +5,16 @@ type Data struct {
 	Value string `json:"value"`
 }
 
-//Message is a message to output when valid
-// *** DEPRECATED ***
-type Message struct {
-	Message  string `json:"message"`
-	Replaced bool   `json:"replaced"`
-}
-
-//ErrorMessage is a message to output when errors occur
-// *** DEPRECATED ***
-type ErrorMessage struct {
-	Error   string `json:"error"`
-	Message string `json:"message"`
-}
-
 //PutSuccess handles adds and replaces
 type PutSuccess struct {
-	Message string `json:"message"`
-	Replaced bool  `json:"replaced"`
+	Message  string `json:"message"`
+	Replaced bool   `json:"replaced"`
 }
 
 //PutFailure handles keylength error and value missing
 //Handles errors for new value and replace
 type PutFailure struct {
-	Error string   `json:"error"`
+	Error   string `json:"error"`
 	Message string `json:"message"`
 }
 
@@ -41,14 +27,14 @@ type GetSuccess struct {
 
 //GetFailure handles a failed get
 type GetFailure struct {
-	Exists bool    `json:"doesExist"`
-	Error string   `json:"error"`
+	Exists  bool   `json:"doesExist"`
+	Error   string `json:"error"`
 	Message string `json:"message"`
 }
 
 //DeleteSuccess handles a succesful delete
 type DeleteSuccess struct {
-	Exists bool    `json:"doesExist"`
+	Exists  bool   `json:"doesExist"`
 	Message string `json:"message"`
 }
 

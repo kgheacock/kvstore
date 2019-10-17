@@ -3,23 +3,22 @@ package kvstore
 import (
 	"encoding/json"
 	"net/http"
-	"./errormessages"
+
 	"github.com/gorilla/mux"
 )
 
 //DeleteHandler here
 func (s *Store) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	decoder := json.NewDecoder(r.Body)
 	key, ok := vars["key"]
 	errMsg := DeleteFailure{} //For failure formatting
 	delMsg := DeleteSuccess{} //For success put formatting
-	if !ok { //Key is not in URL
+	if !ok {                  //Key is not in URL
 		errMsg.Exists = false
 		errMsg.Error = "No key"
 		errMsg.Message = "Error in DELETE"
 		w.WriteHeader(http.StatusNotFound) //404
-		json.NewEncoder(w).Enode(errMsg)
+		json.NewEncoder(w).Encode(errMsg)
 	} else if len(key) > 50 { //Key too long
 		errMsg.Exists = false
 		errMsg.Error = "Key is too long"
@@ -27,7 +26,7 @@ func (s *Store) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest) //400
 		json.NewEncoder(w).Encode(errMsg)
 	} else { //Some key present in URL
-		val, err := s.DAL().Get(key)
+		_, err := s.DAL().Get(key)
 		if err != nil { //Error
 			errMsg.Exists = false
 			errMsg.Error = "Key does not exist"

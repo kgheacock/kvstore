@@ -15,3 +15,10 @@ func (s *Store) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	s.DAL().Delete(key)
 }
+func (s *Store) AddHandler(w http.ResponseWriter, r *http.Request) {
+}
+
+func (s *Store) GetHandler(w http.ResponseWriter, r *http.Request) {
+}
+func (s *Store) UpdateHandler(w http.ResponseWriter, r *http.Request) {
+}

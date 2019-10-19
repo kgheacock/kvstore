@@ -13,6 +13,7 @@ func CreateRouter(s *kvstore.Store) *mux.Router {
 	//route registration
 	router.Handle("/kv-store/{key}", wrap(s.DeleteHandler)).Methods("DELETE")
 	router.Use(loggingMiddleware)
+	router.Use(forwardMiddleware)
 
 	return router
 }

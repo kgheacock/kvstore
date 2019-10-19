@@ -9,7 +9,7 @@ type Store struct {
 type DataAccessLayer interface {
 	Delete(key string) error
 
-	Put(key string, value string) (string, error)
+	Put(key string, value string) (int, error)
 
 	Get(key string) (string, error)
 }

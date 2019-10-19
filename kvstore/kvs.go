@@ -70,16 +70,16 @@ func (s *Store) PutHandler(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusBadRequest)
 				json.NewEncoder(w).Encode(errMsg)
 			} else {
-				valStr, err := s.DAL().Put(key, data.Value)
+				putResp, err := s.DAL().Put(key, data.Value)
 
 				if err != nil {
 					panic(err)
 				} else {
-					if valStr == "added" {
+					if putResp == ADDED {
 						putMsg.Message = "Added successfully"
 						putMsg.Replaced = false
 						w.WriteHeader(http.StatusCreated)
-					} else if valStr == "replaced" {
+					} else if putResp == UPDATED {
 						putMsg.Message = "Updated successfully"
 						putMsg.Replaced = true
 						w.WriteHeader(http.StatusOK)

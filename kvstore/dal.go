@@ -9,35 +9,43 @@ type KVDAL struct {
 	Store map[string]string // data structure
 }
 
-//Put here
-func (k *KVDAL) Put(key string, value string) (string, error) {
-	fmt.Println("Putting", key)
+//Response for PUT method
+const (
+	ADDED   = 0
+	UPDATED = 1
+)
+
+//Put function stores value into map based on key
+func (k *KVDAL) Put(key string, value string) (int, error) {
+	fmt.Println("Putting: ", key)
 	_, ok := k.Store[key]
 	k.Store[key] = value
 	if ok {
-		return "replaced", nil
+		return UPDATED, nil
 	}
-	return "added", nil
+	return ADDED, nil
 }
 
-//Get here
+//Get function retrieves value from map if it exists
 func (k *KVDAL) Get(key string) (string, error) {
+	fmt.Println("Getting: ", key)
+
 	value, ok := k.Store[key]
 	if ok {
 		return value, nil
 	}
 
-	return "", fmt.Errorf("No value for key")
+	return "", fmt.Errorf("Not Found")
 }
 
-//Delete here
+//Delete function removes key-value from map if it exists
 func (k *KVDAL) Delete(key string) error {
-	fmt.Println("Deleting", key)
+	fmt.Println("Deleting: ", key)
 	_, ok := k.Store[key]
 	if ok {
 		delete(k.Store, key)
 		fmt.Println("Deleted ", key)
 		return nil
 	}
-	return fmt.Errorf("Key Not Valid")
+	return fmt.Errorf("Not Valid")
 }

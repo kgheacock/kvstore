@@ -7,38 +7,44 @@ import (
 	"github.com/gorilla/mux"
 )
 
-//DeleteHandler here
+//DeleteHandler
 func (s *Store) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key, ok := vars["key"]
-	errMsg := DeleteFailure{} //For failure formatting
-	delMsg := DeleteSuccess{} //For success put formatting
-	if !ok {                  //Key is not in URL
-		errMsg.Exists = false
-		errMsg.Error = "No key"
-		errMsg.Message = "Error in DELETE"
-		w.WriteHeader(http.StatusNotFound) //404
-		json.NewEncoder(w).Encode(errMsg)
-	} else if len(key) > 50 { //Key too long
-		errMsg.Exists = false
-		errMsg.Error = "Key is too long"
-		errMsg.Message = "Error in DELETE"
-		w.WriteHeader(http.StatusBadRequest) //400
-		json.NewEncoder(w).Encode(errMsg)
-	} else { //Some key present in URL
+	returnMsg := ResponseMessage{}
+	//Key is not in URL
+	if !ok {
+		//exists.Exists is neccessary because anonymous function "exists"
+		//contains the value Exists. This is required due to use of
+		//omitempty in our JSON objects
+		returnMsg.exists.Exists = false
+		returnMsg.Error = "No key"
+		returnMsg.Message = "Error in DELETE"
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(returnMsg)
+	//Key present in URL but is too long
+	} else if len(key) > 50 {
+		returnMsg.exists.Exists = false
+		returnMsg.Error = "Key is too long"
+		returnMsg.Message = "Error in DELETE"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(returnMsg)
+	//Key present in URL
+	} else {
 		_, err := s.DAL().Get(key)
-		if err != nil { //Error
-			errMsg.Exists = false
-			errMsg.Error = "Key does not exist"
-			errMsg.Message = "Error in DELETE"
+		if err != nil {
+			returnMsg.exists.Exists = false
+			returnMsg.Error = "Key does not exist"
+			returnMsg.Message = "Error in DELETE"
 			w.WriteHeader(http.StatusNotFound)
-			json.NewEncoder(w).Encode(errMsg)
-		} else { //Key exists in KVS
-			delMsg.Exists = true
-			delMsg.Message = "Deleted successfully"
+			json.NewEncoder(w).Encode(returnMsg)
+		//Key exists in KVS
+		} else {
+			returnMsg.exists.Exists = true
+			returnMsg.Message = "Deleted successfully"
 			w.WriteHeader(http.StatusOK)
 			s.DAL().Delete(key)
-			json.NewEncoder(w).Encode(delMsg)
+			json.NewEncoder(w).Encode(returnMsg)
 		}
 	}
 }
@@ -48,27 +54,26 @@ func (s *Store) PutHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	decoder := json.NewDecoder(r.Body)
 	key, ok := vars["key"]
-	errMsg := PutFailure{}
-	putMsg := PutSuccess{}
+	returnMsg := ResponseMessage{}
 
 	if !ok {
 		w.WriteHeader(http.StatusBadRequest)
 		w.Write([]byte("No key"))
 	} else if len(key) > 50 {
-		errMsg.Error = "Key is too long"
-		errMsg.Message = "Error in PUT"
+		returnMsg.Error = "Key is too long"
+		returnMsg.Message = "Error in PUT"
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(errMsg)
+		json.NewEncoder(w).Encode(returnMsg)
 	} else {
 		data := Data{}
 		err := decoder.Decode(&data)
 
 		if err == nil {
 			if data.Value == "" {
-				errMsg.Error = "Value is missing"
-				errMsg.Message = "Error in PUT"
+				returnMsg.Error = "Value is missing"
+				returnMsg.Message = "Error in PUT"
 				w.WriteHeader(http.StatusBadRequest)
-				json.NewEncoder(w).Encode(errMsg)
+				json.NewEncoder(w).Encode(returnMsg)
 			} else {
 				valStr, err := s.DAL().Put(key, data.Value)
 
@@ -76,27 +81,29 @@ func (s *Store) PutHandler(w http.ResponseWriter, r *http.Request) {
 					panic(err)
 				} else {
 					if valStr == "added" {
-						putMsg.Message = "Added successfully"
-						putMsg.Replaced = false
+						returnMsg.Message = "Added successfully"
+						//replaced.Replaced is neccessary because anonymous function "replaced"
+						//contains the value Replaced. This is required due to use of
+						//omitempty in our JSON objects
+						returnMsg.replaced.Replaced = false
 						w.WriteHeader(http.StatusCreated)
 					} else if valStr == "replaced" {
-						putMsg.Message = "Updated successfully"
-						putMsg.Replaced = true
+						returnMsg.Message = "Updated successfully"
+						returnMsg.replaced.Replaced = true
 						w.WriteHeader(http.StatusOK)
 					}
-					json.NewEncoder(w).Encode(putMsg)
+					json.NewEncoder(w).Encode(returnMsg)
 				}
 			}
 		}
 	}
 }
 
-//GetHandler here
+//GetHandler
 func (s *Store) GetHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key, ok := vars["key"]
-	getMsg := GetSuccess{}
-	errMsg := GetFailure{}
+	returnMsg := ResponseMessage{}
 
 	if !ok {
 		w.Write([]byte("Method GET not supported"))
@@ -104,17 +111,20 @@ func (s *Store) GetHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		val, err := s.DAL().Get(key)
 		if err != nil {
-			errMsg.Exists = false
-			errMsg.Error = "Key does not exist"
-			errMsg.Message = "Error in GET"
+			//exists.Exists is neccessary because anonymous function "exists"
+			//contains the value Exists. This is required due to use of
+			//omitempty in our JSON objects
+			returnMsg.exists.Exists = false
+			returnMsg.Error = "Key does not exist"
+			returnMsg.Message = "Error in GET"
 			w.WriteHeader(http.StatusNotFound)
-			json.NewEncoder(w).Encode(errMsg)
+			json.NewEncoder(w).Encode(returnMsg)
 		} else {
-			getMsg.Exists = true
-			getMsg.Value = val
-			getMsg.Message = "Retrieved successfully"
+			returnMsg.exists.Exists = true
+			returnMsg.Value = val
+			returnMsg.Message = "Retrieved successfully"
 			w.WriteHeader(http.StatusOK)
-			json.NewEncoder(w).Encode(getMsg)
+			json.NewEncoder(w).Encode(returnMsg)
 		}
 	}
 }

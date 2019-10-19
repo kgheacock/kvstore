@@ -13,7 +13,7 @@ import (
 
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("%s : %s",r.RequestURI, config.Config.ForwardAddress)
+		log.Printf("%s : %s", r.RequestURI, config.Config.ForwardAddress)
 		next.ServeHTTP(w, r)
 	})
 }
@@ -25,7 +25,7 @@ func forwardMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		//Rather compute this once beforehand than in every case. 
+		//Rather compute this once beforehand than in every case.
 		errResp := &ErrorForwardResponse{Error: "Main instance is down", Message: fmt.Sprintf("Error in %s", r.Method)}
 		jsonErrResp, err := json.Marshal(errResp)
 		if err != nil {

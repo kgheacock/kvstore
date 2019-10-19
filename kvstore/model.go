@@ -5,6 +5,19 @@ type Store struct {
 	dal DataAccessLayer
 }
 
+type Data struct {
+	Value string
+}
+
+//Error and Success message
+type ResponseMessage struct {
+	Exists   *bool  `json:"doesExist,omitempty"`
+	Error    string `json:"error,omitempty"`
+	Message  string `json:"message,omitempty"`
+	Replaced *bool  `json:"replaced,omitempty"`
+	Value    string `json:"value,omitempty"`
+}
+
 //DataAccessLayer interface
 type DataAccessLayer interface {
 	Delete(key string) error

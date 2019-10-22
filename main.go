@@ -11,7 +11,7 @@ import (
 
 func main() {
 	config.GenerateConfig()
-	dal := kvstore.KVDAL{}
+	dal := kvstore.KVDAL{Store: make(map[string]string)}
 	kvStore := kvstore.NewStore(&dal)
 
 	router := router.CreateRouter(kvStore)

@@ -29,14 +29,7 @@ func (s *Store) PutHandler(w http.ResponseWriter, r *http.Request) {
 	key := vars["key"]
 
 	var data Data
-	if err := decoder.Decode(&data); err != nil {
-		resp := ResponseMessage{Error: "Value is missing", Message: "Error in PUT"}
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(resp)
-		return
-	}
-
-	if data.Value == "" {
+	if err := decoder.Decode(&data); err != nil || data.Value == "" {
 		resp := ResponseMessage{Error: "Value is missing", Message: "Error in PUT"}
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(resp)

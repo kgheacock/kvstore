@@ -15,9 +15,12 @@ func TestAddHandler(t *testing.T) {
 	for _, key := range keyList {
 		hasher.Reset()
 		hasher.Write([]byte(key))
-		requestBody, err := json.Marshal(map[string]string{
-			"value": string(hasher.Sum(nil)),
-		})
+		bodyStruct := struct {
+			Value string `json:"value"`
+		} {
+			Value: string(hasher.Sum(nil)),
+		}
+		requestBody, err := json.Marshal(bodyStruct)
 		if err != nil {
 			t.Error(err)
 		}
@@ -73,25 +76,25 @@ func TestAddHandlerExists(t *testing.T) {
 	}
 
 }
-func TestAddHandlerTooLong(t *testing.T) {
-	TestInitDAL(t)
-	TestInitKVStore(t)
-	hasher := sha1.New()
-	hasher.Write([]byte(keyList[0]))
-	requestBody, err := json.Marshal(map[string]string{
-		"value": string(hasher.Sum(nil)),
-	})
-	if err != nil {
-		t.Error(err)
-	}
-	req := httptest.NewRequest("PUT", "/kv-store/"+string([0...99]), strings.NewReader(string(requestBody)))
-	w := httptest.NewRecorder()
-	kvStore.AddHandler(w, req)
-	if w.Code != 200 {
-		t.Errorf("Incorrect return code. Expected 200 got %d", w.Code)
-	}
+// func TestAddHandlerTooLong(t *testing.T) {
+// 	TestInitDAL(t)
+// 	TestInitKVStore(t)
+// 	hasher := sha1.New()
+// 	hasher.Write([]byte(keyList[0]))
+// 	requestBody, err := json.Marshal(map[string]string{
+// 		"value": string(hasher.Sum(nil)),
+// 	})
+// 	if err != nil {
+// 		t.Error(err)
+// 	}
+// 	req := httptest.NewRequest("PUT", "/kv-store/"+string([0...99]), strings.NewReader(string(requestBody)))
+// 	w := httptest.NewRecorder()
+// 	kvStore.AddHandler(w, req)
+// 	if w.Code != 200 {
+// 		t.Errorf("Incorrect return code. Expected 200 got %d", w.Code)
+// 	}
 
-}
+// }
 
 func TestDeleteHandler(t *testing.T) {
 	TestInitDAL(t)

@@ -1,38 +1,45 @@
 package kvstore
 
-//Store ...
 type Store struct {
 	dal DataAccessLayer
 }
 
-type Data struct {
-	Value string
-}
-
-//Error and Success message
-type ResponseMessage struct {
-	Exists   *bool  `json:"doesExist,omitempty"`
-	Error    string `json:"error,omitempty"`
-	Message  string `json:"message,omitempty"`
-	Replaced *bool  `json:"replaced,omitempty"`
-	Value    string `json:"value,omitempty"`
-}
-
-//DataAccessLayer interface
 type DataAccessLayer interface {
 	Delete(key string) error
-
-	Put(key string, value string) (int, error)
-
 	Get(key string) (string, error)
+	Put(key string, value string) (int, error)
 }
 
-//NewStore creates a store
 func NewStore(dal DataAccessLayer) *Store {
 	return &Store{dal: dal}
 }
 
-//DAL data access layer
 func (s *Store) DAL() DataAccessLayer {
 	return s.dal
+}
+
+//Holds incoming PUT request body
+type Data struct {
+	Value string `json:"value"`
+}
+
+type ResponseMessage struct {
+	Error   string `json:"error,omitempty"`
+	Message string `json:"message,omitempty"`
+	Value   string `json:"value,omitempty"`
+}
+
+type DeleteResponse struct {
+	ResponseMessage
+	Exists bool `json:"doesExist"`
+}
+
+type PutResponse struct {
+	ResponseMessage
+	Replaced bool `json:"replaced"`
+}
+
+type GetResponse struct {
+	ResponseMessage
+	Exists bool `json:"doesExist"`
 }

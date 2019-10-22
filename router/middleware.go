@@ -9,11 +9,39 @@ import (
 	"net/http"
 
 	"github.com/colbyleiske/cse138_assignment2/config"
+	"github.com/colbyleiske/cse138_assignment2/kvstore"
+	"github.com/gorilla/mux"
 )
 
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Printf("%s : %s", r.RequestURI, config.Config.ForwardAddress)
+		next.ServeHTTP(w, r)
+	})
+}
+
+func validateParametersMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		key, ok := vars["key"]
+		if !ok {
+			resp := struct {
+				kvstore.ResponseMessage
+				Exists bool `json:"doesExist"`
+			}{
+				kvstore.ResponseMessage{"No key", fmt.Sprintf("Error in %s", r.Method), ""}, false,
+			}
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(resp)
+			return
+		}
+
+		if len(key) > 50 {
+			resp := kvstore.ResponseMessage{"Key is too long", fmt.Sprintf("Error in %s", r.Method), ""}
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(resp)
+			return
+		}
 		next.ServeHTTP(w, r)
 	})
 }

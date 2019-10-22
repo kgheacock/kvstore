@@ -6,14 +6,15 @@ import (
 )
 
 var keyList = []string{"ABCD", "FGHIJ", "LMNOP"}
-var dal KVDAL
+var dal DataAccessLayer
 var kvStore *Store
 
 func TestInitDAL(t *testing.T) {
-	dal = KVDAL{}
+	dal = &KVDAL{Store: make(map[string]string)}
+
 }
 func TestInitKVStore(t *testing.T) {
-	kvStore = NewStore(&dal)
+	kvStore = NewStore(dal)
 	if kvStore == nil {
 		t.Error("kvstore was not created")
 	}
@@ -24,7 +25,7 @@ func TestAddKVStore(t *testing.T) {
 	for _, key := range keyList {
 		hasher.Reset()
 		hasher.Write([]byte(key))
-		err := dal.Add(key, string(hasher.Sum(nil)))
+		_, err := dal.Put(key, string(hasher.Sum(nil)))
 		if err != nil {
 			t.Error(err)
 		}
@@ -35,7 +36,7 @@ func TestGetKVStore(t *testing.T) {
 	hasher := sha1.New()
 	for _, key := range keyList {
 		hasher.Reset()
-		err, val := dal.Get(key)
+		val, err := dal.Get(key)
 		if err != nil {
 			t.Error(err)
 		}
@@ -46,6 +47,7 @@ func TestGetKVStore(t *testing.T) {
 
 	}
 }
+
 func TestDeleteKVStore(t *testing.T) {
 	TestInitDAL(t)
 	for _, key := range keyList {
@@ -53,8 +55,8 @@ func TestDeleteKVStore(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		err1, _ := dal.Get(key)
-		if err1 == nil {
+		_, err = dal.Get(key)
+		if err == nil {
 			t.Error("Key still in KVS")
 		}
 	}

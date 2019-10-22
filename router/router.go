@@ -3,7 +3,7 @@ package router
 import (
 	"net/http"
 
-	"../kvstore"
+	"github.com/colbyleiske/cse138_assignment2/kvstore"
 
 	"github.com/gorilla/mux"
 )
@@ -17,6 +17,7 @@ func CreateRouter(s *kvstore.Store) *mux.Router {
 	router.Handle("/kv-store/{key}", wrap(s.GetHandler)).Methods("GET")
 
 	router.Use(loggingMiddleware)
+	router.Use(validateParametersMiddleware)
 	router.Use(forwardMiddleware)
 
 	return router

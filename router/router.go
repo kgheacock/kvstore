@@ -17,6 +17,7 @@ func CreateRouter(s *kvstore.Store) *mux.Router {
 	router.Handle("/kv-store/{key}", wrap(s.GetHandler)).Methods("GET")
 
 	router.Use(loggingMiddleware)
+	router.Use(forwardMiddleware)
 
 	return router
 }

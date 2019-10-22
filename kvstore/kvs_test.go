@@ -40,6 +40,58 @@ func TestAddHandler(t *testing.T) {
 		}
 	}
 }
+func TestAddHandlerExists(t *testing.T) {
+	TestInitDAL(t)
+	TestInitKVStore(t)
+	hasher := sha1.New()
+	hasher.Write([]byte(keyList[0]))
+	requestBody, err := json.Marshal(map[string]string{
+		"value": string(hasher.Sum(nil)),
+	})
+	if err != nil {
+		t.Error(err)
+	}
+	req := httptest.NewRequest("PUT", "/kv-store/"+keyList[0], strings.NewReader(string(requestBody)))
+	w := httptest.NewRecorder()
+	kvStore.AddHandler(w, req)
+	if w.Code != 200 {
+		t.Errorf("Incorrect return code. Expected 200 got %d", w.Code)
+	}
+	requestBodyDup, _ := json.Marshal(map[string]string{
+		"value": "ABC",
+	})
+	reqDup := httptest.NewRequest("PUT", "/kv-store/"+keyList[0], strings.NewReader(string(requestBodyDup)))
+	wDup := httptest.NewRecorder()
+	kvStore.AddHandler(wDup, reqDup)
+	if wDup.Code != 200 {
+		t.Errorf("Incorrect return code. Expected 200 got %d", wDup.Code)
+	}
+	var response map[string]string
+	err = json.Unmarshal([]byte(wDup.Body.String()), &response)
+	if response["replaced"] == "True" {
+		t.Errorf("Duplicate key should cause value to update. Response %s", response["replaced"])
+	}
+
+}
+func TestAddHandlerTooLong(t *testing.T) {
+	TestInitDAL(t)
+	TestInitKVStore(t)
+	hasher := sha1.New()
+	hasher.Write([]byte(keyList[0]))
+	requestBody, err := json.Marshal(map[string]string{
+		"value": string(hasher.Sum(nil)),
+	})
+	if err != nil {
+		t.Error(err)
+	}
+	req := httptest.NewRequest("PUT", "/kv-store/"+string([0...99]), strings.NewReader(string(requestBody)))
+	w := httptest.NewRecorder()
+	kvStore.AddHandler(w, req)
+	if w.Code != 200 {
+		t.Errorf("Incorrect return code. Expected 200 got %d", w.Code)
+	}
+
+}
 
 func TestDeleteHandler(t *testing.T) {
 	TestInitDAL(t)

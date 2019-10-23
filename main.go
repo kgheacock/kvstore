@@ -16,7 +16,7 @@ func main() {
 
 	router := router.CreateRouter(kvStore)
 
-	addr := "localhost:13800"
+	addr := ":13800"
 	srv := &http.Server{
 		Handler: router,
 		Addr:    addr,

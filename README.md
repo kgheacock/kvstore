@@ -1,15 +1,15 @@
-### CSE Assignment 2###
-##Assignment Overview:##
+### CSE Assignment 2
+##Assignment Overview:
 
-#kv store#
+#kv store
 *kvstore/dal contains the data structure and required methods CRUD methods
 *kvstore/kvs handles any interfacing with the DAL
 *kvstore/model contains definitions of structures used in kvstore/dal
-#router#
+#router
 *router/middleware contains methods for proxying
 *router/router contains methods for assigning http routes to their handlers
 *router/model contains definitions of structures used in the router package
-#Dockerfile#
+#Dockerfile
 *Creation of the docker image has the following steps: 
   <ol>
   <li>specify the base image to be golang:alpine (an alpine linux golang deployment)</li>

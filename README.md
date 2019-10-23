@@ -2,13 +2,13 @@
 <h2>Assignment Overview:</h2>
 
 <h3>kv store</h3>
-* kvstore/dal contains the data structure and required methods CRUD methods
-* kvstore/kvs handles any interfacing with the DAL
-* kvstore/model contains definitions of structures used in kvstore/dal
+- kvstore/dal contains the data structure and required methods CRUD methods
+- kvstore/kvs handles any interfacing with the DAL
+- kvstore/model contains definitions of structures used in kvstore/dal
 <h3>router</h3>
-* router/middleware contains methods for proxying
-* router/router contains methods for assigning http routes to their handlers
-* router/model contains definitions of structures used in the router package
+- router/middleware contains methods for proxying
+- router/router contains methods for assigning http routes to their handlers
+- router/model contains definitions of structures used in the router package
 <h3>Dockerfile</h3>
 Creation of the docker image has the following steps: 
   <ol>

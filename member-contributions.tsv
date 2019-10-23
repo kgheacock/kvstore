@@ -2,4 +2,3 @@ kgheacoc  Responsible for Docker and testing
 Chanorti  Responsible for PUT and GET requests
 bzwier  Responsible for DELETE requests and error response.
 cleiske Responsible for follower middleware and overall architecture. 
-

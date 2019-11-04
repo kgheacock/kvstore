@@ -25,8 +25,8 @@ func (s *Store) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *Store) PutHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	decoder := json.NewDecoder(r.Body)
 	key := vars["key"]
+	decoder := json.NewDecoder(r.Body)
 
 	var data Data
 	if err := decoder.Decode(&data); err != nil || data.Value == "" {
@@ -47,7 +47,9 @@ func (s *Store) PutHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(resp)
 		return
-	} else if putResp == UPDATED {
+	}
+
+	if putResp == UPDATED {
 		resp := PutResponse{ResponseMessage{"", "Updated successfully", ""}, true}
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(resp)

@@ -22,6 +22,10 @@ func (s *Store) DAL() DataAccessLayer {
 	return s.dal
 }
 
+func (s *Store) GetNodeCount() int {
+	return s.nodeCount
+}
+
 func (s *Store) Hasher() hasher.Store {
 	return *s.hasher
 }

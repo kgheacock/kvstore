@@ -3,12 +3,13 @@ package router
 import (
 	"net/http"
 
+	"github.com/colbyleiske/cse138_assignment2/hasher"
 	"github.com/colbyleiske/cse138_assignment2/kvstore"
 
 	"github.com/gorilla/mux"
 )
 
-func CreateRouter(s *kvstore.Store) *mux.Router {
+func CreateRouter(s *kvstore.Store, h *hasher.Store) *mux.Router {
 	router := mux.NewRouter()
 
 	//route registration

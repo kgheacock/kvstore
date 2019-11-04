@@ -5,16 +5,19 @@ import (
 	"net/http"
 
 	"github.com/colbyleiske/cse138_assignment2/config"
+	"github.com/colbyleiske/cse138_assignment2/hasher"
 	"github.com/colbyleiske/cse138_assignment2/kvstore"
 	"github.com/colbyleiske/cse138_assignment2/router"
 )
 
 func main() {
 	config.GenerateConfig()
-	dal := kvstore.KVDAL{Store: make(map[string]string)}
-	kvStore := kvstore.NewStore(&dal)
+	hasherDal := hasher.Hasher{}
+	hasher := hasher.NewHasher(&hasherDal)
+	kvDal := kvstore.KVDAL{Store: make(map[string]string)}
+	kvStore := kvstore.NewStore(&kvDal, hasher)
 
-	router := router.CreateRouter(kvStore)
+	router := router.CreateRouter(kvStore, hasher)
 
 	addr := ":13800"
 	srv := &http.Server{

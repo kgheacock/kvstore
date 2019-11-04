@@ -1,7 +1,10 @@
 package kvstore
 
+import "github.com/colbyleiske/cse138_assignment2/hasher"
+
 type Store struct {
-	dal DataAccessLayer
+	dal    DataAccessLayer
+	hasher *hasher.Store
 }
 
 type DataAccessLayer interface {
@@ -10,12 +13,16 @@ type DataAccessLayer interface {
 	Put(key string, value string) (int, error)
 }
 
-func NewStore(dal DataAccessLayer) *Store {
-	return &Store{dal: dal}
+func NewStore(dal DataAccessLayer, hasher *hasher.Store) *Store {
+	return &Store{dal: dal, hasher: hasher}
 }
 
 func (s *Store) DAL() DataAccessLayer {
 	return s.dal
+}
+
+func (s *Store) Hasher() hasher.Store {
+	return *s.hasher
 }
 
 //Holds incoming PUT request body

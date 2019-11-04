@@ -34,13 +34,11 @@ func (k *KVDAL) Put(key string, value string) (int, error) {
 //Get function retrieves value from map if it exists
 func (k *KVDAL) Get(key string) (string, error) {
 	fmt.Println("Getting: ", key)
-
 	value, ok := k.Store[key]
-	if ok {
-		return value, nil
+	if !ok {
+		return "", ErrKeyNotFound
 	}
-
-	return "", fmt.Errorf("Not Found")
+	return value, nil
 }
 
 //Delete function removes key-value from map if it exists

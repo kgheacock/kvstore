@@ -5,6 +5,7 @@ import "github.com/colbyleiske/cse138_assignment2/hasher"
 type Store struct {
 	dal    DataAccessLayer
 	hasher *hasher.Store
+	nodeCount int
 }
 
 type DataAccessLayer interface {

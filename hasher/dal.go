@@ -1,7 +1,9 @@
 package hasher
 
-type Hasher struct {}
+type Hasher struct {
+	
+}
 
-func (h *Hasher) Hash (key string) (int, error) {
+func (h *Hasher) GetServerByKey (key string) (int, error) {
 	return 0 , nil //temp
 }

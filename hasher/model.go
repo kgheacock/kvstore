@@ -5,7 +5,7 @@ type Store struct {
 }
 
 type DataAccessLayer interface {
-	GetServerByKey(key string) (int, error)
+	GetServerByKey(key string) (string, error)
 }
 
 func NewHasher(dal DataAccessLayer) *Store {

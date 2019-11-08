@@ -27,7 +27,6 @@ func KeyNotFound(key string) error {
   }
 }
 
-//Ring datastructure
 type Ring struct {
   sync.Mutex
   Nodes Nodes
@@ -90,10 +89,11 @@ func (r *Ring) GetKeyNode (id string) (*Node, error) {
   if location >= r.Nodes.Len() {
     location = 0
   }
-  if location == -1 { //***THIS DOES NOT CURRENTLY WORK***
+  if location < r.Nodes.Len() && r.Nodes[location].Id == id {
+    return r.Nodes[location], nil
+  } else {
     return &Node{}, KeyNotFound("")
   }
-  return r.Nodes[location], nil
 }
 
 func (r *Ring) ReShard () {
@@ -157,7 +157,6 @@ func main(){
     fmt.Println("Key:", keys[i]+ ",","is on Server: ",theNodeWanted)
   }
   
-  //This breaks everything
   theNodeWanted, _ := myRing.GetServerByKey("DoesntExist")
   fmt.Println("Key:", "DoesntExist" + ",","is on Server: ",theNodeWanted)
   

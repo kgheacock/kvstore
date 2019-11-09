@@ -8,6 +8,6 @@ type DataAccessLayer interface {
 	GetServerByKey(key string) (string, error)
 }
 
-func NewHasher(dal DataAccessLayer) *Store {
+func NewRingStore(dal DataAccessLayer) *Store {
 	return &Store{dal: dal}
 }

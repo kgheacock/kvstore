@@ -12,12 +12,12 @@ import (
 
 func main() {
 	config.GenerateConfig()
-	hasherDal := hasher.Hasher{}
-	hasher := hasher.NewHasher(&hasherDal)
+	ringDAL := hasher.Ring{}
+	ring := hasher.NewRingStore(&ringDAL)
 	kvDal := kvstore.KVDAL{Store: make(map[string]string)}
-	kvStore := kvstore.NewStore(&kvDal, hasher)
+	kvStore := kvstore.NewStore(&kvDal, ring)
 
-	router := router.CreateRouter(kvStore, hasher)
+	router := router.CreateRouter(kvStore, ring)
 
 	addr := ":13800"
 	srv := &http.Server{

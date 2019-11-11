@@ -16,7 +16,7 @@ func TestGetServerByKey(t *testing.T) {
 	//setup ring
 	//add nodes
 	//add keys
-	//t.Log("Reasfdasdfasdfasfdadsfasdfadsfadsfadfsadsasdfadsfee")
+
 	ring := NewRing()
 	for item := range keyset1 {
 		ring.AddKey(keyset1[item])
@@ -46,9 +46,9 @@ func TestGetServerByKey(t *testing.T) {
 
 		}
 	}
-	//t.Errorf("Reasdfasdfasdfasdfasdfee")
+
 	allKeys := GetServersAndKeys()
 	for i := 0; i < len(allKeys); i++ {
-		t.Errorf(allKeys[i].ServerName)
+		t.Logf(allKeys[i].ServerName)
 	}
 }

@@ -13,6 +13,11 @@
 <li>router/router contains methods for assigning http routes to their handlers</li>
 <li>router/model contains definitions of structures used in the router package</li>
   </ul>
+<h3>hasher</h3>
+<ul>
+  <li>hasher/dal contains the entire consistent hashing library</li>
+  <li>hasher/model contains definitions of structures used in consistent hashing library</li>
+</ul>
 <h3>Dockerfile</h3>
 Creation of the docker image has the following steps: 
   <ol>

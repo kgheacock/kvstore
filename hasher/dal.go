@@ -25,6 +25,11 @@ func NewRing() *Ring {
 	return &Ring{Nodes: Nodes{}, Numkeys: 0}
 }
 
+/*
+Fix for loops
+Fix name scheme for servers id methods
+*/
+
 //List of nodes
 type Nodes []*Node
 
@@ -58,12 +63,12 @@ func (r *Ring) AddKey(id string) {
 	r.Numkeys++
 }
 
-func (r *Ring) AddServer(id string) {
+func (r *Ring) AddServer(ip string) {
 	r.Lock()
 	defer r.Unlock()
 	for i := 0; i < NumVirtualNodes; i++ {
-		fullid := id + ":" + strconv.Itoa(i)
-		node := r.NewNode(fullid, true)
+		fullip := ip + ":" + strconv.Itoa(i)
+		node := r.NewNode(fullip, true)
 		r.Nodes = append(r.Nodes, node)
 	}
 	sort.Sort(r.Nodes)
@@ -85,6 +90,8 @@ func (r *Ring) GetKeyNode(id string) (*Node, error) {
 }
 
 func (r *Ring) ReShard() {
+	r.Lock()
+	defer r.Unlock()
 	for i := 0; i < r.Nodes.Len(); i++ {
 		if !r.Nodes[i].IsServer {
 			for j := i; j < r.Nodes.Len(); j++ {
@@ -94,6 +101,7 @@ func (r *Ring) ReShard() {
 				}
 				if r.Nodes[j].IsServer {
 					r.Nodes[i].Server = r.Nodes[j]
+					KeysPerNode(r.Nodes[i], r.Nodes[j])
 					break
 				}
 			}
@@ -101,6 +109,40 @@ func (r *Ring) ReShard() {
 	}
 }
 
+//Holds struct containing server name and its keys
+type KeyCount struct {
+	ServerName string
+	Nodes      Nodes
+}
+
+//Is a list of structs to be exported
+var ServersAndKeys []KeyCount
+
+func NewKeyCount(name string) *KeyCount {
+	return &KeyCount{
+		ServerName: name,
+		Nodes:      Nodes{},
+	}
+}
+
+//Called during resharding, creates list of KeyCount structs
+//Used to map data to respective servers outside this library
+func KeysPerNode(key, server *Node) {
+	serverIp := strings.Split(server.Id, ":")
+	for entry := range ServersAndKeys {
+		if ServersAndKeys[entry].ServerName == serverIp[0] {
+			ServersAndKeys[entry].Nodes = append(ServersAndKeys[entry].Nodes, key)
+			return
+		}
+	}
+	//If no entry exists for that name
+	newEntry := NewKeyCount(serverIp[0])
+	newEntry.Nodes = append(newEntry.Nodes, key)
+	ServersAndKeys = append(ServersAndKeys, *newEntry)
+	return
+}
+
+//Get total keys on ring
 func (r *Ring) GetNumOfKeys() int { return r.Numkeys }
 
 func (r *Ring) printRing() {
@@ -125,30 +167,4 @@ func (r *Ring) GetServerByKey(key string) (string, error) {
 	return serverip[0], nil
 }
 
-/*
-//TESTING CODE
-func main(){
-  keys := []string{"Chris", "Brandon", "Colby", "Keith", "Alvaro", "Mackey"}
-
-  myRing := InitRing()
-  myRing.AddServer("A")
-  myRing.AddServer("B")
-  myRing.AddServer("C")
-
-  for i := 0; i < len(keys); i++ {
-    myRing.AddKey(keys[i])
-  }
-
-  myRing.printRing()
-  myRing.ReShard()
-
-  for i := 0; i < len(keys); i++ {
-    theNodeWanted, _ := myRing.GetServerByKey(keys[i])
-    fmt.Println("Key:", keys[i]+ ",","is on Server: ",theNodeWanted)
-  }
-
-  theNodeWanted, _ := myRing.GetServerByKey("DoesntExist")
-  fmt.Println("Key:", "DoesntExist" + ",","is on Server: ",theNodeWanted)
-
-}
-*/
+func GetServersAndKeys() []KeyCount { return ServersAndKeys }

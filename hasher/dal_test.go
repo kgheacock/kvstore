@@ -1,24 +1,39 @@
 package hasher
 
-import "testing"
+import (
+	"testing"
+)
 
 var ring Ring
 
 func init() {
-	//setup ring
-	//add nodes
-	//add keys
+
 }
 
 func TestGetServerByKey(t *testing.T) {
+	keyset1 := []string{"Chris", "Brandon", "Colby", "Keith", "Alvaro", "Mackey", "Space-Boss", "Dimitris", "Julig", "Pham", "Betz", "Long", "Qian", "Tantalo"}
+	servers := []string{"A", "B", "C"}
+	//setup ring
+	//add nodes
+	//add keys
+	//t.Log("Reasfdasdfasdfasfdadsfasdfadsfadsfadfsadsasdfadsfee")
 	ring := NewRing()
+	for item := range keyset1 {
+		ring.AddKey(keyset1[item])
+	}
+	for item := range servers {
+		ring.AddServer(servers[item])
+	}
+	ring.ReShard()
+
 	tt := []struct {
 		key           string
 		expectedIP    string
 		expectedError error
 	}{
-		{key: "foo", expectedIP: "127.0.0.1", expectedError: nil},
-		{key: "bar", expectedIP: "", expectedError: KeyNotFound},
+		{key: "Tantalo", expectedIP: "C", expectedError: nil},
+		{key: "Alvaro", expectedIP: "A", expectedError: nil},
+		{key: "DoesNotExist", expectedIP: "", expectedError: KeyNotFound},
 	}
 
 	for _, tc := range tt {
@@ -30,5 +45,10 @@ func TestGetServerByKey(t *testing.T) {
 			t.Errorf("Expected error %s , got %s", tc.expectedError, err)
 
 		}
+	}
+	//t.Errorf("Reasdfasdfasdfasdfasdfee")
+	allKeys := GetServersAndKeys()
+	for i := 0; i < len(allKeys); i++ {
+		t.Errorf(allKeys[i].ServerName)
 	}
 }

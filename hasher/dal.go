@@ -15,6 +15,25 @@ const NumVirtualNodes = 20
 
 var KeyNotFound error = errors.New("key not found")
 
+//*************** Node Functions ***************\\
+
+//List of nodes
+type Nodes []*Node
+
+//Server or Key
+type Node struct {
+	Id       string
+	IdHash   uint32
+	Server   *Node
+	IsServer bool
+}
+
+func (n Nodes) Len() int           { return len(n) }
+func (n Nodes) Swap(i, j int)      { n[i], n[j] = n[j], n[i] }
+func (n Nodes) Less(i, j int) bool { return n[i].IdHash < n[j].IdHash }
+
+//*************** Ring Functions ***************\\
+
 type Ring struct {
 	sync.Mutex
 	Nodes   Nodes
@@ -23,26 +42,6 @@ type Ring struct {
 
 func NewRing() *Ring {
 	return &Ring{Nodes: Nodes{}, Numkeys: 0}
-}
-
-/*
-Fix for loops
-Fix name scheme for servers id methods
-*/
-
-//List of nodes
-type Nodes []*Node
-
-func (n Nodes) Len() int           { return len(n) }
-func (n Nodes) Swap(i, j int)      { n[i], n[j] = n[j], n[i] }
-func (n Nodes) Less(i, j int) bool { return n[i].IdHash < n[j].IdHash }
-
-//Server or Key
-type Node struct {
-	Id       string
-	IdHash   uint32
-	Server   *Node
-	IsServer bool
 }
 
 func (r *Ring) NewNode(id string, nodetype bool) *Node {
@@ -74,6 +73,7 @@ func (r *Ring) AddServer(ip string) {
 	sort.Sort(r.Nodes)
 }
 
+//Used to binary search for node in ring
 func (r *Ring) GetKeyNode(id string) (*Node, error) {
 	boolfn := func(i int) bool {
 		return r.Nodes[i].IdHash >= r.HashVal(id)
@@ -89,6 +89,33 @@ func (r *Ring) GetKeyNode(id string) (*Node, error) {
 	}
 }
 
+//Get total keys on ring
+func (r *Ring) GetNumOfKeys() int { return r.Numkeys }
+
+//Print whole ring for debugging
+func (r *Ring) printRing() {
+	for i := 0; i < r.Nodes.Len(); i++ {
+		fmt.Println(r.Nodes[i].Id)
+	}
+}
+
+//Takes in string, returns 32bit hash
+func (r *Ring) HashVal(key string) uint32 {
+	return crc32.ChecksumIEEE([]byte(key))
+}
+
+//Return the ip of a server by passing in the key
+func (r *Ring) GetServerByKey(key string) (string, error) {
+	node, err := r.GetKeyNode(key)
+	if err != nil {
+		log.Printf("Could not locate key %s\n", key)
+		return "", KeyNotFound
+	}
+	serverip := strings.Split(node.Server.Id, ":")
+	return serverip[0], nil
+}
+
+//Reassign keys to servers
 func (r *Ring) ReShard() {
 	r.Lock()
 	defer r.Unlock()
@@ -109,13 +136,15 @@ func (r *Ring) ReShard() {
 	}
 }
 
+//*************** KeyCount Functions ***************\\
+
 //Holds struct containing server name and its keys
 type KeyCount struct {
 	ServerName string
 	Nodes      Nodes
 }
 
-//Is a list of structs to be exported
+//Defines slice of KeyCount structs
 var ServersAndKeys []KeyCount
 
 func NewKeyCount(name string) *KeyCount {
@@ -142,29 +171,9 @@ func KeysPerNode(key, server *Node) {
 	return
 }
 
-//Get total keys on ring
-func (r *Ring) GetNumOfKeys() int { return r.Numkeys }
-
-func (r *Ring) printRing() {
-	for i := 0; i < r.Nodes.Len(); i++ {
-		fmt.Println(r.Nodes[i].Id)
-	}
-}
-
-//Takes in string, returns 32bit hash
-func (r *Ring) HashVal(key string) uint32 {
-	return crc32.ChecksumIEEE([]byte(key))
-}
-
-//Return the ip of a server by passing in the key
-func (r *Ring) GetServerByKey(key string) (string, error) {
-	node, err := r.GetKeyNode(key)
-	if err != nil {
-		log.Printf("Could not locate key %s\n", key)
-		return "", KeyNotFound
-	}
-	serverip := strings.Split(node.Server.Id, ":")
-	return serverip[0], nil
-}
-
 func GetServersAndKeys() []KeyCount { return ServersAndKeys }
+
+/*
+Fix for loops
+Fix name scheme for servers id methods
+*/

@@ -117,6 +117,12 @@ func (r *Ring) GetServerByKey(key string) (string, error) {
 
 //Reassign keys to servers
 func (r *Ring) ReShard() {
+	//Empty slice for resharding
+	ServersAndKeys = nil
+	//Empty ring
+	if r.GetNumOfKeys() == 0 {
+		return
+	}
 	r.Lock()
 	defer r.Unlock()
 	for i := 0; i < r.Nodes.Len(); i++ {

@@ -35,25 +35,40 @@ func (n Nodes) Less(i, j int) bool { return n[i].IpHash < n[j].IpHash }
 
 //*************** Ring Functions ***************\\
 
+//Nodes: Actual representation of ring
+//Servers: []String of non-virtualized node IP's
 type Ring struct {
 	sync.Mutex
-	Nodes Nodes
+	Nodes   Nodes
+	Servers Servers
 }
 
+//List of non-virtual server IP's
+type Servers []string
+
 func NewRing() *Ring {
-	return &Ring{Nodes: Nodes{}}
+	return &Ring{Nodes: Nodes{}, Servers: Servers{}}
 }
 
 //Adds server and virtual nodes to ring
 func (r *Ring) AddServer(ip string) {
 	r.Lock()
 	defer r.Unlock()
+	//Adds IP to list of servers
+	r.Servers = append(r.Servers, ip)
+	//Creates virtualized nodes for ring
 	for i := 0; i < NumVirtualNodes; i++ {
 		fullip := ip + ":" + strconv.Itoa(i)
 		node := r.NewNode(fullip)
 		r.Nodes = append(r.Nodes, node)
 	}
 	sort.Sort(r.Nodes)
+}
+
+//Returns list of all non-virtual server IP's on ring
+func (r *Ring) GetServers() []string {
+	sort.Strings(r.Servers)
+	return r.Servers
 }
 
 //Print whole ring for debugging

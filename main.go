@@ -12,14 +12,16 @@ import (
 
 func main() {
 	config.GenerateConfig()
+
 	ringDAL := hasher.Ring{}
 	ring := hasher.NewRingStore(&ringDAL)
+	
 	kvDal := kvstore.KVDAL{Store: make(map[string]string)}
 	kvStore := kvstore.NewStore(&kvDal, ring)
 
 	router := router.CreateRouter(kvStore, ring)
 
-	addr := ":13800"
+	addr := config.Config.Address
 	srv := &http.Server{
 		Handler: router,
 		Addr:    addr,

@@ -58,7 +58,7 @@ func (r *Ring) AddServer(ip string) {
 	newVirNodes := make(nodes, 0, numVirtualNodes)
 	//Creates virtualized nodes for ring
 	for i := 0; i < numVirtualNodes; i++ {
-		virtualIP := ip + ":" + strconv.Itoa(i)
+		virtualIP := ip + "$" + strconv.Itoa(i)
 		node := r.newNode(virtualIP)
 		newVirNodes = append(newVirNodes, node)
 	}
@@ -89,7 +89,7 @@ func (r *Ring) GetServerByKey(key string) (string, error) {
 		location = 0
 	}
 	node := r.nodes[location]
-	serverip := strings.Split(node.IP, ":")
+	serverip := strings.Split(node.IP, "$")
 	return serverip[0], nil
 }
 

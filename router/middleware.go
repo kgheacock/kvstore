@@ -29,7 +29,7 @@ var (
 
 func (s *Store) loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("%s", r.RequestURI)
+		log.Printf("%s - %s", config.Config.Address, r.RequestURI)
 		next.ServeHTTP(w, r)
 	})
 }
@@ -110,6 +110,7 @@ func (s *Store) forwardMiddleware(next http.Handler) http.Handler {
 
 		if proxyIP == config.Config.Address {
 			next.ServeHTTP(w, r)
+			return
 		}
 
 		body, err := ioutil.ReadAll(r.Body)

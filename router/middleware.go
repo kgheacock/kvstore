@@ -62,7 +62,7 @@ func (s *Store) validateParametersMiddleware(next http.Handler) http.Handler {
 
 func (s *Store) bufferRequestMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		source, ok := ctx.Value(middleware.ContextSourceKey).(string)
+		source, ok := r.Context().Value(ContextSourceKey).(string)
 		if ok && source == INTERNAL {
 			next.ServeHTTP(w, r)
 		}
@@ -77,7 +77,7 @@ func (s *Store) bufferRequestMiddleware(next http.Handler) http.Handler {
 
 /*
 To get the value from the context
-source, ok := ctx.Value(middleware.ContextSourceKey).(string)
+source, ok := Context().Value(middleware.ContextSourceKey).(string)
 middleware.INTERNAL or middleware.EXTERNAL
 */
 func (s *Store) checkSourceMiddleware(next http.Handler) http.Handler {
@@ -102,7 +102,7 @@ func (s *Store) forwardMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		proxyIP, err := s.hasher.DAL().ServerOfKey(key)
+		proxyIP, err := s.hasher.DAL().GetServerByKey(key)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return

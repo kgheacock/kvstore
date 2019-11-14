@@ -95,9 +95,8 @@ func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
 	serverListString := vars["view"]
 	serverList := strings.Split(serverListString, ",")
 	sort.Strings(serverList)
-	for _, server := range serverList {
-		config.Config.Servers = append(config.Config.Servers, server)
-	}
+	config.Config.Servers = serverList
+
 	/*
 		if source == middleware.EXTERNAL {
 			s.state = RECIEVED_EXTERNAL_RESHARD
@@ -124,7 +123,7 @@ func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	for _, key := range keyList {
 		client := &http.Client{}
-		serverIP, err := s.hasher.DAL().ServerOfKey(key)
+		serverIP, err := s.hasher.DAL().GetServerByKey(key)
 		if err != nil {
 			log.Fatal(err)
 		}

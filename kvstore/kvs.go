@@ -30,6 +30,7 @@ func (s *Store) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *Store) KeyCountHandler(w http.ResponseWriter, r *http.Request) {
 	//Return Key Count
+	w.Write([]byte("WIP"))
 }
 
 func (s *Store) PutHandler(w http.ResponseWriter, r *http.Request) {

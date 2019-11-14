@@ -12,11 +12,12 @@ import (
 func CreateRouter(s *kvstore.Store, h *hasher.Store) *mux.Router {
 	router := mux.NewRouter()
 	storeRouter := router.PathPrefix("/kv-store").Subrouter()
+	
 	//route registration
-
 	storeRouter.Handle("/{key}", wrap(s.DeleteHandler)).Methods("DELETE")
 	storeRouter.Handle("/{key}", wrap(s.PutHandler)).Methods("PUT")
 	storeRouter.Handle("/{key}", wrap(s.GetHandler)).Methods("GET")
+	
 	router.Handle("/kv-store/key-count", wrap(s.KeyCountHandler)).Methods("GET")
 	router.Handle("/kv-store/view-change", wrap(s.ReshardHandler)).Methods("PUT")
 

@@ -1,30 +1,50 @@
 package kvstore
 
-import "github.com/colbyleiske/cse138_assignment2/hasher"
+import (
+	"sync"
+
+	"github.com/colbyleiske/cse138_assignment2/hasher"
+)
 
 type Store struct {
-	dal                       DataAccessLayer
-	hasher                    *hasher.Store
-	ViewChangeFinishedChannel chan bool
-	nodeCount                 int
+	sync.Mutex
+	dal                              DataAccessLayer
+	hasher                           *hasher.Store
+	state                            nodeState
+	viewChangeAllAcksRecievedChannel chan bool
+	ViewChangeFinishedChannel        chan bool
+	nodeAckCount                     int
+	nodeCount                        int
 }
+type nodeState int
+
+const (
+	NORMAL nodeState = iota + 1
+	RECIEVED_EXTERNAL_RESHARD
+	//Lock Dict to external requests
+	RECIEVED_INTERNAL_RESHARD
+	TRANSFER_KEYS
+	FINISHED_TRANSFER
+	//Release lock
+	PROCESS_BACKLOG
+)
 
 type DataAccessLayer interface {
 	Delete(key string) error
 	Get(key string) (string, error)
 	Put(key string, value string) (int, error)
-	GetKeyList() ([]string, error)
+	KeyList() ([]string, error)
 }
 
 func NewStore(dal DataAccessLayer, hasher *hasher.Store) *Store {
-	return &Store{dal: dal, hasher: hasher}
+	return &Store{dal: dal, hasher: hasher, state: NORMAL}
 }
 
 func (s *Store) DAL() DataAccessLayer {
 	return s.dal
 }
 
-func (s *Store) GetNodeCount() int {
+func (s *Store) NodeCount() int {
 	return s.nodeCount
 }
 

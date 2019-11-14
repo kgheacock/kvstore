@@ -13,9 +13,11 @@ func CreateRouter(s *kvstore.Store, h *hasher.Store) *mux.Router {
 	router := mux.NewRouter()
 
 	//route registration
-	router.Handle("/kv-store/{key}", wrap(s.DeleteHandler)).Methods("DELETE")
-	router.Handle("/kv-store/{key}", wrap(s.PutHandler)).Methods("PUT")
-	router.Handle("/kv-store/{key}", wrap(s.GetHandler)).Methods("GET")
+	router.Handle("/kv-store/keys/{key}", wrap(s.DeleteHandler)).Methods("DELETE")
+	router.Handle("/kv-store/keys/{key}", wrap(s.PutHandler)).Methods("PUT")
+	router.Handle("/kv-store/keys/{key}", wrap(s.GetHandler)).Methods("GET")
+	router.Handle("/kv-store/key-count", wrap(s.KeyCountHandler)).Methods("GET")
+	router.Handle("/kv-store/view-change", wrap(s.ReshardHandler)).Methods("PUT")
 
 	middlewareStore := NewStore(h, s)
 	router.Use(middlewareStore.loggingMiddleware)

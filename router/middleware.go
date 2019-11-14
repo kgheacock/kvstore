@@ -65,8 +65,8 @@ func (s *Store) bufferRequestMiddleware(next http.Handler) http.Handler {
 		// 	next.ServeHTTP(w,r)
 		// }
 
-		<- s.kvstore.ViewChangeFinishedChannel
-		next.ServeHTTP(w,r)
+		<-s.kvstore.ViewChangeFinishedChannel
+		next.ServeHTTP(w, r)
 	})
 }
 
@@ -96,7 +96,7 @@ func (s *Store) forwardMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		proxyIP, err := s.hasher.DAL().GetServerByKey(key)
+		proxyIP, err := s.hasher.DAL().ServerOfKey(key)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return

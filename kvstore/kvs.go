@@ -15,15 +15,18 @@ import (
 func (s *Store) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["key"]
-
+	var addr string
+	if len(r.Header.Get("X-Real-Ip")) != 0 {
+		addr = config.Config.Address
+	}
 	if err := s.DAL().Delete(key); err != nil {
-		resp := DeleteResponse{ResponseMessage{"Key does not exist", "Error in DELETE", ""}, false}
+		resp := DeleteResponse{ResponseMessage{"Key does not exist", "Error in DELETE", "", addr}, false}
 		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(resp)
 		return
 	}
 
-	resp := DeleteResponse{ResponseMessage{"", "Deleted successfully", ""}, true}
+	resp := DeleteResponse{ResponseMessage{"", "Deleted successfully", "", addr}, true}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
 }
@@ -37,10 +40,14 @@ func (s *Store) PutHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["key"]
 	decoder := json.NewDecoder(r.Body)
+	var addr string
+	if len(r.Header.Get("X-Real-Ip")) != 0 {
+		addr = config.Config.Address
+	}
 
 	var data Data
 	if err := decoder.Decode(&data); err != nil || data.Value == "" {
-		resp := ResponseMessage{Error: "Value is missing", Message: "Error in PUT"}
+		resp := ResponseMessage{Error: "Value is missing", Message: "Error in PUT", Address: addr}
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(resp)
 		return
@@ -53,13 +60,13 @@ func (s *Store) PutHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if putResp == ADDED {
-		resp := PutResponse{ResponseMessage{"", "Added successfully", ""}, false}
+		resp := PutResponse{ResponseMessage{"", "Added successfully", "", addr}, false}
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(resp)
 		return
 	}
 	if putResp == UPDATED {
-		resp := PutResponse{ResponseMessage{"", "Updated successfully", ""}, true}
+		resp := PutResponse{ResponseMessage{"", "Updated successfully", "", addr}, true}
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(resp)
 		return
@@ -69,16 +76,20 @@ func (s *Store) PutHandler(w http.ResponseWriter, r *http.Request) {
 func (s *Store) GetHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["key"]
+	var addr string
+	if len(r.Header.Get("X-Real-Ip")) != 0 {
+		addr = config.Config.Address
+	}
 
 	val, err := s.DAL().Get(key)
 	if err != nil {
-		resp := GetResponse{ResponseMessage{"Key does not exist", "Error in GET", ""}, false}
+		resp := GetResponse{ResponseMessage{"Key does not exist", "Error in GET", "", addr}, false}
 		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(resp)
 		return
 	}
 
-	resp := GetResponse{ResponseMessage{"", "Retrieved successfully", val}, true}
+	resp := GetResponse{ResponseMessage{"", "Retrieved successfully", val, addr}, true}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
 }

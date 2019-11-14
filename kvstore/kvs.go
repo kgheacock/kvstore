@@ -93,6 +93,7 @@ func (s *Store) GetHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
 }
+
 func (s *Store) VCFinishedAckHandler(w http.ResponseWriter, r *http.Request) {
 	//ISSUE: This is NOT Itempotent. If a server acks more than once this number will be invalid
 	s.nodeAckCount += 1
@@ -101,6 +102,7 @@ func (s *Store) VCFinishedAckHandler(w http.ResponseWriter, r *http.Request) {
 		s.viewChangeAllAcksRecievedChannel <- true
 	}
 }
+
 func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
 	//source, ok := ctx.Value(middleware.ContextSourceKey).(string)
 	vars := mux.Vars(r)
@@ -191,4 +193,23 @@ func (s *Store) NewServersFromVC(newNodeList []string) []string {
 		}
 	}
 	return newNodes
+}
+func (s *Store) GetKeyCountHandler(w http.ResponseWriter, r *http.Request) {
+
+	count := s.DAL().GetKeyCount()
+	//{"message":"Key count retrieved successfully","key-count":<key-count>}.
+
+	resp := GetKeyCountRepsponse{"Key count retrieved successfully", count}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(resp)
+}
+
+func (s *Store) GetKeyCountHandler(w http.ResponseWriter, r *http.Request) {
+
+	count := s.DAL().GetKeyCount()
+	//{"message":"Key count retrieved successfully","key-count":<key-count>}.
+
+	resp := KeyCount{"Key count reteieved successfully". count}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(resp)
 }

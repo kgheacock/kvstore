@@ -34,6 +34,7 @@ type DataAccessLayer interface {
 	Get(key string) (string, error)
 	Put(key string, value string) (int, error)
 	KeyList() ([]string, error)
+	GetKeyCount() (int)
 }
 
 func NewStore(dal DataAccessLayer, hasher *hasher.Store) *Store {
@@ -81,4 +82,9 @@ type PutResponse struct {
 type GetResponse struct {
 	ResponseMessage
 	Exists bool `json:"doesExist"`
+}
+
+type GetKeyCountRepsponse struct {
+	Message string `json:"message`
+	KeyCount int `json:"key-count"`
 }

@@ -48,7 +48,7 @@ func (s *Store) validateParametersMiddleware(next http.Handler) http.Handler {
 				kvstore.ResponseMessage
 				Exists bool `json:"doesExist"`
 			}{
-				kvstore.ResponseMessage{"No key", fmt.Sprintf("Error in %s", r.Method), "",addr}, false,
+				kvstore.ResponseMessage{"No key", fmt.Sprintf("Error in %s", r.Method), "", addr}, false,
 			}
 			w.WriteHeader(http.StatusNotFound)
 			json.NewEncoder(w).Encode(resp)
@@ -56,7 +56,7 @@ func (s *Store) validateParametersMiddleware(next http.Handler) http.Handler {
 		}
 
 		if len(key) > 50 {
-			resp := kvstore.ResponseMessage{"Key is too long", fmt.Sprintf("Error in %s", r.Method), "",addr}
+			resp := kvstore.ResponseMessage{"Key is too long", fmt.Sprintf("Error in %s", r.Method), "", addr}
 			w.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(w).Encode(resp)
 			return
@@ -70,12 +70,14 @@ func (s *Store) bufferRequestMiddleware(next http.Handler) http.Handler {
 		source, ok := r.Context().Value(ContextSourceKey).(string)
 		if ok && source == INTERNAL {
 			next.ServeHTTP(w, r)
+			return
 		}
-		// if state == kvstore.NORMAL {
-		// 	next.ServeHTTP(w,r)
-		// }
-
-		//<-s.kvstore.ViewChangeFinishedChannel
+		if s.kvstore.State() == kvstore.NORMAL {
+			next.ServeHTTP(w, r)
+			return
+		}
+		//otherwise we are buffering this call until reshard is finished
+		<-s.kvstore.ViewChangeFinishedChannel
 		next.ServeHTTP(w, r)
 	})
 }
@@ -87,15 +89,11 @@ middleware.INTERNAL or middleware.EXTERNAL
 */
 func (s *Store) checkSourceMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println(r.RemoteAddr)
-		log.Println(r.Header.Get("X-Real-Ip"))
-		log.Println(r.Header.Get("X-Forwarded-For"))
 		source := INTERNAL
 		if !config.IsIPInternal(r.Header.Get("X-Real-Ip")) || len(r.Header.Get("X-Forwarded-For")) != 0 {
 			source = EXTERNAL
 		}
 
-		log.Printf("%s request\n", source)
 		ctx := context.WithValue(r.Context(), ContextSourceKey, source)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
@@ -136,7 +134,7 @@ func (s *Store) forwardMiddleware(next http.Handler) http.Handler {
 		}
 
 		proxyReq.Header = r.Header
-		proxyReq.Header.Set("X-Real-Ip", config.Config.Address) //this is so we can know its coming internal based on external source
+		proxyReq.Header.Set("X-Real-Ip", config.Config.Address) 
 		proxyReq.Header.Set("X-Forwarded-For", r.RemoteAddr)
 
 		client := &http.Client{}

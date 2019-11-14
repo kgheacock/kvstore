@@ -2,7 +2,7 @@ package kvstore
 
 import (
 	"errors"
-	"fmt"
+	"log"
 	"sort"
 )
 
@@ -41,7 +41,7 @@ var (
 
 //Put function stores value into map based on key
 func (k *KVDAL) Put(key string, value string) (int, error) {
-	fmt.Println("Putting: ", key)
+	log.Println("PUT", key)
 	_, ok := k.Store[key]
 	k.Store[key] = value
 	if ok {
@@ -52,7 +52,7 @@ func (k *KVDAL) Put(key string, value string) (int, error) {
 
 //Get function retrieves value from map if it exists
 func (k *KVDAL) Get(key string) (string, error) {
-	fmt.Println("Getting: ", key)
+	log.Println("GET", key)
 	value, ok := k.Store[key]
 	if !ok {
 		return "", ErrKeyNotFound
@@ -62,11 +62,11 @@ func (k *KVDAL) Get(key string) (string, error) {
 
 //Delete function removes key-value from map if it exists
 func (k *KVDAL) Delete(key string) error {
-	fmt.Println("Deleting: ", key)
+	log.Println("DEL", key)
 	if _, ok := k.Store[key]; !ok {
+		log.Printf("%s not found\n", key)
 		return ErrKeyNotFound
 	}
 	delete(k.Store, key)
-	fmt.Println("Deleted ", key)
 	return nil
 }

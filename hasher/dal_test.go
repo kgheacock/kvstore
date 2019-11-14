@@ -27,7 +27,7 @@ func TestBasicCorrectMapping(t *testing.T) {
 		{key: "Mackey", expectedIP: "A", expectedError: nil},
 	}
 	for _, tc := range tt {
-		ip, err := ring.GetServerByKey(tc.key)
+		ip, err := ring.ServerOfKey(tc.key)
 		if ip != tc.expectedIP {
 			t.Errorf("Expected IP %s , got %s", tc.expectedIP, ip)
 		}
@@ -36,7 +36,7 @@ func TestBasicCorrectMapping(t *testing.T) {
 
 		}
 	}
-	serverList := ring.GetServers()
+	serverList := ring.Servers()
 	if len(serverList) != 3 {
 		t.Errorf("Incorrect amount of servers present in server list. Expected %v, got %v", 3, len(serverList))
 	}
@@ -72,7 +72,7 @@ func TestGetServerByKey(t *testing.T) {
 	}
 
 	for _, tc := range tt {
-		ip, err := ring.GetServerByKey(tc.key)
+		ip, err := ring.ServerOfKey(tc.key)
 		if ip != tc.expectedIP {
 			t.Errorf("Expected IP %s , got %s", tc.expectedIP, ip)
 		}
@@ -81,7 +81,7 @@ func TestGetServerByKey(t *testing.T) {
 
 		}
 	}
-	serverList := ring.GetServers()
+	serverList := ring.Servers()
 	if len(serverList) != 3 {
 		t.Errorf("Incorrect amount of servers present in server list. Expected %v, got %v", 3, len(serverList))
 	}

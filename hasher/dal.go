@@ -9,92 +9,96 @@ import (
 	"sync"
 )
 
-const NumVirtualNodes = 20
+const numVirtualNodes = 20
 
 //*************** Node Functions ***************\\
 
-//List of nodes
-type Nodes []*Node
+type nodes []*node
 
-//Server
-type Node struct {
-	Ip     string
-	IpHash uint32
+//node is a server
+type node struct {
+	IP     string
+	IPHash uint32
 }
 
-func (r *Ring) NewNode(ip string) *Node {
-	return &Node{
-		Ip:     ip,
-		IpHash: r.HashVal(ip),
+func (r *Ring) newNode(ip string) *node {
+	return &node{
+		IP:     ip,
+		IPHash: r.hashVal(ip),
 	}
 }
 
-func (n Nodes) Len() int           { return len(n) }
-func (n Nodes) Swap(i, j int)      { n[i], n[j] = n[j], n[i] }
-func (n Nodes) Less(i, j int) bool { return n[i].IpHash < n[j].IpHash }
+func (n nodes) Len() int           { return len(n) }
+func (n nodes) Swap(i, j int)      { n[i], n[j] = n[j], n[i] }
+func (n nodes) Less(i, j int) bool { return n[i].IPHash < n[j].IPHash }
 
 //*************** Ring Functions ***************\\
 
-//Nodes: Actual representation of ring
-//Servers: []String of non-virtualized node IP's
+//Ring nodes: Actual representation of ring by virtual nodes
+//Ring servers: []String of non-virtualized node IP's
 type Ring struct {
 	sync.Mutex
-	Nodes   Nodes
-	Servers Servers
+	nodes   nodes
+	servers servers
 }
 
-//List of non-virtual server IP's
-type Servers []string
+//servers is []string of non-virtual server IP's
+type servers []string
 
+//NewRing creates Ring object
 func NewRing() *Ring {
-	return &Ring{Nodes: Nodes{}, Servers: Servers{}}
+	return &Ring{nodes: nodes{}, servers: servers{}}
 }
 
-//Adds server and virtual nodes to ring
+//AddServer adds server and virtual nodes to ring
 func (r *Ring) AddServer(ip string) {
 	r.Lock()
 	defer r.Unlock()
 	//Adds IP to list of servers
-	r.Servers = append(r.Servers, ip)
+	r.servers = append(r.servers, ip)
+	newVirNodes := make(nodes, 0, numVirtualNodes)
 	//Creates virtualized nodes for ring
-	for i := 0; i < NumVirtualNodes; i++ {
-		fullip := ip + ":" + strconv.Itoa(i)
-		node := r.NewNode(fullip)
-		r.Nodes = append(r.Nodes, node)
+	for i := 0; i < numVirtualNodes; i++ {
+		virtualIP := ip + ":" + strconv.Itoa(i)
+		node := r.newNode(virtualIP)
+		newVirNodes = append(newVirNodes, node)
 	}
-	sort.Sort(r.Nodes)
+	r.nodes = append(r.nodes, newVirNodes...)
+	sort.Sort(r.nodes)
 }
 
-//Returns list of all non-virtual server IP's on ring
-func (r *Ring) GetServers() []string {
-	sort.Strings(r.Servers)
-	return r.Servers
+//Servers returns list of all non-virtual server IP's on ring
+func (r *Ring) Servers() []string {
+	r.Lock()
+	defer r.Unlock()
+	sort.Strings(r.servers)
+	return r.servers
 }
 
-//Print whole ring for debugging
-func (r *Ring) printRing() {
-	for i := 0; i < r.Nodes.Len(); i++ {
-		fmt.Println(r.Nodes[i].Ip)
-	}
-}
-
-//Takes in string, returns 32bit hash
-func (r *Ring) HashVal(something string) uint32 {
-	return crc32.ChecksumIEEE([]byte(something))
-}
-
-//Return the ip of a server by passing in the key
-func (r *Ring) GetServerByKey(key string) (string, error) {
+//ServerOfKey returns the IP of a server by passing in the key
+func (r *Ring) ServerOfKey(key string) (string, error) {
+	r.Lock()
+	defer r.Unlock()
 	//Required for binary search
 	boolfn := func(i int) bool {
-		return r.Nodes[i].IpHash >= r.HashVal(key)
+		return r.nodes[i].IPHash >= r.hashVal(key)
 	}
-	location := sort.Search(r.Nodes.Len(), boolfn)
+	location := sort.Search(r.nodes.Len(), boolfn)
 	//If key hashes to end of ring, server is beginning of ring
-	if location >= r.Nodes.Len() {
+	if location >= r.nodes.Len() {
 		location = 0
 	}
-	node := r.Nodes[location]
-	serverip := strings.Split(node.Ip, ":")
+	node := r.nodes[location]
+	serverip := strings.Split(node.IP, ":")
 	return serverip[0], nil
+}
+
+func (r *Ring) printRing() {
+	for i := 0; i < r.nodes.Len(); i++ {
+		fmt.Println(r.nodes[i].IP)
+	}
+}
+
+func (r *Ring) hashVal(something string) uint32 {
+	return crc32.ChecksumIEEE([]byte(something))
 }

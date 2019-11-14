@@ -39,15 +39,14 @@ func (n nodes) Less(i, j int) bool { return n[i].IPHash < n[j].IPHash }
 type Ring struct {
 	mutex   sync.Mutex
 	nodes   nodes
-	servers servers
+	servers []string
 }
 
 //servers is []string of non-virtual server IP's
-type servers []string
 
 //NewRing creates Ring object
 func NewRing() *Ring {
-	return &Ring{nodes: nodes{}, servers: servers{}}
+	return &Ring{nodes: nodes{}, servers: []string{}}
 }
 
 //AddServer adds server and virtual nodes to ring
@@ -100,6 +99,6 @@ func (r *Ring) printRing() {
 	}
 }
 
-func (r *Ring) hashVal(something string) uint32 {
-	return crc32.ChecksumIEEE([]byte(something))
+func (r *Ring) hashVal(val string) uint32 {
+	return crc32.ChecksumIEEE([]byte(val))
 }

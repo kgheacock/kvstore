@@ -61,6 +61,7 @@ type ResponseMessage struct {
 	Error   string `json:"error,omitempty"`
 	Message string `json:"message,omitempty"`
 	Value   string `json:"value,omitempty"`
+	Address string `json:"address,omitempty"`
 }
 
 type DeleteResponse struct {

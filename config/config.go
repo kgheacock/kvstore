@@ -22,3 +22,12 @@ func GenerateConfig() {
 		Address: addr,
 	}
 }
+
+func IsIPInternal(unknownIP string) bool {
+	for _, ip := range Config.Servers {
+		if ip == unknownIP {
+			return true
+		}
+	}
+	return false
+}

@@ -13,9 +13,9 @@ import (
 func main() {
 	config.GenerateConfig()
 
-	ringDAL := hasher.Ring{}
-	ring := hasher.NewRingStore(&ringDAL)
-	
+	ringDAL := hasher.NewRing()
+	ring := hasher.NewRingStore(ringDAL)
+
 	kvDal := kvstore.KVDAL{Store: make(map[string]string)}
 	kvStore := kvstore.NewStore(&kvDal, ring)
 

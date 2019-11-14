@@ -9,23 +9,23 @@ import (
 //KVDAL is a key value data-access layer
 type KVDAL struct {
 	Store   map[string]string // data structure
-	KeyList []string
+	keyList []string
 }
 
 //GetKeyList returns []string of all keys present in map
-func (k *KVDAL) GetKeyList() ([]string, error) {
+func (k *KVDAL) KeyList() ([]string, error) {
 	//Clear old KeyList
-	k.KeyList = nil
+	k.keyList = nil
 	//Use make for efficient memory allocation
-	k.KeyList = make([]string, 0, len(k.Store))
+	k.keyList = make([]string, 0, len(k.Store))
 	for key := range k.Store {
-		k.KeyList = append(k.KeyList, key)
+		k.keyList = append(k.keyList, key)
 	}
-	if len(k.KeyList) == 0 {
-		return k.KeyList, ErrKeyListEmpty
+	if len(k.keyList) == 0 {
+		return k.keyList, ErrKeyListEmpty
 	}
-	sort.Strings(k.KeyList)
-	return k.KeyList, nil
+	sort.Strings(k.keyList)
+	return k.keyList, nil
 }
 
 //Response for PUT method

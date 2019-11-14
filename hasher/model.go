@@ -7,7 +7,6 @@ type Store struct {
 type DataAccessLayer interface {
 	ServerOfKey(key string) (string, error)
 	Servers() []string
-	NewRing() *Ring
 	AddServer(ip string)
 }
 

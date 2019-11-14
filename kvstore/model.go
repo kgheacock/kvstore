@@ -3,16 +3,17 @@ package kvstore
 import "github.com/colbyleiske/cse138_assignment2/hasher"
 
 type Store struct {
-	dal    DataAccessLayer
-	hasher *hasher.Store
+	dal                       DataAccessLayer
+	hasher                    *hasher.Store
 	ViewChangeFinishedChannel chan bool
-	nodeCount int
+	nodeCount                 int
 }
 
 type DataAccessLayer interface {
 	Delete(key string) error
 	Get(key string) (string, error)
 	Put(key string, value string) (int, error)
+	GetKeyList() ([]string, error)
 }
 
 func NewStore(dal DataAccessLayer, hasher *hasher.Store) *Store {

@@ -70,3 +70,8 @@ func (k *KVDAL) Delete(key string) error {
 	delete(k.Store, key)
 	return nil
 }
+
+//GetKeyCount gets the number of keys in the map
+func (k *KVDAL) GetKeyCount() int {
+	return len(k.Store)
+}

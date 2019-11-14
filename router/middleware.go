@@ -70,7 +70,7 @@ func (s *Store) bufferRequestMiddleware(next http.Handler) http.Handler {
 		// 	next.ServeHTTP(w,r)
 		// }
 
-		<-s.kvstore.ViewChangeFinishedChannel
+		//<-s.kvstore.ViewChangeFinishedChannel
 		next.ServeHTTP(w, r)
 	})
 }

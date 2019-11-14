@@ -42,6 +42,7 @@ func (s *Store) validateParametersMiddleware(next http.Handler) http.Handler {
 		if len(r.Header.Get("X-Real-Ip")) != 0 {
 			addr = config.Config.Address
 		}
+
 		if !ok {
 			resp := struct {
 				kvstore.ResponseMessage
@@ -81,7 +82,7 @@ func (s *Store) bufferRequestMiddleware(next http.Handler) http.Handler {
 
 /*
 To get the value from the context
-source, ok := Context().Value(middleware.ContextSourceKey).(string)
+source, ok := r.Context().Value(middleware.ContextSourceKey).(string)
 middleware.INTERNAL or middleware.EXTERNAL
 */
 func (s *Store) checkSourceMiddleware(next http.Handler) http.Handler {

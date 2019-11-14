@@ -75,10 +75,11 @@ func (r *Ring) Servers() []string {
 	return r.servers
 }
 
-//ServerOfKey returns the IP of a server by passing in the key
-func (r *Ring) ServerOfKey(key string) (string, error) {
+//GetServerByKey returns the IP of a server by passing in the key
+func (r *Ring) GetServerByKey(key string) (string, error) {
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
+
 	//Required for binary search
 	boolfn := func(i int) bool {
 		return r.nodes[i].IPHash >= r.hashVal(key)

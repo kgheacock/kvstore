@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 
 	"github.com/colbyleiske/cse138_assignment2/config"
@@ -28,7 +29,7 @@ var (
 
 func (s *Store) loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		//log.Printf("%s : %s", r.RequestURI, config.Config.ForwardAddress)
+		log.Printf("%s", r.RequestURI)
 		next.ServeHTTP(w, r)
 	})
 }
@@ -61,6 +62,10 @@ func (s *Store) validateParametersMiddleware(next http.Handler) http.Handler {
 
 func (s *Store) bufferRequestMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		source, ok := ctx.Value(middleware.ContextSourceKey).(string)
+		if ok && source == INTERNAL {
+			next.ServeHTTP(w, r)
+		}
 		// if state == kvstore.NORMAL {
 		// 	next.ServeHTTP(w,r)
 		// }
@@ -78,10 +83,11 @@ middleware.INTERNAL or middleware.EXTERNAL
 func (s *Store) checkSourceMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		source := INTERNAL
-		if err := s.checkIPExists(r.RemoteAddr); err == nil || len(r.Header.Get("X-Forwarded-For")) != 0 {
+		if err := s.checkIPExists(r.RemoteAddr); err != nil || len(r.Header.Get("X-Forwarded-For")) != 0 {
 			source = EXTERNAL
 		}
 
+		log.Printf("This is an %s request.\n", source)
 		ctx := context.WithValue(r.Context(), ContextSourceKey, source)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})

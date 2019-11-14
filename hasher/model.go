@@ -5,7 +5,7 @@ type Store struct {
 }
 
 type DataAccessLayer interface {
-	ServerOfKey(key string) (string, error)
+	GetServerByKey(key string) (string, error)
 	Servers() []string
 	AddServer(ip string)
 }

@@ -12,10 +12,9 @@ type cfg struct {
 var Config cfg
 
 func GenerateConfig() {
-	//view := os.Getenv("VIEW")
-	//addr := os.Getenv("ADDRESS")
-	addr := "localhost:13800"
-	view := "localhost,10.10.0.2:13800" //clTODO
+	view := os.Getenv("VIEW")
+	addr := os.Getenv("ADDRESS")
+
 	servers := strings.Split(view, ",")
 	Config = cfg{
 		Servers: servers,

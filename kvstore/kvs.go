@@ -194,22 +194,10 @@ func (s *Store) NewServersFromVC(newNodeList []string) []string {
 	}
 	return newNodes
 }
+
 func (s *Store) GetKeyCountHandler(w http.ResponseWriter, r *http.Request) {
-
 	count := s.DAL().GetKeyCount()
-	//{"message":"Key count retrieved successfully","key-count":<key-count>}.
-
 	resp := GetKeyCountRepsponse{"Key count retrieved successfully", count}
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(resp)
-}
-
-func (s *Store) GetKeyCountHandler(w http.ResponseWriter, r *http.Request) {
-
-	count := s.DAL().GetKeyCount()
-	//{"message":"Key count retrieved successfully","key-count":<key-count>}.
-
-	resp := KeyCount{"Key count reteieved successfully". count}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
 }

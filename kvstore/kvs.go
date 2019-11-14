@@ -147,6 +147,7 @@ func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
 			payload, _ := json.Marshal(Data{value})
 			req, _ := http.NewRequest("POST", serverIP, bytes.NewBuffer(payload))
 			req.Header.Set("Content-Type", "application/json")
+			req.Header.Set("X-Real-Ip",config.Config.Address)
 			resp, err := client.Do(req)
 			if err != nil {
 				log.Fatal(err)

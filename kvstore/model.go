@@ -52,6 +52,10 @@ func (s *Store) Hasher() hasher.Store {
 	return *s.hasher
 }
 
+func (s *Store) State() nodeState {
+	return s.state
+}
+
 //Holds incoming PUT request body
 type Data struct {
 	Value string `json:"value"`

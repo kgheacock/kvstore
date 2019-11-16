@@ -1,20 +1,18 @@
 package kvstore
 
 import (
-	"sync"
-
 	"github.com/colbyleiske/cse138_assignment2/hasher"
 )
 
 type Store struct {
-	sync.Mutex
-	dal                              DataAccessLayer
-	hasher                           *hasher.Store
-	state                            nodeState
-	viewChangeAllAcksRecievedChannel chan bool
-	ViewChangeFinishedChannel        chan bool
-	nodeAckCount                     int
-	nodeCount                        int
+	dal                       DataAccessLayer
+	hasher                    *hasher.Store
+	state                     nodeState
+	ViewChangeFinishedChannel chan bool
+}
+type shard struct {
+	Address  string `json:"address,omitempty"`
+	KeyCount int    `json:"key-count,omitempty"`
 }
 type nodeState int
 
@@ -25,6 +23,7 @@ const (
 	RECIEVED_INTERNAL_RESHARD
 	TRANSFER_KEYS
 	FINISHED_TRANSFER
+	WAITING_FOR_ACK
 	//Release lock
 	PROCESS_BACKLOG
 )
@@ -33,20 +32,16 @@ type DataAccessLayer interface {
 	Delete(key string) error
 	Get(key string) (string, error)
 	Put(key string, value string) (int, error)
-	KeyList() ([]string, error)
-	GetKeyCount() (int)
+	KeyList() []string
+	GetKeyCount() int
 }
 
 func NewStore(dal DataAccessLayer, hasher *hasher.Store) *Store {
-	return &Store{dal: dal, hasher: hasher, state: NORMAL}
+	return &Store{dal: dal, hasher: hasher, state: NORMAL, ViewChangeFinishedChannel: make(chan bool, 1)}
 }
 
 func (s *Store) DAL() DataAccessLayer {
 	return s.dal
-}
-
-func (s *Store) NodeCount() int {
-	return s.nodeCount
 }
 
 func (s *Store) Hasher() hasher.Store {
@@ -85,6 +80,10 @@ type GetResponse struct {
 }
 
 type GetKeyCountRepsponse struct {
-	Message string `json:"message`
-	KeyCount int `json:"key-count"`
+	Message  string `json:"message"`
+	KeyCount int    `json:"key-count"`
+}
+
+type ViewChangeRequest struct {
+	View string `json:"view"`
 }

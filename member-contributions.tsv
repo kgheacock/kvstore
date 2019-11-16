@@ -7,4 +7,4 @@ Assignment	3
 kgheacoc	implemented reshard protocol
 Chanorti	Responsible for key count and testing
 bzwier	Responsible for consistent hashing library and some functions in kvstore
-cleiske	handled proxy, middleware, general architecture and glueing her together :)
+cleiske	handled proxy, middleware, general architecture and glueing her together :))

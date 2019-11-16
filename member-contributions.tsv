@@ -4,7 +4,7 @@ Chanorti	Responsible for PUT and GET requests
 bzwier	Responsible for DELETE requests and error response
 cleiske	Responsible for follower middleware and overall architecture
 Assignment	3
-kgheacoc	fill in
+kgheacoc	implemented reshard protocol
 Chanorti	Responsible for key count and testing
 bzwier	Responsible for consistent hashing library and some functions in kvstore
 cleiske	handled proxy, middleware, general architecture and glueing her together :)

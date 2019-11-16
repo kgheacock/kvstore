@@ -11,16 +11,9 @@ import (
 	"net/http"
 
 	"github.com/colbyleiske/cse138_assignment2/config"
+	"github.com/colbyleiske/cse138_assignment2/ctx"
 	"github.com/colbyleiske/cse138_assignment2/kvstore"
 	"github.com/gorilla/mux"
-)
-
-type ContextKey string
-
-const (
-	ContextSourceKey ContextKey = "source"
-	EXTERNAL         string     = "EXTERNAL"
-	INTERNAL         string     = "INTERNAL"
 )
 
 var (
@@ -67,8 +60,8 @@ func (s *Store) validateParametersMiddleware(next http.Handler) http.Handler {
 
 func (s *Store) bufferRequestMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		source, ok := r.Context().Value(ContextSourceKey).(string)
-		if ok && source == INTERNAL {
+		source, ok := r.Context().Value(ctx.ContextSourceKey).(string)
+		if ok && source == ctx.INTERNAL {
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -77,8 +70,9 @@ func (s *Store) bufferRequestMiddleware(next http.Handler) http.Handler {
 			return
 		}
 		//otherwise we are buffering this call until reshard is finished
-		<-s.kvstore.ViewChangeFinishedChannel
-		next.ServeHTTP(w, r)
+		//<-s.kvstore.ViewChangeFinishedChannel
+		return // just don't let do it if we arent ready for now
+		// next.ServeHTTP(w, r)
 	})
 }
 
@@ -89,12 +83,12 @@ middleware.INTERNAL or middleware.EXTERNAL
 */
 func (s *Store) checkSourceMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		source := INTERNAL
+		source := ctx.INTERNAL
 		if !config.IsIPInternal(r.Header.Get("X-Real-Ip")) || len(r.Header.Get("X-Forwarded-For")) != 0 {
-			source = EXTERNAL
+			source = ctx.EXTERNAL
 		}
 
-		ctx := context.WithValue(r.Context(), ContextSourceKey, source)
+		ctx := context.WithValue(r.Context(), ctx.ContextSourceKey, source)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
@@ -134,7 +128,7 @@ func (s *Store) forwardMiddleware(next http.Handler) http.Handler {
 		}
 
 		proxyReq.Header = r.Header
-		proxyReq.Header.Set("X-Real-Ip", config.Config.Address) 
+		proxyReq.Header.Set("X-Real-Ip", config.Config.Address)
 		proxyReq.Header.Set("X-Forwarded-For", r.RemoteAddr)
 
 		client := &http.Client{}

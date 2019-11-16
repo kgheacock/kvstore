@@ -13,7 +13,7 @@ type KVDAL struct {
 }
 
 //GetKeyList returns []string of all keys present in map
-func (k *KVDAL) KeyList() ([]string, error) {
+func (k *KVDAL) KeyList() []string {
 	//Clear old KeyList
 	k.keyList = nil
 	//Use make for efficient memory allocation
@@ -21,11 +21,9 @@ func (k *KVDAL) KeyList() ([]string, error) {
 	for key := range k.Store {
 		k.keyList = append(k.keyList, key)
 	}
-	if len(k.keyList) == 0 {
-		return k.keyList, ErrKeyListEmpty
-	}
+
 	sort.Strings(k.keyList)
-	return k.keyList, nil
+	return k.keyList
 }
 
 //Response for PUT method

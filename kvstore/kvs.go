@@ -109,50 +109,28 @@ func (s *Store) ReshardCompleteHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(respStruct)
 }
 func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
-
 	decoder := json.NewDecoder(r.Body)
 
 	var viewChangeRequest ViewChangeRequest
 	if err := decoder.Decode(&viewChangeRequest); err != nil || viewChangeRequest.View == "" {
+		log.Println()
+		log.Println("ERROR: 1", err)
 		return
 	}
 
 	serverList := strings.Split(viewChangeRequest.View, ",")
 	newServers := s.Difference(serverList, config.Config.Servers)
+	log.Println("NEW SERVERs: ", newServers)
 	config.Config.Servers = serverList
 
 	source, ok := r.Context().Value(ctx.ContextSourceKey).(string)
 	if !ok {
-		w.WriteHeader(http.StatusInternalServerError)
 		log.Println("Failed to find source of request")
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	if source == ctx.EXTERNAL {
-		//LOCK server to external requests
 		s.state = RECIEVED_EXTERNAL_RESHARD
-		//TODO: calls are currently 1 at a time but this can be optimized by
-		//making the requests in a GO routine and using a channel to count acks
-		//e.g.:
-		/*
-			ack_count := 0
-			ack_channel := make(chan bool, node_count)
-			go func() {
-				client := &http.Client{}
-
-				resp,err :=//make requet
-				for err!=nil{
-					resp,err = //resend request but for debugging just do a log.Fatal()
-				}
-				ack_channel <- true
-			 }()
-
-			 for ack_count < (node_count - 1){
-				 if <- ack_channel {
-					 ack_count ++
-				 }
-			 }
-			 //send VC complete message
-		*/
 		client := &http.Client{}
 		for _, server := range config.Config.Servers {
 			log.Println(server)
@@ -160,22 +138,22 @@ func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
 				url := fmt.Sprintf("http://%s/kv-store/view-change", server)
 				viewChangeReqBytes, err := json.Marshal(viewChangeRequest)
 				if err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
 					log.Println(err)
+					w.WriteHeader(http.StatusInternalServerError)
 					return
 				}
 				req, err := http.NewRequest("PUT", url, bytes.NewReader(viewChangeReqBytes))
 				if err != nil {
+					log.Println("ERROR: 2", err)
 					w.WriteHeader(http.StatusInternalServerError)
-					log.Printf("Error in PUT request. URL: %s", url)
 					return
 				}
 				req.Header.Set("Content-Type", "application/json")
 				req.Header.Set("X-Real-Ip", config.Config.Address)
 				resp, err := client.Do(req)
 				if err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
 					log.Println(err)
+					w.WriteHeader(http.StatusInternalServerError)
 					return
 				}
 				resp.Body.Close()
@@ -195,14 +173,14 @@ func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
 		client := &http.Client{}
 		serverIP, err := s.hasher.DAL().GetServerByKey(key)
 		if err != nil {
-			log.Printf("Error Getting Server by Key. key: %s\n", key)
+			log.Println("ERROR: 3", err)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
 		if serverIP != config.Config.Address {
 			value, err := s.dal.Get(key)
 			if err != nil {
-				log.Printf("Error on GET. key: %s\n", key)
+				log.Println("ERROR: 4", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
@@ -213,7 +191,7 @@ func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
 			req.Header.Set("X-Real-Ip", config.Config.Address)
 			resp, err := client.Do(req)
 			if err != nil {
-				log.Printf("Error on Request: %s", req)
+				log.Println("ERROR: 5", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
@@ -221,7 +199,7 @@ func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
 			log.Printf("Transfered key: %s to server: %s", key, serverIP)
 			err = s.dal.Delete(key)
 			if err != nil {
-				log.Printf("Error on Delete. key: %s\n", key)
+				log.Println("ERROR: 6", err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
@@ -240,7 +218,7 @@ func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
 				var s shard
 				resp, err := client.Do(req)
 				if err != nil {
-					log.Printf("Error on Client Do request. Request: %s\n", req)
+					log.Println("ERROR: ", err)
 					w.WriteHeader(http.StatusInternalServerError)
 					return
 				}
@@ -248,7 +226,7 @@ func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
 				err = decoder.Decode(&s)
 				shardList = append(shardList, s)
 				if err != nil {
-					log.Printf("Error on adding shard. Shard: %s\n", s)
+					log.Println("ERROR: ", err)
 					w.WriteHeader(http.StatusInternalServerError)
 					return
 				}

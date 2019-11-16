@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"strings"
+	"log"
 )
 
 type cfg struct {

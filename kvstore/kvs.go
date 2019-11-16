@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"sort"
 	"strings"
 
 	"github.com/colbyleiske/cse138_assignment2/config"
@@ -119,8 +118,9 @@ func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	serverList := strings.Split(viewChangeRequest.View, ",")
-	sort.Strings(serverList)
-	//config.Config.Servers = serverList
+	newServers := s.Difference(serverList, config.Config.Servers)
+	config.Config.Servers = serverList
+
 	source, ok := r.Context().Value(ctx.ContextSourceKey).(string)
 	if !ok {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -158,7 +158,13 @@ func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println(server)
 			if server != config.Config.Address {
 				url := fmt.Sprintf("http://%s/kv-store/view-change", server)
-				req, err := http.NewRequest("PUT", url, r.Body)
+				viewChangeReqBytes, err := json.Marshal(viewChangeRequest)
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+					log.Println(err)
+					return
+				}
+				req, err := http.NewRequest("PUT", url, bytes.NewReader(viewChangeReqBytes))
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 					log.Printf("Error in PUT request. URL: %s", url)
@@ -169,7 +175,7 @@ func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
 				resp, err := client.Do(req)
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
-					log.Printf("View change request to server %s failed\n", url)
+					log.Println(err)
 					return
 				}
 				resp.Body.Close()
@@ -178,15 +184,10 @@ func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	//LOCK server to external requests
 	s.state = RECIEVED_INTERNAL_RESHARD
-	log.Println(serverList)
-	log.Println(config.Config.Servers)
-	newServers := s.Difference(serverList, config.Config.Servers)
-	log.Println(newServers)
-	config.Config.Servers = serverList
 	for _, server := range newServers {
-		log.Println("NEW SERVER", server)
 		s.hasher.DAL().AddServer(server)
 	}
+
 	s.state = TRANSFER_KEYS
 	keyList := s.dal.KeyList()
 

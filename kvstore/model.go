@@ -12,7 +12,7 @@ type Store struct {
 }
 type shard struct {
 	Address  string `json:"address,omitempty"`
-	KeyCount int    `json:"key-count,omitempty"`
+	KeyCount int    `json:"key-count"`
 }
 type nodeState int
 

@@ -1,0 +1,1380 @@
+{"message":"Retrieved successfully","value":"sampleValue1","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue2","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue3","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue4","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue5","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue6","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue7","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue8","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue10","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue11","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue12","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue13","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue14","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue15","address":"localhost:8082","doesExist":true}
+
+200
+
+500
+
+500
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue20","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue21","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue22","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue23","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue24","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue25","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue26","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue27","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue28","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue29","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue30","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue31","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue32","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue33","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue34","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue35","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue36","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue37","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue38","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue39","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue40","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue41","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue42","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue43","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue44","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue46","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue47","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue48","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue50","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue54","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue58","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue60","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue61","address":"localhost:8082","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue63","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue64","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue65","address":"localhost:8082","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue67","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue68","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue69","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue70","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue71","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue72","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue73","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue74","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue75","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue76","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue77","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue78","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue79","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue80","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue82","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue83","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue84","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue86","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue87","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue88","address":"localhost:8082","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue90","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue91","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue92","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue93","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue94","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue95","address":"localhost:8082","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue97","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue98","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue99","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue100","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue101","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+
+500
+
+500
+
+500
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue108","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue110","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue114","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue118","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue120","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue121","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue122","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue123","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue124","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue125","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue127","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue128","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue129","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue130","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue131","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue132","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue133","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue134","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue135","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue136","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue137","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue138","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue141","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue145","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue149","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+
+500
+
+500
+
+500
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue156","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue157","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue158","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue160","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue161","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue162","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue163","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue164","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue165","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue166","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue167","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue168","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue169","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue170","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue171","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue172","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue174","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue175","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue176","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue178","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue179","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue180","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue181","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue182","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue183","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue184","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue185","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue186","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue187","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue188","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue189","address":"localhost:8082","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue191","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue192","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue193","address":"localhost:8082","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue195","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue196","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue197","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue198","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue199","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue200","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue201","address":"localhost:8082","doesExist":true}
+
+200
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue204","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue205","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue206","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue207","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue208","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue210","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue214","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue218","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue220","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue221","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue222","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue223","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue224","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue225","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue226","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue227","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue228","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue229","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue230","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue231","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue232","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue233","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue234","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue235","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue236","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue237","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue238","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue239","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue241","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue245","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue249","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue251","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue252","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue253","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue254","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue255","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue256","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue257","doesExist":true}
+
+200
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue260","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue261","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue262","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue263","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue264","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue265","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue266","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue267","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue268","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue269","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue270","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue271","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue272","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue274","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue275","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue276","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue278","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue279","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue280","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue281","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue282","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue284","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue285","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue286","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue287","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue288","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue289","address":"localhost:8082","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue291","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue292","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue293","address":"localhost:8082","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue295","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue296","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue297","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue298","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue299","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue300","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue301","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue302","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue303","address":"localhost:8082","doesExist":true}
+
+200
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue306","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue307","doesExist":true}
+
+200
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue310","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue314","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue318","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue320","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue321","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue322","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue323","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue324","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue325","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue327","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue328","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue329","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue330","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue331","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue332","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue333","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue334","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue335","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue336","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue337","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue338","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue339","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue341","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue345","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue349","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+
+500
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue354","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue355","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue356","doesExist":true}
+
+200
+
+500
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue360","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue361","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue362","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue363","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue365","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue366","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue367","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue368","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue369","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue370","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue371","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue372","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue374","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue375","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue376","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue378","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue379","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue380","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue381","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue382","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue384","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue385","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue386","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue387","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue388","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue389","address":"localhost:8082","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue391","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue392","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue393","address":"localhost:8082","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue395","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue396","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue397","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue398","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue399","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue402","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue404","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue407","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue408","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue410","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue414","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue418","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue420","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue421","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue423","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue424","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue425","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue426","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue427","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue428","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue429","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue430","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue431","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue432","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue433","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue434","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue435","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue436","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue437","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue438","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue439","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue441","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue445","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue449","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue451","doesExist":true}
+
+200
+
+500
+
+500
+
+500
+
+500
+{"message":"Retrieved successfully","value":"sampleValue456","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue458","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue459","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue460","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue461","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue462","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue463","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue464","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue465","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue466","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue467","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue468","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue469","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue470","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue471","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue472","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue474","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue475","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue476","address":"localhost:8081","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue478","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue479","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue480","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue481","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue482","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue483","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue484","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue485","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue486","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue487","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue488","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue489","address":"localhost:8082","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue491","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue492","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue493","address":"localhost:8082","doesExist":true}
+
+200
+
+500
+{"message":"Retrieved successfully","value":"sampleValue495","address":"localhost:8081","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue496","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue497","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue498","address":"localhost:8082","doesExist":true}
+
+200
+{"message":"Retrieved successfully","value":"sampleValue499","address":"localhost:8082","doesExist":true}
+
+200
+
+500
+
+500
+
+500
+
+500
+{"error":"Key does not exist","message":"Error in GET","address":"localhost:8081","doesExist":false}
+
+404
+{"error":"Key does not exist","message":"Error in GET","address":"localhost:8081","doesExist":false}
+
+404
+
+500
+
+500
+
+500
+
+500
+{"error":"Key does not exist","message":"Error in GET","address":"localhost:8081","doesExist":false}
+
+404

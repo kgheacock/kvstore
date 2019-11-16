@@ -1,36 +1,38 @@
-################### 
-# Course: CSE 138
-# Date: Fall 2019
-# Assignment: #2
-# Author: Elisabeth Oliver
-# Email: elaolive@ucsc.edu
-###################
-
 import unittest
 import subprocess
 import requests # Note, you may need to install this package via pip (or pip3)
 
-PORT = 13800
+PORT = 8080
 localhost = "localhost" # windows toolbox users will again want to make this the docker machine's ip adress
 
 class Client():
 
 	def putKey(self, key, value, port):
-		result = requests.put('http://%s:%s/kv-store/%s'%(localhost, str(port), key), 
+		result = requests.put('http://%s:%s/kv-store/keys/%s'%(localhost, str(port), key), 
 							json={'value':value},
 							headers = {"Content-Type": "application/json"})
 		return self.formatResult(result)
 	
 	def getKey(self, key, port):
-		result = requests.get('http://%s:%s/kv-store/%s'%(localhost, str(port), key),
+		result = requests.get('http://%s:%s/kv-store/keys/%s'%(localhost, str(port), key),
 							headers = {"Content-Type": "application/json"})
 		return self.formatResult(result)
 	
 	def deleteKey(self, key, port):
-		result = requests.delete('http://%s:%s/kv-store/%s'%(localhost, str(port), key),
+		result = requests.delete('http://%s:%s/kv-store/keys/%s'%(localhost, str(port), key),
 							headers = {"Content-Type": "application/json"})
 		return self.formatResult(result)
 
+	def getKeyCount(self, port):
+		result = requests.get('http://%s:%s/kv-store/key-count'%(localhost, str(port)),
+							headers = {"Content-Type": "application/json"})
+		return self.formatResult(result)
+
+	def putViewChange(self, views, port):
+		result = requests.put('http://%s:%s/kv-store/view-change'%(localhost, str(port)),
+							json={"view": view},
+							headers = {"Content-Type": "application/json"})
+		return self.formatResult(result)
 	# this just turns the requests result object into a simplified json object 
 	# containing only fields I care about 
 	def formatResult(self, result):
@@ -50,38 +52,61 @@ class Client():
 client = Client()
 
 #### Expected Responses:
-addResponse_Success = { 	"message":		"Added successfully",
+put_success = { 	"message":		"Added successfully",
+						"replaced": 	False,
+						"address":"changeme",
+						"status_code":	201}
+
+put_success_no_addr = { 	"message":		"Added successfully",
 						"replaced": 	False,
 						"status_code":	201}
-addResponseError_NoKey = {	"error":	"Value is missing",
-							"message":	"Error in PUT",
-						"status_code":	400}
-addResponseError_longKey = {"error":	"Key is too long",
+
+put_error_no_key = {	"error":	"Value is missing",
 							"message":	"Error in PUT",
 						"status_code":	400}
 
-updateResponse_Success = {"message":		"Updated successfully",
+put_error_longKey = {"error":	"Key is too long",
+							"message":	"Error in PUT",
+						"status_code":	400}
+
+update_success = {"message":		"Updated successfully",
 						"replaced":		True,
 						"status_code":	200}
-updateResponseError_NoKey = addResponseError_NoKey
 
-getResponse_Success = {	"doesExist":	True,
+update_fail_no_key = put_error_no_key
+
+get_success = {	"doesExist":	True,
 						"message":		"Retrieved successfully",
-						"value":		"Default Value, should be changed based on input",
+						"value":		"changme",
 						"status_code":	200}
-getResponse_NoKey = {	"doesExist":	False,
+
+get_no_key = {	"doesExist":	False,
 						"error":		"Key does not exist",
 						"message":		"Error in GET",
 						"status_code":	404}
 
-delResponse_Success = {	"doesExist":	True,
+del_success = {	"doesExist":	True,
+						"message":		"Deleted successfully",
+						"address":"changeme",
+						"status_code":	200}
+
+del_success_no_addr = {	"doesExist":	True,
 						"message":		"Deleted successfully",
 						"status_code":	200}
-delResponse_NoKey = {	"doesExist":	False,
+
+del_no_key = {	"doesExist":	False,
 						"error":		"Key does not exist",
 						"message":		"Error in DELETE",
 						"status_code":	404}
 
+get_key_count = {
+	"message":"Key count retrieved successfully","key-count": "changme"
+}
+
+put_view_change = {
+    "message": "View change successful",
+    "shards" : "changme - array of messages",
+}
 
 
 class TestHW1(unittest.TestCase):
@@ -91,7 +116,11 @@ class TestHW1(unittest.TestCase):
 	def test_add_1(self):
 		result = client.putKey("Test", "a friendly string", PORT)
 
-		self.assertEqual(result, addResponse_Success)
+		#expected = put_success.copy()
+		#expected["address"] = result["address"]
+		expected = put_success_no_addr
+
+		self.assertEqual(result, expected)
 
 ## Get Key Values
 	# add and get
@@ -101,12 +130,12 @@ class TestHW1(unittest.TestCase):
 
 		result = client.putKey(key, value, PORT)
 
-		self.assertEqual(result["status_code"], addResponse_Success["status_code"], 
+		self.assertEqual(result["status_code"], put_success["status_code"], 
 			msg="add key: failed add, cannot continue test\n%s\n"%result)
 
 
 		result = client.getKey(key, PORT)
-		expected = getResponse_Success.copy()
+		expected = get_success.copy()
 		expected["value"] = value
 
 		self.assertEqual(result, expected)
@@ -118,13 +147,13 @@ class TestHW1(unittest.TestCase):
 
 		result = client.putKey(key, "one, one, one, one!", PORT)
 
-		self.assertEqual(result["status_code"], addResponse_Success["status_code"], 
+		self.assertEqual(result["status_code"], put_success["status_code"], 
 			msg="add key: failed add, cannot continue test\n%s\n"%result)
 		
 
 		result = client.putKey(key, "two, three, four!", PORT)
 
-		self.assertEqual(result, updateResponse_Success)
+		self.assertEqual(result, update_success)
 
 ### Delete Keys
 	# add and delete
@@ -133,12 +162,32 @@ class TestHW1(unittest.TestCase):
 
 		result = client.putKey(key, "delete, delete, delete!", PORT)
 
-		self.assertEqual(result["status_code"], addResponse_Success["status_code"], 
+		self.assertEqual(result["status_code"], put_success["status_code"], 
 			msg="add key: failed add, cannot continue test\n%s\n"%result)
 
 		result = client.deleteKey(key, PORT)
 
-		self.assertEqual(result, delResponse_Success)
+		#expected = del_success.copy()
+		#expected["address"] = result["address"]
+
+		self.assertEqual(result, del_success_no_addr)
+
+### Key Count
+	# add and delete
+	def test_key_count_1(self):
+		key = "keyToDelete"
+
+		result = client.get_key_count(PORT)
+
+		self.assertEqual(result["status_code"], put_success["status_code"], 
+			msg="add key: failed add, cannot continue test\n%s\n"%result)
+
+		result = client.deleteKey(key, PORT)
+
+		#expected = del_success.copy()
+		#expected["address"] = result["address"]
+
+		self.assertEqual(result, del_success_no_addr)
 
 
 if __name__ == '__main__':

@@ -11,15 +11,23 @@ import (
 
 func CreateRouter(s *kvstore.Store, h *hasher.Store) *mux.Router {
 	router := mux.NewRouter()
+	storeRouter := router.PathPrefix("/kv-store/keys").Subrouter()
 
 	//route registration
-	router.Handle("/kv-store/{key}", wrap(s.DeleteHandler)).Methods("DELETE")
-	router.Handle("/kv-store/{key}", wrap(s.PutHandler)).Methods("PUT")
-	router.Handle("/kv-store/{key}", wrap(s.GetHandler)).Methods("GET")
+	storeRouter.Handle("/{key}", wrap(s.DeleteHandler)).Methods("DELETE")
+	storeRouter.Handle("/{key}", wrap(s.PutHandler)).Methods("PUT")
+	storeRouter.Handle("/{key}", wrap(s.GetHandler)).Methods("GET")
 
-	router.Use(loggingMiddleware)
-	router.Use(validateParametersMiddleware)
-	router.Use(forwardMiddleware)
+	router.Handle("/kv-store/key-count", wrap(s.GetKeyCountHandler)).Methods("GET")
+	router.Handle("/kv-store/view-change", wrap(s.ReshardHandler)).Methods("PUT")
+	router.Handle("/internal/vc-complete", wrap(s.ReshardCompleteHandler)).Methods("GET")
+
+	middlewareStore := NewStore(h, s)
+	router.Use(middlewareStore.loggingMiddleware)
+	router.Use(middlewareStore.checkSourceMiddleware)
+	router.Use(middlewareStore.bufferRequestMiddleware)
+	storeRouter.Use(middlewareStore.validateParametersMiddleware)
+	storeRouter.Use(middlewareStore.forwardMiddleware)
 
 	return router
 }

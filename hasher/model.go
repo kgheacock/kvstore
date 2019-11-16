@@ -6,8 +6,14 @@ type Store struct {
 
 type DataAccessLayer interface {
 	GetServerByKey(key string) (string, error)
+	Servers() []string
+	AddServer(ip string)
 }
 
 func NewRingStore(dal DataAccessLayer) *Store {
 	return &Store{dal: dal}
+}
+
+func (s *Store) DAL() DataAccessLayer {
+	return s.dal
 }

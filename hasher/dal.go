@@ -1,154 +1,104 @@
 package hasher
 
 import (
-	"errors"
 	"fmt"
 	"hash/crc32"
-	"log"
 	"sort"
 	"strconv"
 	"strings"
 	"sync"
 )
 
-const NumVirtualNodes = 20
+const numVirtualNodes = 20
 
-var KeyNotFound error = errors.New("key not found")
+//*************** Node Functions ***************\\
 
+type nodes []*node
+
+//node is a server
+type node struct {
+	IP     string
+	IPHash uint32
+}
+
+func (r *Ring) newNode(ip string) *node {
+	return &node{
+		IP:     ip,
+		IPHash: r.hashVal(ip),
+	}
+}
+
+func (n nodes) Len() int           { return len(n) }
+func (n nodes) Swap(i, j int)      { n[i], n[j] = n[j], n[i] }
+func (n nodes) Less(i, j int) bool { return n[i].IPHash < n[j].IPHash }
+
+//*************** Ring Functions ***************\\
+
+//Ring nodes: Actual representation of ring by virtual nodes
+//Ring servers: []String of non-virtualized node IP's
 type Ring struct {
-	sync.Mutex
-	Nodes   Nodes
-	Numkeys int
+	mutex   sync.Mutex
+	nodes   nodes
+	servers []string
 }
 
+//servers is []string of non-virtual server IP's
+
+//NewRing creates Ring object
 func NewRing() *Ring {
-	return &Ring{Nodes: Nodes{}, Numkeys: 0}
+	return &Ring{nodes: nodes{}, servers: []string{}}
 }
 
-//List of nodes
-type Nodes []*Node
-
-func (n Nodes) Len() int           { return len(n) }
-func (n Nodes) Swap(i, j int)      { n[i], n[j] = n[j], n[i] }
-func (n Nodes) Less(i, j int) bool { return n[i].IdHash < n[j].IdHash }
-
-//Server or Key
-type Node struct {
-	Id       string
-	IdHash   uint32
-	Server   *Node
-	IsServer bool
-}
-
-func (r *Ring) NewNode(id string, nodetype bool) *Node {
-	return &Node{
-		Id:       id,
-		IdHash:   r.HashVal(id),
-		Server:   nil,
-		IsServer: nodetype,
+//AddServer adds server and virtual nodes to ring
+func (r *Ring) AddServer(ip string) {
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
+	//Adds IP to list of servers
+	r.servers = append(r.servers, ip)
+	newVirNodes := make(nodes, 0, numVirtualNodes)
+	//Creates virtualized nodes for ring
+	for i := 0; i < numVirtualNodes; i++ {
+		virtualIP := ip + "$" + strconv.Itoa(i)
+		node := r.newNode(virtualIP)
+		newVirNodes = append(newVirNodes, node)
 	}
+	r.nodes = append(r.nodes, newVirNodes...)
+	sort.Sort(r.nodes)
 }
 
-func (r *Ring) AddKey(id string) {
-	r.Lock()
-	defer r.Unlock()
-	node := r.NewNode(id, false)
-	r.Nodes = append(r.Nodes, node)
-	sort.Sort(r.Nodes)
-	r.Numkeys++
+//Servers returns list of all non-virtual server IP's on ring
+func (r *Ring) Servers() []string {
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
+	sort.Strings(r.servers)
+	return r.servers
 }
 
-func (r *Ring) AddServer(id string) {
-	r.Lock()
-	defer r.Unlock()
-	for i := 0; i < NumVirtualNodes; i++ {
-		fullid := id + ":" + strconv.Itoa(i)
-		node := r.NewNode(fullid, true)
-		r.Nodes = append(r.Nodes, node)
-	}
-	sort.Sort(r.Nodes)
-}
+//GetServerByKey returns the IP of a server by passing in the key
+func (r *Ring) GetServerByKey(key string) (string, error) {
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
 
-func (r *Ring) GetKeyNode(id string) (*Node, error) {
+	//Required for binary search
 	boolfn := func(i int) bool {
-		return r.Nodes[i].IdHash >= r.HashVal(id)
+		return r.nodes[i].IPHash >= r.hashVal(key)
 	}
-	location := sort.Search(r.Nodes.Len(), boolfn)
-	if location >= r.Nodes.Len() {
+	location := sort.Search(r.nodes.Len(), boolfn)
+	//If key hashes to end of ring, server is beginning of ring
+	if location >= r.nodes.Len() {
 		location = 0
 	}
-	if location < r.Nodes.Len() && r.Nodes[location].Id == id {
-		return r.Nodes[location], nil
-	} else {
-		return &Node{}, KeyNotFound
-	}
-}
-
-func (r *Ring) ReShard() {
-	for i := 0; i < r.Nodes.Len(); i++ {
-		if !r.Nodes[i].IsServer {
-			for j := i; j < r.Nodes.Len(); j++ {
-				//If we reach end and didnt find server
-				if j == r.Nodes.Len()-1 {
-					j = 0
-				}
-				if r.Nodes[j].IsServer {
-					r.Nodes[i].Server = r.Nodes[j]
-					break
-				}
-			}
-		}
-	}
-}
-
-func (r *Ring) GetNumOfKeys() int { return r.Numkeys }
-
-func (r *Ring) printRing() {
-	for i := 0; i < r.Nodes.Len(); i++ {
-		fmt.Println(r.Nodes[i].Id)
-	}
-}
-
-//Takes in string, returns 32bit hash
-func (r *Ring) HashVal(key string) uint32 {
-	return crc32.ChecksumIEEE([]byte(key))
-}
-
-//Return the ip of a server by passing in the key
-func (r *Ring) GetServerByKey(key string) (string, error) {
-	node, err := r.GetKeyNode(key)
-	if err != nil {
-		log.Printf("Could not locate key %s\n", key)
-		return "", KeyNotFound
-	}
-	serverip := strings.Split(node.Server.Id, ":")
+	node := r.nodes[location]
+	serverip := strings.Split(node.IP, "$")
 	return serverip[0], nil
 }
 
-/*
-//TESTING CODE
-func main(){
-  keys := []string{"Chris", "Brandon", "Colby", "Keith", "Alvaro", "Mackey"}
-
-  myRing := InitRing()
-  myRing.AddServer("A")
-  myRing.AddServer("B")
-  myRing.AddServer("C")
-
-  for i := 0; i < len(keys); i++ {
-    myRing.AddKey(keys[i])
-  }
-
-  myRing.printRing()
-  myRing.ReShard()
-
-  for i := 0; i < len(keys); i++ {
-    theNodeWanted, _ := myRing.GetServerByKey(keys[i])
-    fmt.Println("Key:", keys[i]+ ",","is on Server: ",theNodeWanted)
-  }
-
-  theNodeWanted, _ := myRing.GetServerByKey("DoesntExist")
-  fmt.Println("Key:", "DoesntExist" + ",","is on Server: ",theNodeWanted)
-
+func (r *Ring) printRing() {
+	for i := 0; i < r.nodes.Len(); i++ {
+		fmt.Println(r.nodes[i].IP)
+	}
 }
-*/
+
+func (r *Ring) hashVal(val string) uint32 {
+	return crc32.ChecksumIEEE([]byte(val))
+}

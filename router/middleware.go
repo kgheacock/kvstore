@@ -69,10 +69,11 @@ func (s *Store) bufferRequestMiddleware(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 			return
 		}
-		//otherwise we are buffering this call until reshard is finished
-		//<-s.kvstore.ViewChangeFinishedChannel
-		return // just don't let do it if we arent ready for now
-		// next.ServeHTTP(w, r)
+
+		w.Write([]byte("Resharding in progress"))
+		w.WriteHeader(http.StatusInternalServerError)
+
+		return
 	})
 }
 

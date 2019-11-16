@@ -36,9 +36,9 @@ func (s *Store) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 func (s *Store) KeyCountHandler(w http.ResponseWriter, r *http.Request) {
 	//Return Key Count
 	resp := struct {
-		message  string `json="message"`
-		keyCount int    `json="key-count`
-	}{message: "Key countretrieved successfully", keyCount: s.DAL().GetKeyCount()}
+		message  string `json:"message"`
+		keyCount int    `json:"key-count"`
+	}{message: "Key count retrieved successfully", keyCount: s.DAL().GetKeyCount()}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
 }
@@ -62,6 +62,7 @@ func (s *Store) PutHandler(w http.ResponseWriter, r *http.Request) {
 
 	putResp, err := s.DAL().Put(key, data.Value)
 	if err != nil {
+		log.Printf("Error in PUT. key: %s, value: %s\n", key, data.Value)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -122,6 +123,7 @@ func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
 	//config.Config.Servers = serverList
 	source, ok := r.Context().Value(ctx.ContextSourceKey).(string)
 	if !ok {
+		w.WriteHeader(http.StatusInternalServerError)
 		log.Println("Failed to find source of request")
 		return
 	}
@@ -158,14 +160,15 @@ func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
 				url := fmt.Sprintf("http://%s/kv-store/view-change", server)
 				req, err := http.NewRequest("PUT", url, r.Body)
 				if err != nil {
-					log.Println(err)
+					w.WriteHeader(http.StatusInternalServerError)
+					log.Printf("Error in PUT request. URL: %s", url)
 					return
 				}
 				req.Header.Set("Content-Type", "application/json")
 				req.Header.Set("X-Real-Ip", config.Config.Address)
 				resp, err := client.Do(req)
 				if err != nil {
-					log.Println(err)
+					w.WriteHeader(http.StatusInternalServerError)
 					log.Printf("View change request to server %s failed\n", url)
 					return
 				}
@@ -177,7 +180,7 @@ func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
 	s.state = RECIEVED_INTERNAL_RESHARD
 	log.Println(serverList)
 	log.Println(config.Config.Servers)
-	newServers := s.Difference(serverList,config.Config.Servers)
+	newServers := s.Difference(serverList, config.Config.Servers)
 	log.Println(newServers)
 	config.Config.Servers = serverList
 	for _, server := range newServers {
@@ -191,12 +194,15 @@ func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
 		client := &http.Client{}
 		serverIP, err := s.hasher.DAL().GetServerByKey(key)
 		if err != nil {
-			log.Fatal(err)
+			log.Printf("Error Getting Server by Key. key: %s\n", key)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 		if serverIP != config.Config.Address {
 			value, err := s.dal.Get(key)
 			if err != nil {
-				log.Println(err)
+				log.Printf("Error on GET. key: %s\n", key)
+				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 			url := fmt.Sprintf("http://%s/kv-store/keys/%s", serverIP, key)
@@ -206,14 +212,16 @@ func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
 			req.Header.Set("X-Real-Ip", config.Config.Address)
 			resp, err := client.Do(req)
 			if err != nil {
-				log.Println(err)
+				log.Printf("Error on Request: %s", req)
+				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 			defer resp.Body.Close()
 			log.Printf("Transfered key: %s to server: %s", key, serverIP)
 			err = s.dal.Delete(key)
 			if err != nil {
-				log.Println(err)
+				log.Printf("Error on Delete. key: %s\n", key)
+				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 		}
@@ -231,14 +239,16 @@ func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
 				var s shard
 				resp, err := client.Do(req)
 				if err != nil {
-					log.Println(err)
+					log.Printf("Error on Client Do request. Request: %s\n", req)
+					w.WriteHeader(http.StatusInternalServerError)
 					return
 				}
 				decoder := json.NewDecoder(resp.Body)
 				err = decoder.Decode(&s)
 				shardList = append(shardList, s)
 				if err != nil {
-					log.Println(err)
+					log.Printf("Error on adding shard. Shard: %s\n", s)
+					w.WriteHeader(http.StatusInternalServerError)
 					return
 				}
 			}

@@ -1,0 +1,1357 @@
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","replaced":false}
+
+201
+{"message":"Added successfully","replaced":false}
+
+201
+{"message":"Added successfully","replaced":false}
+
+201
+{"message":"Added successfully","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+
+500
+
+500
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","replaced":false}
+
+201
+{"message":"Added successfully","replaced":false}
+
+201
+{"message":"Added successfully","replaced":false}
+
+201
+{"message":"Added successfully","replaced":false}
+
+201
+{"message":"Added successfully","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","replaced":false}
+
+201
+{"message":"Added successfully","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+
+500
+
+500
+
+500
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+
+500
+
+500
+
+500
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+
+500
+
+500
+{"message":"Added successfully","replaced":false}
+
+201
+{"message":"Added successfully","replaced":false}
+
+201
+{"message":"Added successfully","replaced":false}
+
+201
+{"message":"Added successfully","replaced":false}
+
+201
+{"message":"Added successfully","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","replaced":false}
+
+201
+{"message":"Added successfully","replaced":false}
+
+201
+{"message":"Added successfully","replaced":false}
+
+201
+{"message":"Added successfully","replaced":false}
+
+201
+{"message":"Added successfully","replaced":false}
+
+201
+{"message":"Added successfully","replaced":false}
+
+201
+{"message":"Added successfully","replaced":false}
+
+201
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","replaced":false}
+
+201
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+
+500
+
+500
+
+500
+{"message":"Added successfully","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","replaced":false}
+
+201
+
+500
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+
+500
+{"message":"Added successfully","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+
+500
+{"message":"Added successfully","replaced":false}
+
+201
+{"message":"Added successfully","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+
+500
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","replaced":false}
+
+201
+
+500
+
+500
+
+500
+
+500
+{"message":"Added successfully","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+
+500
+{"message":"Added successfully","address":"localhost:8081","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+{"message":"Added successfully","address":"localhost:8082","replaced":false}
+
+201
+
+500

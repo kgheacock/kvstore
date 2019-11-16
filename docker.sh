@@ -1,7 +1,12 @@
 # ------------------------------
+# Stop and remove existing
+docker stop $(docker ps -a -q)
+docker rm $(docker ps -a -q)
+docker network rm kv_subnet
+# ------------------------------
 # Run Docker containers
 
-path_to_dockerfile="Dockerfile"
+path_to_dockerfile="."
 
 docker network create --subnet=10.10.0.0/16 kv_subnet
 docker build -t kv-store:3.0 $path_to_dockerfile
@@ -18,13 +23,13 @@ full_view=${initial_full_view},${addr3}
 docker run --name="node1"        --net=kv_subnet     \
            --ip=10.10.0.2        -p 13802:13800      \
            -e ADDRESS="${addr1}"                     \
-           -e VIEW=${initial_full_view}              \
+           -e VIEW=${initial_full_view}  -d            \
            kv-store:3.0
 
 docker run --name="node2"        --net=kv_subnet     \
            --ip=10.10.0.3        -p 13803:13800      \
            -e ADDRESS="${addr2}"                     \
-           -e VIEW=${initial_full_view}              \
+           -e VIEW=${initial_full_view}   -d           \
            kv-store:3.0
 
 # ------------------------------
@@ -70,7 +75,7 @@ expected_response
 docker run --name="node3" --net=kv_subnet            \
            --ip=10.10.0.4  -p 13804:13800            \
            -e ADDRESS="${addr3}"                     \
-           -e VIEW="${full_view}"                    \
+           -e VIEW="${full_view}"   -d                 \
            kv-store:3.0
 
 curl --request PUT                                   \

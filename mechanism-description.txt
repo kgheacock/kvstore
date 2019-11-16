@@ -1,0 +1,12 @@
+We implemented consistent hashing by creating a circular linkedl ist data structure that assigned hashing namespace too servers that are added to the ring. Additionally we added virutal nodes for better consistency around the ring. We use 20 currently, it is a arbitrary number.
+When adding a new server, ther server is placed in its proper spot in the ring based on the hash value based on the servers ip address. Each virtual node as its ID appended to the server IP when hashing.
+
+The resharding process will take in an incoming request, tell all other nodes in the new view change provided we are about to view change to the new space and then proceed to add the new nodes to our ring.
+After we add our newn ode, we begin to redistribute keys by going through all of our keys and checking their new server location. 
+After sending those, we delete them off of our local store and call it a day. When we receive ACKS from other nodes that they have finished, we will change our state back to normal.
+While we are view-changing, we do not allow any new request to come in and throw a 500 , error response in leiu of a real one.
+
+Key count just grabs the length of our store.
+
+Proxying is the same as before but we check the keys server location on the ring.
+

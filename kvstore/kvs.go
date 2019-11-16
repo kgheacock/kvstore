@@ -266,23 +266,6 @@ func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-//Assumes only an INCREASING server list. Invalid when nodes can be deleted
-func (s *Store) NewServersFromVC(newNodeList []string) []string {
-	oldNodeList := s.hasher.DAL().Servers()
-	sort.Strings(oldNodeList)
-	var oldNodeID int
-	oldNodeID = 0
-	var newNodes []string
-	for _, node := range newNodeList {
-		if node == oldNodeList[oldNodeID] {
-			oldNodeID++
-		} else {
-			newNodes = append(newNodes, node)
-		}
-	}
-	return newNodes
-}
-
 func (s *Store) Difference(a, b []string) (diff []string) {
 	m := make(map[string]bool)
 

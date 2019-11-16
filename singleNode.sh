@@ -1,25 +1,3 @@
-# ------------------------------
-# Run Docker containers
-
-path_to_dockerfile="./"
-
-docker network create --subnet=10.10.0.0/16 kv_subnet
-docker build -t kv-store:3.0 $path_to_dockerfile
-
-# example node addresses
-addr1="10.10.0.2:13800"
-
-# convenience variables
-initial_full_view="${addr1}"
-
-docker run --name="node1"        --net=kv_subnet     \
-           --ip=10.10.0.2        -p 13800:13800      \
-           -e ADDRESS="${addr1}"                     \
-           -e VIEW=${initial_full_view}              \
-           kv-store:3.0
-
-#docker run --name="node2"        --net=kv_subnet     \
- #          --ip=10.10.0.3        -p 13803:13800      \
-  #         -e ADDRESS="${addr2}"                     \
-   #        -e VIEW=${initial_full_view}              \
-    #       kv-store:3.0
+export ADDRESS="localhost:8081"
+export VIEW="localhost:8080,localhost:8081"
+go run main.go

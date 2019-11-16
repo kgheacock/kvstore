@@ -3,12 +3,14 @@ package kvstore
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"sort"
 	"strings"
 
 	"github.com/colbyleiske/cse138_assignment2/config"
+	"github.com/colbyleiske/cse138_assignment2/ctx"
 	"github.com/gorilla/mux"
 )
 
@@ -33,7 +35,12 @@ func (s *Store) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *Store) KeyCountHandler(w http.ResponseWriter, r *http.Request) {
 	//Return Key Count
-	w.Write([]byte("WIP"))
+	resp := struct {
+		message  string `json:"message"`
+		keyCount int    `json:"key-count"`
+	}{message: "Key count retrieved successfully", keyCount: s.DAL().GetKeyCount()}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(resp)
 }
 
 func (s *Store) PutHandler(w http.ResponseWriter, r *http.Request) {
@@ -55,6 +62,7 @@ func (s *Store) PutHandler(w http.ResponseWriter, r *http.Request) {
 
 	putResp, err := s.DAL().Put(key, data.Value)
 	if err != nil {
+		log.Printf("Error in PUT. key: %s, value: %s\n", key, data.Value)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -93,89 +101,169 @@ func (s *Store) GetHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
 }
-
-func (s *Store) VCFinishedAckHandler(w http.ResponseWriter, r *http.Request) {
-	//ISSUE: This is NOT Itempotent. If a server acks more than once this number will be invalid
-	s.nodeAckCount += 1
-	if s.nodeAckCount == (s.nodeCount - 1) {
-		s.nodeAckCount = 0
-		s.viewChangeAllAcksRecievedChannel <- true
-	}
+func (s *Store) ReshardCompleteHandler(w http.ResponseWriter, r *http.Request) {
+	s.state = NORMAL
+	respStruct := shard{KeyCount: s.DAL().GetKeyCount(), Address: config.Config.Address}
+	//s.ViewChangeFinishedChannel <- true
+	//s.ViewChangeFinishedChannel = make(chan bool, 1)
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(respStruct)
 }
-
 func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
-	//source, ok := ctx.Value(middleware.ContextSourceKey).(string)
-	vars := mux.Vars(r)
-	serverListString := vars["view"]
-	serverList := strings.Split(serverListString, ",")
+
+	decoder := json.NewDecoder(r.Body)
+
+	var viewChangeRequest ViewChangeRequest
+	if err := decoder.Decode(&viewChangeRequest); err != nil || viewChangeRequest.View == "" {
+		return
+	}
+
+	serverList := strings.Split(viewChangeRequest.View, ",")
 	sort.Strings(serverList)
-	config.Config.Servers = serverList
+	//config.Config.Servers = serverList
+	source, ok := r.Context().Value(ctx.ContextSourceKey).(string)
+	if !ok {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Println("Failed to find source of request")
+		return
+	}
+	if source == ctx.EXTERNAL {
+		//LOCK server to external requests
+		s.state = RECIEVED_EXTERNAL_RESHARD
+		//TODO: calls are currently 1 at a time but this can be optimized by
+		//making the requests in a GO routine and using a channel to count acks
+		//e.g.:
+		/*
+			ack_count := 0
+			ack_channel := make(chan bool, node_count)
+			go func() {
+				client := &http.Client{}
 
-	/*
-		if source == middleware.EXTERNAL {
-			s.state = RECIEVED_EXTERNAL_RESHARD
-			for _, server := range config.Config.Servers {
-				if server != config.Config.addr {
-					//TODO
-					//sendVCRequest(node, newNodeList)
+				resp,err :=//make requet
+				for err!=nil{
+					resp,err = //resend request but for debugging just do a log.Fatal()
 				}
+				ack_channel <- true
+			 }()
 
+			 for ack_count < (node_count - 1){
+				 if <- ack_channel {
+					 ack_count ++
+				 }
+			 }
+			 //send VC complete message
+		*/
+		client := &http.Client{}
+		for _, server := range config.Config.Servers {
+			log.Println(server)
+			if server != config.Config.Address {
+				url := fmt.Sprintf("http://%s/kv-store/view-change", server)
+				req, err := http.NewRequest("PUT", url, r.Body)
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+					log.Printf("Error in PUT request. URL: %s", url)
+					return
+				}
+				req.Header.Set("Content-Type", "application/json")
+				req.Header.Set("X-Real-Ip", config.Config.Address)
+				resp, err := client.Do(req)
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+					log.Printf("View change request to server %s failed\n", url)
+					return
+				}
+				resp.Body.Close()
 			}
 		}
-	*/
+	}
 	//LOCK server to external requests
 	s.state = RECIEVED_INTERNAL_RESHARD
-	newServers := s.NewServersFromVC(config.Config.Servers)
+	log.Println(serverList)
+	log.Println(config.Config.Servers)
+	newServers := s.Difference(serverList, config.Config.Servers)
+	log.Println(newServers)
+	config.Config.Servers = serverList
 	for _, server := range newServers {
+		log.Println("NEW SERVER", server)
 		s.hasher.DAL().AddServer(server)
-
 	}
 	s.state = TRANSFER_KEYS
-	keyList, err := s.dal.KeyList()
-	if err != nil {
-		log.Fatal(err)
-	}
+	keyList := s.dal.KeyList()
+
 	for _, key := range keyList {
 		client := &http.Client{}
 		serverIP, err := s.hasher.DAL().GetServerByKey(key)
 		if err != nil {
-			log.Fatal(err)
+			log.Printf("Error Getting Server by Key. key: %s\n", key)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
 		}
 		if serverIP != config.Config.Address {
 			value, err := s.dal.Get(key)
 			if err != nil {
-				log.Fatal(err)
+				log.Printf("Error on GET. key: %s\n", key)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
 			}
+			url := fmt.Sprintf("http://%s/kv-store/keys/%s", serverIP, key)
 			payload, _ := json.Marshal(Data{value})
-			req, _ := http.NewRequest("POST", serverIP, bytes.NewBuffer(payload))
+			req, _ := http.NewRequest("PUT", url, bytes.NewBuffer(payload))
 			req.Header.Set("Content-Type", "application/json")
-			req.Header.Set("X-Real-Ip",config.Config.Address)
+			req.Header.Set("X-Real-Ip", config.Config.Address)
 			resp, err := client.Do(req)
 			if err != nil {
-				log.Fatal(err)
+				log.Printf("Error on Request: %s", req)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
 			}
 			defer resp.Body.Close()
-
-			//TODO: Add value to JSON payload
-			//Make http PUT request to serverIP
+			log.Printf("Transfered key: %s to server: %s", key, serverIP)
 			err = s.dal.Delete(key)
 			if err != nil {
-				log.Fatal(err)
+				log.Printf("Error on Delete. key: %s\n", key)
+				w.WriteHeader(http.StatusInternalServerError)
+				return
 			}
 		}
 	}
-	s.state = FINISHED_TRANSFER
-	//TODO broadcast ack to all servers
-	for _, server := range config.Config.Servers {
-		err, _ := http.NewRequest("POST", server, nil)
-		if err != nil {
-			log.Printf("Ack to server %s returned an error ", server)
+	s.state = WAITING_FOR_ACK
+	if source == ctx.EXTERNAL {
+		client := &http.Client{}
+		var shardList []shard
+		for _, server := range config.Config.Servers {
+			if server != config.Config.Address {
+				url := fmt.Sprintf("http://%s/internal/vc-complete", server)
+				req, _ := http.NewRequest("GET", url, nil)
+				req.Header.Set("Content-Type", "application/json")
+				req.Header.Set("X-Real-Ip", config.Config.Address)
+				var s shard
+				resp, err := client.Do(req)
+				if err != nil {
+					log.Printf("Error on Client Do request. Request: %s\n", req)
+					w.WriteHeader(http.StatusInternalServerError)
+					return
+				}
+				decoder := json.NewDecoder(resp.Body)
+				err = decoder.Decode(&s)
+				shardList = append(shardList, s)
+				if err != nil {
+					log.Printf("Error on adding shard. Shard: %s\n", s)
+					w.WriteHeader(http.StatusInternalServerError)
+					return
+				}
+			}
 		}
+		shardList = append(shardList, shard{KeyCount: s.DAL().GetKeyCount(), Address: config.Config.Address})
+		resp := struct {
+			Message string  `json:"message"`
+			Shards  []shard `json:"shards"`
+		}{"View change successful", shardList}
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(resp)
+		s.state = NORMAL
+		//s.ViewChangeFinishedChannel <- true
+		//s.ViewChangeFinishedChannel = make(chan bool, 1)
 	}
-	s.ViewChangeFinishedChannel <- true
-	s.state = PROCESS_BACKLOG
-	<-s.viewChangeAllAcksRecievedChannel
-	s.state = NORMAL
 }
 
 //Assumes only an INCREASING server list. Invalid when nodes can be deleted
@@ -193,6 +281,21 @@ func (s *Store) NewServersFromVC(newNodeList []string) []string {
 		}
 	}
 	return newNodes
+}
+
+func (s *Store) Difference(a, b []string) (diff []string) {
+	m := make(map[string]bool)
+
+	for _, item := range b {
+		m[item] = true
+	}
+
+	for _, item := range a {
+		if _, ok := m[item]; !ok {
+			diff = append(diff, item)
+		}
+	}
+	return
 }
 
 func (s *Store) GetKeyCountHandler(w http.ResponseWriter, r *http.Request) {

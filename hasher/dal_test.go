@@ -54,6 +54,9 @@ func TestBasicCorrectMapping(t *testing.T) {
 	}
 
 	ring.RemoveServer("A")
+	if len(ring.Servers()) != 2 {
+		t.Errorf("Length of server list %v, expected %v", len(ring.Servers()), 2)
+	}
 	tp := []struct {
 		key           string
 		expectedIP    string

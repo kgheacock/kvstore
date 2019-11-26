@@ -63,12 +63,13 @@ func (r *Ring) AddServer(ip string) {
 //RemoveServer removes a server from the ring, and changes server list
 func (r *Ring) RemoveServer(ip string) {
 	location := sort.SearchStrings(r.Servers(), ip)
-	r.servers = append(r.Servers()[:location], r.Servers()[location+1:]...)
+	newServers := append(r.Servers()[:location], r.Servers()[location+1:]...)
 	//Clear nodes entirely and remake ring
 	r.nodes = nil
-	for _, item := range r.servers {
+	for _, item := range newServers {
 		r.AddServer(item)
 	}
+	r.servers = newServers
 }
 
 //Servers returns list of all non-virtual server IP's on ring

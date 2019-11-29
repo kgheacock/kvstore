@@ -108,6 +108,91 @@ func (s *Store) ReshardCompleteHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(respStruct)
 }
+
+func (s *Store) ReshardHandlerRouter(w http.ResponseWriter, r *http.Request) {
+	//Check internal/external
+	//If external: we are first to recieve. Forward to all other nodes
+	//If internal: we must update our ring and check keys for validity
+	source, ok := r.Context().Value(ctx.ContextSourceKey).(string)
+	if !ok {
+		log.Println("Failed to find source of request")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	if source == ctx.EXTERNAL {
+		s.ExternalReshardHandler(w, r)
+	} else {
+		s.InternalReshardHandler(w, r)
+	}
+
+}
+func (s *Store) InternalReshardHandler(w http.ResponseWriter, r *http.Request) {
+	var viewChangeRequest InternalViewChangeRequest
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&viewChangeRequest); err != nil || viewChangeRequest.ReplFactor == 0 {
+		log.Println()
+		log.Println("ERROR: 1", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	config.Config.Servers = nil
+	for _,servers := range viewChangeRequest.NamedView{
+		config.Config.Servers := append(config.Config.Servers, servers...)
+		//Remove all servers from ring
+		//Add new quoroms to ring
+	}
+}
+func (s *Store) ExternalReshardHandler(w http.ResponseWriter, r *http.Request) {
+	//First to recieve. We must forward to everyone but ourselves. Then call reshard ourselves
+	var viewChangeRequest ExternalViewChangeRequest
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&viewChangeRequest); err != nil || viewChangeRequest.ReplFactor == 0 {
+		log.Println()
+		log.Println("ERROR: 1", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	config.Config.Servers = viewChangeRequest.View
+	viewChangeSentChannel := make(chan bool, len(viewChangeRequest.View-1))
+	replFacotr := viewChangeRequest.ReplFactor
+	var map[string]string[] namedQuorum := nil //:=makeQuorum(config.Config.Servers, replFactor)
+	namedViewChangeRequest := InteralViewChangeRequest{NamedView:namedQuorum,ReplFactor:replFacotr}
+	viewChangeReqBytes, err := json.Marshal(namedViewChangeRequest)
+	for _, server := range viewChangeRequest.View {
+			go func(chan bool finishedChannel) {
+				client := &http.Client{}
+				url := fmt.Sprintf("http://%s/kv-store/view-change", server)
+				req, err := http.NewRequest("PUT", url, bytes.NewReader(viewChangeReqBytes))
+				if err != nil {
+					log.Println("ERROR: 2", err)
+					w.WriteHeader(http.StatusInternalServerError)
+					finishedChannel <- false
+					return
+				}
+				req.Header.Set("Content-Type", "application/json")
+				req.Header.Set("X-Real-Ip", config.Config.Address)
+				resp, err := client.Do(req)
+				if err != nil {
+					log.Println(err)
+					w.WriteHeader(http.StatusInternalServerError)
+					finishedChannel <- false
+					return
+				}
+				resp.Body.Close()
+				finishedChannel <- true
+		}
+	}
+	for _, server := range viewChangeRequest.View{
+		if !<-finishedChannel{
+			log,Printf("Recieved an error response from server %s",server)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+	}
+
+
+
+}
 func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 

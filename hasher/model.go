@@ -15,27 +15,27 @@ type Quorum struct {
 	members []string
 }
 
-func (q *Quorum) AddMember(ip string) {
-	q.members = append(q.members, ip)
+func (q *Quorum) AddMember(id string) {
+	q.members = append(q.members, id)
 }
-func (q *Quorum) RemoveMember(ip string) error{
-	if len(q.members) == 0{
-		return Errors.new("Element not found") //Is this correct?
+func (q *Quorum) RemoveMember(id string) error {
+	if len(q.members) == 0 {
+		return errors.new("Element not found") //Is this correct?
 	}
-	if elem == q.members[0]{
+	if id == q.members[0] {
 		return nil
 	}
-	for i,elem := q.members{
-		if(elem == ip){
-			q.members = append(q.members[:i-1],q.members[i+1:])
+	for i, elem := range q.members {
+		if elem == id {
+			q.members = append(q.members[:i-1], q.members[i+1:]...)
 			return nil
 		}
 	}
-	return Errors.new("Element not found")
+	return errors.new("Element not found")
 }
 
-func (q *Quorum) SetMembers(ips [] string){
-	q.members = ips
+func (q *Quorum) SetMembers(ids []string) {
+	q.members = ids
 }
 
 func NewRingStore(dal DataAccessLayer) *Store {

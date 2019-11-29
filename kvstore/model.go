@@ -14,19 +14,7 @@ type shard struct {
 	Address  string `json:"address,omitempty"`
 	KeyCount int    `json:"key-count"`
 }
-type nodeState int
 
-const (
-	NORMAL nodeState = iota + 1
-	RECIEVED_EXTERNAL_RESHARD
-	//Lock Dict to external requests
-	RECIEVED_INTERNAL_RESHARD
-	TRANSFER_KEYS
-	FINISHED_TRANSFER
-	WAITING_FOR_ACK
-	//Release lock
-	PROCESS_BACKLOG
-)
 
 type DataAccessLayer interface {
 	Delete(key string) error
@@ -84,6 +72,11 @@ type GetKeyCountRepsponse struct {
 	KeyCount int    `json:"key-count"`
 }
 
-type ViewChangeRequest struct {
-	View string `json:"view"`
+type ExternalViewChangeRequest struct {
+	View string[] `json:"view"`
+	ReplFactor int `json:"repl-factor"`
+}
+type InternalViewChangeRequest struct{
+	NamedView map[string]string[] `json:"named-view"`
+	ReplFactor int `json:"repl-factor"`
 }

@@ -11,11 +11,6 @@ type VectorClock struct {
 	VC map[string]int
 }
 
-//Less compares two vectorclocks value at the same server key, "if v1 less than v2"
-//func (vc *VectorClock) Less(vc2 *VectorClock) bool {
-//	return vc.VC[config.Config.Address] < vc2.VC[config.Config.Address]
-//}
-
 //Len returns len() of map of a VectorClock
 func (vc *VectorClock) Len() int { return len(vc.VC) }
 

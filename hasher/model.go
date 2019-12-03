@@ -8,6 +8,7 @@ type DataAccessLayer interface {
 	GetServerByKey(key string) (string, error)
 	Servers() []string
 	AddServer(ip string)
+	RemoveServer(ip string)
 }
 
 func NewRingStore(dal DataAccessLayer) *Store {

@@ -21,13 +21,13 @@ func TestBasicCorrectMapping(t *testing.T) {
 	}{
 		{key: "Chris", expectedIP: "C", expectedError: nil},
 		{key: "Brandon", expectedIP: "C", expectedError: nil},
-		{key: "Colby", expectedIP: "B", expectedError: nil},
-		{key: "Keith", expectedIP: "B", expectedError: nil},
-		{key: "Alvaro", expectedIP: "A", expectedError: nil},
-		{key: "Mackey", expectedIP: "A", expectedError: nil},
+		{key: "Colby", expectedIP: "C", expectedError: nil},
+		{key: "Keith", expectedIP: "A", expectedError: nil},
+		{key: "Alvaro", expectedIP: "C", expectedError: nil},
+		{key: "Mackey", expectedIP: "C", expectedError: nil},
 	}
 	for _, tc := range tt {
-		ip, err := ring.ServerOfKey(tc.key)
+		ip, err := ring.GetServerByKey(tc.key)
 		if ip != tc.expectedIP {
 			t.Errorf("Expected IP %s , got %s", tc.expectedIP, ip)
 		}
@@ -52,6 +52,35 @@ func TestBasicCorrectMapping(t *testing.T) {
 	if serverList[result3] != "C" {
 		t.Errorf("Server C expected, not found.")
 	}
+
+	ring.RemoveServer("A")
+	if len(ring.Servers()) != 2 {
+		t.Errorf("Length of server list %v, expected %v", len(ring.Servers()), 2)
+	}
+	tp := []struct {
+		key           string
+		expectedIP    string
+		expectedError error
+	}{
+		{key: "Chris", expectedIP: "C", expectedError: nil},
+		{key: "Brandon", expectedIP: "C", expectedError: nil},
+		{key: "Colby", expectedIP: "C", expectedError: nil},
+		{key: "Keith", expectedIP: "B", expectedError: nil},
+		{key: "Alvaro", expectedIP: "C", expectedError: nil},
+		{key: "Mackey", expectedIP: "C", expectedError: nil},
+		{key: "Tantalo", expectedIP: "B", expectedError: nil},
+	}
+	for _, tc := range tp {
+		ip, err := ring.GetServerByKey(tc.key)
+		if ip != tc.expectedIP {
+			t.Errorf("Expected IP %s , got %s", tc.expectedIP, ip)
+		}
+		if err != tc.expectedError {
+			t.Errorf("Expected error %s , got %s", tc.expectedError, err)
+
+		}
+	}
+
 }
 
 func TestGetServerByKey(t *testing.T) {
@@ -66,13 +95,13 @@ func TestGetServerByKey(t *testing.T) {
 		expectedIP    string
 		expectedError error
 	}{
-		{key: "Tantalo", expectedIP: "C", expectedError: nil},
-		{key: "Alvaro", expectedIP: "A", expectedError: nil},
+		{key: "Tantalo", expectedIP: "A", expectedError: nil},
+		{key: "Alvaro", expectedIP: "C", expectedError: nil},
 		{key: "DoesNotExist", expectedIP: "C", expectedError: nil},
 	}
 
 	for _, tc := range tt {
-		ip, err := ring.ServerOfKey(tc.key)
+		ip, err := ring.GetServerByKey(tc.key)
 		if ip != tc.expectedIP {
 			t.Errorf("Expected IP %s , got %s", tc.expectedIP, ip)
 		}

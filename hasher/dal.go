@@ -6,7 +6,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"sync"
 )
 
 const numVirtualNodes = 20
@@ -37,12 +36,9 @@ func (n nodes) Less(i, j int) bool { return n[i].IPHash < n[j].IPHash }
 //Ring nodes: Actual representation of ring by virtual nodes
 //Ring servers: []String of non-virtualized node IP's
 type Ring struct {
-	mutex   sync.Mutex
 	nodes   nodes
 	servers []string
 }
-
-//servers is []string of non-virtual server IP's
 
 //NewRing creates Ring object
 func NewRing() *Ring {
@@ -51,8 +47,6 @@ func NewRing() *Ring {
 
 //AddServer adds server and virtual nodes to ring
 func (r *Ring) AddServer(ip string) {
-	r.mutex.Lock()
-	defer r.mutex.Unlock()
 	//Adds IP to list of servers
 	r.servers = append(r.servers, ip)
 	newVirNodes := make(nodes, 0, numVirtualNodes)
@@ -66,19 +60,26 @@ func (r *Ring) AddServer(ip string) {
 	sort.Sort(r.nodes)
 }
 
+//RemoveServer removes a server from the ring, and changes server list
+func (r *Ring) RemoveServer(ip string) {
+	location := sort.SearchStrings(r.Servers(), ip)
+	newServers := append(r.Servers()[:location], r.Servers()[location+1:]...)
+	//Clear nodes entirely and remake ring
+	r.nodes = nil
+	for _, item := range newServers {
+		r.AddServer(item)
+	}
+	r.servers = newServers
+}
+
 //Servers returns list of all non-virtual server IP's on ring
 func (r *Ring) Servers() []string {
-	r.mutex.Lock()
-	defer r.mutex.Unlock()
 	sort.Strings(r.servers)
 	return r.servers
 }
 
 //GetServerByKey returns the IP of a server by passing in the key
 func (r *Ring) GetServerByKey(key string) (string, error) {
-	r.mutex.Lock()
-	defer r.mutex.Unlock()
-
 	//Required for binary search
 	boolfn := func(i int) bool {
 		return r.nodes[i].IPHash >= r.hashVal(key)

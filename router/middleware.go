@@ -79,8 +79,8 @@ func (s *Store) bufferRequestMiddleware(next http.Handler) http.Handler {
 
 /*
 To get the value from the context
-source, ok := r.Context().Value(middleware.ContextSourceKey).(string)
-middleware.INTERNAL or middleware.EXTERNAL
+source, ok := r.Context().Value(ctx.ContextSourceKey).(string)
+ctx.INTERNAL or ctx.EXTERNAL
 */
 func (s *Store) checkSourceMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

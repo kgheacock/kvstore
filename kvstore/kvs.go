@@ -101,51 +101,47 @@ func (s *Store) GetHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(resp)
 }
 func (s *Store) ReshardCompleteHandler(w http.ResponseWriter, r *http.Request) {
-	s.state = NORMAL
 	respStruct := shard{KeyCount: s.DAL().GetKeyCount(), Address: config.Config.Address}
-	//s.ViewChangeFinishedChannel <- true
-	//s.ViewChangeFinishedChannel = make(chan bool, 1)
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(respStruct)
 }
-func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
+func (s *Store) InternalReshardHandler(w http.ResponseWriter, r *http.Request) {
+	var viewChangeRequest InternalViewChangeRequest
 	decoder := json.NewDecoder(r.Body)
-
-	var viewChangeRequest ViewChangeRequest
-	if err := decoder.Decode(&viewChangeRequest); err != nil || viewChangeRequest.View == "" {
+	if err := decoder.Decode(&viewChangeRequest); err != nil || viewChangeRequest.ReplFactor == 0 {
 		log.Println()
 		log.Println("ERROR: 1", err)
-		return
-	}
-
-	serverList := strings.Split(viewChangeRequest.View, ",")
-	newServers := s.Difference(serverList, config.Config.Servers)
-	log.Println("NEW SERVERs: ", newServers)
-	config.Config.Servers = serverList
-
-	source, ok := r.Context().Value(ctx.ContextSourceKey).(string)
-	if !ok {
-		log.Println("Failed to find source of request")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	if source == ctx.EXTERNAL {
-		s.state = RECIEVED_EXTERNAL_RESHARD
-		client := &http.Client{}
-		for _, server := range config.Config.Servers {
-			log.Println(server)
-			if server != config.Config.Address {
-				url := fmt.Sprintf("http://%s/kv-store/view-change", server)
-				viewChangeReqBytes, err := json.Marshal(viewChangeRequest)
-				if err != nil {
-					log.Println(err)
-					w.WriteHeader(http.StatusInternalServerError)
-					return
-				}
+	config.Config.Quoroms = viewChangeRequest.namedQuorum
+	//update hasher
+}
+func (s *Store) ExternalReshardHandler(w http.ResponseWriter, r *http.Request) {
+	//First to recieve. We must forward to everyone but ourselves. Then call reshard ourselves
+	var viewChangeRequest ExternalViewChangeRequest
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&viewChangeRequest); err != nil || viewChangeRequest.ReplFactor == 0 {
+		log.Println()
+		log.Println("ERROR: 1", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	config.Config.Servers = viewChangeRequest.View
+	viewChangeSentChannel := make(chan bool, len(viewChangeRequest.View-1))
+	replFacotr := viewChangeRequest.ReplFactor
+	var namedQuorum map[string][]string  = nil //:=makeQuorum(config.Config.Servers, replFactor)
+	namedViewChangeRequest := InteralViewChangeRequest{NamedView:namedQuorum,ReplFactor:replFacotr}
+	viewChangeReqBytes, err := json.Marshal(namedViewChangeRequest)
+	for _, server := range viewChangeRequest.View {
+			go func(chan finishedChannel) {
+				client := &http.Client{}
+				url := fmt.Sprintf("http://%s/internal/view-change", server)
 				req, err := http.NewRequest("PUT", url, bytes.NewReader(viewChangeReqBytes))
 				if err != nil {
 					log.Println("ERROR: 2", err)
 					w.WriteHeader(http.StatusInternalServerError)
+					finishedChannel <- false
 					return
 				}
 				req.Header.Set("Content-Type", "application/json")
@@ -154,110 +150,37 @@ func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
 				if err != nil {
 					log.Println(err)
 					w.WriteHeader(http.StatusInternalServerError)
+					finishedChannel <- false
 					return
 				}
 				resp.Body.Close()
-			}
-		}
+				finishedChannel <- true
+		}(viewChangeSentChannel)
 	}
-	//LOCK server to external requests
-	s.state = RECIEVED_INTERNAL_RESHARD
-	for _, server := range newServers {
-		s.hasher.DAL().AddServer(server)
-	}
-
-	s.state = TRANSFER_KEYS
-	keyList := s.dal.KeyList()
-
-	for _, key := range keyList {
-		client := &http.Client{}
-		serverIP, err := s.hasher.DAL().GetServerByKey(key)
-		if err != nil {
-			log.Println("ERROR: 3", err)
+	for _, server := range viewChangeRequest.View{
+		if !<-finishedChannel{
+			log,Printf("Recieved an error response from server %s",server)
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		if serverIP != config.Config.Address {
-			value, err := s.dal.Get(key)
-			if err != nil {
-				log.Println("ERROR: 4", err)
-				w.WriteHeader(http.StatusInternalServerError)
-				return
-			}
-			url := fmt.Sprintf("http://%s/kv-store/keys/%s", serverIP, key)
-			payload, _ := json.Marshal(Data{value})
-			req, _ := http.NewRequest("PUT", url, bytes.NewBuffer(payload))
-			req.Header.Set("Content-Type", "application/json")
-			req.Header.Set("X-Real-Ip", config.Config.Address)
-			resp, err := client.Do(req)
-			if err != nil {
-				log.Println("ERROR: 5", err)
-				w.WriteHeader(http.StatusInternalServerError)
-				return
-			}
-			defer resp.Body.Close()
-			log.Printf("Transfered key: %s to server: %s", key, serverIP)
-			err = s.dal.Delete(key)
-			if err != nil {
-				log.Println("ERROR: 6", err)
-				w.WriteHeader(http.StatusInternalServerError)
-				return
-			}
-		}
 	}
-	s.state = WAITING_FOR_ACK
-	if source == ctx.EXTERNAL {
+	for _, server := range viewChangeRequest.View{
 		client := &http.Client{}
-		var shardList []shard
-		for _, server := range config.Config.Servers {
-			if server != config.Config.Address {
-				url := fmt.Sprintf("http://%s/internal/vc-complete", server)
-				req, _ := http.NewRequest("GET", url, nil)
-				req.Header.Set("Content-Type", "application/json")
-				req.Header.Set("X-Real-Ip", config.Config.Address)
-				var s shard
-				resp, err := client.Do(req)
-				if err != nil {
-					log.Println("ERROR: ", err)
-					w.WriteHeader(http.StatusInternalServerError)
-					return
-				}
-				decoder := json.NewDecoder(resp.Body)
-				err = decoder.Decode(&s)
-				shardList = append(shardList, s)
-				if err != nil {
-					log.Println("ERROR: ", err)
-					w.WriteHeader(http.StatusInternalServerError)
-					return
-				}
-			}
+		url := fmt.Sprintf("http://%s/internal/vc-complete", server)
+		req, err := http.NewRequest("GET", url, bytes.NewReader(nil))
+		if err != nil {
+			log.Println("ERROR: 2", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
 		}
-		shardList = append(shardList, shard{KeyCount: s.DAL().GetKeyCount(), Address: config.Config.Address})
-		resp := struct {
-			Message string  `json:"message"`
-			Shards  []shard `json:"shards"`
-		}{"View change successful", shardList}
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(resp)
-		s.state = NORMAL
-		//s.ViewChangeFinishedChannel <- true
-		//s.ViewChangeFinishedChannel = make(chan bool, 1)
-	}
-}
-
-func (s *Store) Difference(a, b []string) (diff []string) {
-	m := make(map[string]bool)
-
-	for _, item := range b {
-		m[item] = true
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("X-Real-Ip", config.Config.Address)
+		resp, err := client.Do(req)
 	}
 
-	for _, item := range a {
-		if _, ok := m[item]; !ok {
-			diff = append(diff, item)
-		}
-	}
-	return
+
+
+
 }
 
 func (s *Store) GetKeyCountHandler(w http.ResponseWriter, r *http.Request) {

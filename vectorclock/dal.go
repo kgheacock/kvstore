@@ -33,12 +33,12 @@ func (vc *VectorClock) IncrementVC() {
 	vc.VC[server]++
 }
 
-//CurrentState returns int currentState from VC struct
+//CurrentState returns value of own clock
 func (vc *VectorClock) CurrentState() int {
 	return vc.VC[config.Config.Address]
 }
 
-//UpdateVC matches two VC's by taking piecewise max of both
+//UpdateVC updates vc's values by taking piecewise max. Only changes vc.
 func (vc *VectorClock) UpdateVC(vc2 *VectorClock) {
 	serverList := config.Config.Servers
 	for _, server := range serverList {

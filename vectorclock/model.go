@@ -8,6 +8,7 @@ type DataAccessLayer interface {
 	IncrementVC()
 	CurrentState() int
 	UpdateVC(vc2 *VectorClock)
+	MaxClock(vclist []VectorClock)
 }
 
 func NewVectorClockStore(dal DataAccessLayer) *Store {

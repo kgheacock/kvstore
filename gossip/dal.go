@@ -12,6 +12,7 @@ type GossipData struct{
 
 //WakeUp starts a ShareGossip request in a bounded time range, forever
 func WakeUp() {
+	ServerVC := NewVectorClock()
 	min := 500
 	max := 2000
 	for {
@@ -23,7 +24,7 @@ func WakeUp() {
 
 //Actually send data
 func ShareGossip() {
-	
+	//INCREMENT VC
 	gd := GossipData{vc:...,data:...}
 	payload,_ := json.Marshal(gd)
 	client := &http.Clinet{}

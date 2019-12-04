@@ -17,7 +17,7 @@ var Config cfg
 
 func GenerateConfig() {
 	addr := os.Getenv("ADDRESS")
-	Config = cfg{Address: addr}
+	Config = cfg{Address: addr, ThisQuorom: "", Quoroms: make(map[string][]string), ReplFactor: 0}
 }
 
 func IsIPInternal(unknownIP string) bool {

@@ -105,35 +105,13 @@ func (s *Store) ReshardCompleteHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(respStruct)
 	s.state = NORMAL
 }
-<<<<<<< HEAD
-
-func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
-=======
 func (s *Store) InternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 	s.state = RECIEVED_INTERNAL_RESHARD
 	var viewChangeRequest InternalViewChangeRequest
->>>>>>> b60eabe3346c188f121800f64ad53b75b08e8b7d
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&viewChangeRequest); err != nil || viewChangeRequest.ReplFactor == 0 {
 		log.Println()
 		log.Println("ERROR: 1", err)
-<<<<<<< HEAD
-		return
-	}
-
-	serverList := strings.Split(viewChangeRequest.View, ",")
-	replFactor := ViewChangeRequest.ReplFactor
-	newServers := s.Difference(serverList, config.Config.Servers)
-	log.Println("NEW SERVERs: ", newServers)
-	log.Println("REPL-FACTOR: ", replFactor)
-	config.Config.Servers = serverList
-	config.Config.ReplFactor = replFactor
-
-	source, ok := r.Context().Value(ctx.ContextSourceKey).(string)
-	if !ok {
-		log.Println("Failed to find source of request")
-=======
->>>>>>> b60eabe3346c188f121800f64ad53b75b08e8b7d
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -258,13 +236,16 @@ func (s *Store) GetKeyCountHandler(w http.ResponseWriter, r *http.Request) {
 func (s *Store) DeleteReplHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["key"]
-	var addr string
-
 	if err := s.DAL().Delete(key); err != nil {
-		return REPL_RESULT.FAIL
+		resp := DeleteResponse{ResponseMessage{"Key does not exist", "Error in DELETE", ""}, false}
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(resp)
+		return
 	}
 
-	return REPL_RESULT.SUCCESS
+	resp := DeleteResponse{ResponseMessage{"", "Deleted successfully", ""}, true}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(resp)
 }
 
 func (s *Store) GetReplHandler(w http.ResponseWriter, r *http.Request) {
@@ -273,10 +254,15 @@ func (s *Store) GetReplHandler(w http.ResponseWriter, r *http.Request) {
 
 	val, err := s.DAL().Get(key)
 	if err != nil {
-		return REPL_RESULT.FAIL, nil
+		resp := GetResponse{ResponseMessage{"Key does not exist", "Error in GET", ""}, false}
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(resp)
+		return
 	}
 
-	return REPL_RESULT.SUCCESS, val
+	resp := GetResponse{ResponseMessage{"", "Retrieved successfully", val}, true}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(resp)
 }
 
 func (s *Store) PutReplHandler(w http.ResponseWriter, r *http.Request) {
@@ -285,13 +271,30 @@ func (s *Store) PutReplHandler(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 
 	var data Data
-	decoder.Decode(&data)
+	if err := decoder.Decode(&data); err != nil || data.Value == "" {
+		resp := ResponseMessage{Error: "Value is missing", Message: "Error in PUT"}
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(resp)
+		return
+	}
 
 	putResp, err := s.DAL().Put(key, data.Value)
 	if err != nil {
 		log.Printf("Error in PUT. key: %s, value: %s\n", key, data.Value)
-		REPL_RESULT.FAIL
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	return REPL_RESULT.SUCCESS
+
+	if putResp == ADDED {
+		resp := PutResponse{ResponseMessage{"", "Added successfully", ""}, false}
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(resp)
+		return
+	}
+	if putResp == UPDATED {
+		resp := PutResponse{ResponseMessage{"", "Updated successfully", ""}, true}
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(resp)
+		return
+	}
 }

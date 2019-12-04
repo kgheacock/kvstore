@@ -82,11 +82,6 @@ type GetKeyCountRepsponse struct {
 	KeyCount int    `json:"key-count"`
 }
 
-<<<<<<< HEAD
-type ViewChangeRequest struct {
-	View       string `json:"view"`
-	ReplFactor int    `json:"repl-factor"`
-=======
 type ExternalViewChangeRequest struct {
 	View       []string `json:"view"`
 	ReplFactor int      `json:"repl-factor"`
@@ -95,5 +90,4 @@ type ExternalViewChangeRequest struct {
 type InternalViewChangeRequest struct {
 	NamedView  map[string][]string `json:"NamedQuorom"`
 	ReplFactor int                 `json:"repl-factor"`
->>>>>>> b60eabe3346c188f121800f64ad53b75b08e8b7d
 }

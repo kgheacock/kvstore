@@ -237,13 +237,13 @@ func (s *Store) DeleteReplHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["key"]
 	if err := s.DAL().Delete(key); err != nil {
-		resp := DeleteResponse{ResponseMessage{"Key does not exist", "Error in DELETE", ""}, false}
+		resp := DeleteResponse{ResponseMessage{"Key does not exist", "Error in DELETE", "", ""}, false}
 		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(resp)
 		return
 	}
 
-	resp := DeleteResponse{ResponseMessage{"", "Deleted successfully", ""}, true}
+	resp := DeleteResponse{ResponseMessage{"", "Deleted successfully", "", ""}, true}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
 }
@@ -254,13 +254,13 @@ func (s *Store) GetReplHandler(w http.ResponseWriter, r *http.Request) {
 
 	val, err := s.DAL().Get(key)
 	if err != nil {
-		resp := GetResponse{ResponseMessage{"Key does not exist", "Error in GET", ""}, false}
+		resp := GetResponse{ResponseMessage{"Key does not exist", "Error in GET", "", ""}, false}
 		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(resp)
 		return
 	}
 
-	resp := GetResponse{ResponseMessage{"", "Retrieved successfully", val}, true}
+	resp := GetResponse{ResponseMessage{"", "Retrieved successfully", val, ""}, true}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
 }
@@ -286,13 +286,13 @@ func (s *Store) PutReplHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if putResp == ADDED {
-		resp := PutResponse{ResponseMessage{"", "Added successfully", ""}, false}
+		resp := PutResponse{ResponseMessage{"", "Added successfully", "", ""}, false}
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(resp)
 		return
 	}
 	if putResp == UPDATED {
-		resp := PutResponse{ResponseMessage{"", "Updated successfully", ""}, true}
+		resp := PutResponse{ResponseMessage{"", "Updated successfully", "", ""}, true}
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(resp)
 		return

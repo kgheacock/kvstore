@@ -18,6 +18,10 @@ func CreateRouter(s *kvstore.Store, h *hasher.Store) *mux.Router {
 	storeRouter.Handle("/{key}", wrap(s.PutHandler)).Methods("PUT")
 	storeRouter.Handle("/{key}", wrap(s.GetHandler)).Methods("GET")
 
+	router.Handle("/replication/{key}", wrap(s.DeleteReplHandler)).Methods("DELETE")
+	router.Handle("/replication/{key}", wrap(s.PutReplHandler)).Methods("PUT")
+	router.Handle("/replication/{key}", wrap(s.GetReplHandler)).Methods("GET")
+
 	router.Handle("/kv-store/key-count", wrap(s.GetKeyCountHandler)).Methods("GET")
 	router.Handle("/kv-store/view-change", wrap(s.ReshardHandler)).Methods("PUT")
 	router.Handle("/internal/vc-complete", wrap(s.ReshardCompleteHandler)).Methods("GET")

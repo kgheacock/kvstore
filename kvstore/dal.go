@@ -6,6 +6,11 @@ import (
 	"sort"
 )
 
+type REPL_RESULT struct {
+	FAIL    "FAIL"
+	SUCCESS "SUCCESS"
+}
+
 //KVDAL is a key value data-access layer
 type KVDAL struct {
 	Store   map[string]string // data structure

@@ -85,5 +85,6 @@ type GetKeyCountRepsponse struct {
 }
 
 type ViewChangeRequest struct {
-	View string `json:"view"`
+	View       string `json:"view"`
+	ReplFactor int    `json:"repl-factor"`
 }

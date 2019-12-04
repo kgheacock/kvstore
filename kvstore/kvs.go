@@ -100,6 +100,7 @@ func (s *Store) GetHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
 }
+
 func (s *Store) ReshardCompleteHandler(w http.ResponseWriter, r *http.Request) {
 	s.state = NORMAL
 	respStruct := shard{KeyCount: s.DAL().GetKeyCount(), Address: config.Config.Address}
@@ -108,6 +109,7 @@ func (s *Store) ReshardCompleteHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(respStruct)
 }
+
 func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 
@@ -119,9 +121,12 @@ func (s *Store) ReshardHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	serverList := strings.Split(viewChangeRequest.View, ",")
+	replFactor := ViewChangeRequest.ReplFactor
 	newServers := s.Difference(serverList, config.Config.Servers)
 	log.Println("NEW SERVERs: ", newServers)
+	log.Println("REPL-FACTOR: ", replFactor)
 	config.Config.Servers = serverList
+	config.Config.ReplFactor = replFactor
 
 	source, ok := r.Context().Value(ctx.ContextSourceKey).(string)
 	if !ok {
@@ -265,4 +270,45 @@ func (s *Store) GetKeyCountHandler(w http.ResponseWriter, r *http.Request) {
 	resp := GetKeyCountRepsponse{"Key count retrieved successfully", count}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
+}
+
+func (s *Store) DeleteReplHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	key := vars["key"]
+	var addr string
+
+	if err := s.DAL().Delete(key); err != nil {
+		return REPL_RESULT.FAIL
+	}
+
+	return REPL_RESULT.SUCCESS
+}
+
+func (s *Store) GetReplHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	key := vars["key"]
+
+	val, err := s.DAL().Get(key)
+	if err != nil {
+		return REPL_RESULT.FAIL, nil
+	}
+
+	return REPL_RESULT.SUCCESS, val
+}
+
+func (s *Store) PutReplHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	key := vars["key"]
+	decoder := json.NewDecoder(r.Body)
+
+	var data Data
+	decoder.Decode(&data)
+
+	putResp, err := s.DAL().Put(key, data.Value)
+	if err != nil {
+		log.Printf("Error in PUT. key: %s, value: %s\n", key, data.Value)
+		REPL_RESULT.FAIL
+		return
+	}
+	return REPL_RESULT.SUCCESS
 }

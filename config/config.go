@@ -6,8 +6,9 @@ import (
 )
 
 type cfg struct {
-	Servers []string
-	Address string
+	Servers    []string
+	Address    string
+	ReplFactor int
 }
 
 var Config cfg

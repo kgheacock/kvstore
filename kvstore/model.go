@@ -5,10 +5,9 @@ import (
 )
 
 type Store struct {
-	dal                       DataAccessLayer
-	hasher                    *hasher.Store
-	state                     nodeState
-	ViewChangeFinishedChannel chan bool
+	dal    DataAccessLayer
+	hasher *hasher.Store
+	state  nodeState
 }
 type shard struct {
 	Address  string `json:"address,omitempty"`
@@ -37,7 +36,7 @@ type DataAccessLayer interface {
 }
 
 func NewStore(dal DataAccessLayer, hasher *hasher.Store) *Store {
-	return &Store{dal: dal, hasher: hasher, state: NORMAL, ViewChangeFinishedChannel: make(chan bool, 1)}
+	return &Store{dal: dal, hasher: hasher, state: NORMAL}
 }
 
 func (s *Store) DAL() DataAccessLayer {
@@ -47,7 +46,6 @@ func (s *Store) DAL() DataAccessLayer {
 func (s *Store) Hasher() hasher.Store {
 	return *s.hasher
 }
-
 func (s *Store) State() nodeState {
 	return s.state
 }
@@ -84,7 +82,18 @@ type GetKeyCountRepsponse struct {
 	KeyCount int    `json:"key-count"`
 }
 
+<<<<<<< HEAD
 type ViewChangeRequest struct {
 	View       string `json:"view"`
 	ReplFactor int    `json:"repl-factor"`
+=======
+type ExternalViewChangeRequest struct {
+	View       []string `json:"view"`
+	ReplFactor int      `json:"repl-factor"`
+}
+
+type InternalViewChangeRequest struct {
+	NamedView  map[string][]string `json:"NamedQuorom"`
+	ReplFactor int                 `json:"repl-factor"`
+>>>>>>> b60eabe3346c188f121800f64ad53b75b08e8b7d
 }

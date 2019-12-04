@@ -18,6 +18,11 @@
   <li>hasher/dal contains the entire consistent hashing library</li>
   <li>hasher/model contains definitions of structures used in consistent hashing library</li>
 </ul>
+<h3>vectorclock</h3>
+<ul>
+  <li>vectorclock/dal contains the vectorclock library</li>
+  <li>vectorclock/model contains definitions of functions and structures used in vectorclock library</li>
+</ul>
 <h3>Dockerfile</h3>
 Creation of the docker image has the following steps: 
   <ol>

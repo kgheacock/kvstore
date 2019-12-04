@@ -20,8 +20,8 @@ func main() {
 	ringDAL := hasher.NewRing()
 	ring := hasher.NewRingStore(ringDAL)
 
-	for _, serverIP := range config.Config.Servers {
-		ring.DAL().AddServer(serverIP)
+	for quoromName := range config.Config.Quoroms {
+		ring.DAL().AddServer(quoromName)
 	}
 
 	kvDal := kvstore.KVDAL{Store: make(map[string]string)}

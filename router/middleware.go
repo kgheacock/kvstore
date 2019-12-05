@@ -13,6 +13,7 @@ import (
 	"github.com/colbyleiske/cse138_assignment2/config"
 	"github.com/colbyleiske/cse138_assignment2/ctx"
 	"github.com/colbyleiske/cse138_assignment2/kvstore"
+	"github.com/colbyleiske/cse138_assignment2/vectorclock"
 	"github.com/gorilla/mux"
 )
 
@@ -41,7 +42,7 @@ func (s *Store) validateParametersMiddleware(next http.Handler) http.Handler {
 				kvstore.ResponseMessage
 				Exists bool `json:"doesExist"`
 			}{
-				kvstore.ResponseMessage{"No key", fmt.Sprintf("Error in %s", r.Method), "", addr}, false,
+				kvstore.ResponseMessage{"No key", fmt.Sprintf("Error in %s", r.Method), "", addr, config.Config.CurrentShard().VectorClock}, false,
 			}
 			w.WriteHeader(http.StatusNotFound)
 			json.NewEncoder(w).Encode(resp)
@@ -49,7 +50,7 @@ func (s *Store) validateParametersMiddleware(next http.Handler) http.Handler {
 		}
 
 		if len(key) > 50 {
-			resp := kvstore.ResponseMessage{"Key is too long", fmt.Sprintf("Error in %s", r.Method), "", addr}
+			resp := kvstore.ResponseMessage{"Key is too long", fmt.Sprintf("Error in %s", r.Method), "", addr, config.Config.CurrentShard().VectorClock}
 			w.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(w).Encode(resp)
 			return
@@ -90,6 +91,28 @@ func (s *Store) checkSourceMiddleware(next http.Handler) http.Handler {
 		}
 
 		ctx := context.WithValue(r.Context(), ctx.ContextSourceKey, source)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+func (s *Store) checkVectorClock(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var bodyBytes []byte
+		if r.Body != nil {
+			bodyBytes, _ = ioutil.ReadAll(r.Body)
+		}
+		r.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+
+		causalContext := struct {
+			Context vectorclock.VectorClock `json:"causal-context"`
+		}{}
+
+		if err := json.Unmarshal(bodyBytes, &causalContext); err != nil {
+			log.Println("some error here about failing to get json read")
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), ctx.ContextCausalContextKey, causalContext.Context)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

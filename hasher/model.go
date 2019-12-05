@@ -1,14 +1,16 @@
 package hasher
 
+import "github.com/colbyleiske/cse138_assignment2/shard"
+
 type Store struct {
 	dal DataAccessLayer
 }
 
 type DataAccessLayer interface {
 	GetServerByKey(key string) (string, error)
-	Servers() []string
-	AddServer(ip string)
-	RemoveServer(ip string)
+	Shards() Shards
+	AddShard(newShard *shard.Shard)
+	RemoveShard(shard *shard.Shard)
 }
 
 func NewRingStore(dal DataAccessLayer) *Store {

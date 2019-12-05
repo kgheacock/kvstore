@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"os/signal"
@@ -12,23 +13,22 @@ import (
 	"github.com/colbyleiske/cse138_assignment2/hasher"
 	"github.com/colbyleiske/cse138_assignment2/kvstore"
 	"github.com/colbyleiske/cse138_assignment2/router"
-	"github.com/colbyleiske/cse138_assignment2/vectorclock"
 )
 
 func main() {
+	rand.Seed(4091999) //gonna use my birthdate for deterministic testing
+
 	config.GenerateConfig()
 
 	ringDAL := hasher.NewRing()
 	ring := hasher.NewRingStore(ringDAL)
-	vcDAL := vectorclock.NewVectorClock()
-	vc := vectorclock.NewVectorClockStore(vcDAL)
 
-	//for quoromName := range config.Config.Quoroms {
-	//	ring.DAL().AddServer(quoromName)
-	//}
+	for _, shard := range config.Config.Shards {
+		ringDAL.AddShard(shard)
+	}
 
 	kvDal := kvstore.KVDAL{Store: make(map[string]string)}
-	kvStore := kvstore.NewStore(&kvDal, ring, vc)
+	kvStore := kvstore.NewStore(&kvDal, ring)
 
 	router := router.CreateRouter(kvStore, ring)
 

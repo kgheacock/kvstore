@@ -121,7 +121,8 @@ func (s *Store) InternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 	config.Config.Quoroms = viewChangeRequest.NamedView
 	config.Config.Mux.Unlock()
 	for quorom, servers := range config.Config.Quoroms {
-		s.hasher.DAL().RemoveServer(quorom)
+		s.vc.DAL().ResetVC(servers)
+		s.hasher.DAL().AddServer(quorom)
 		for _, server := range servers {
 			if server == config.Config.Address {
 				config.Config.ThisQuorom = quorom
@@ -154,6 +155,7 @@ func (s *Store) InternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 			resp.Body.Close()
 		}
 	}
+
 }
 func (s *Store) ExternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 	//First to recieve. We must forward to everyone but ourselves. Then call reshard ourselves

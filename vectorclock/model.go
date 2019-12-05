@@ -7,8 +7,9 @@ type Store struct {
 type DataAccessLayer interface {
 	IncrementVC()
 	CurrentState() int
+	ResetVC(serverList []string)
 	UpdateVC(vc2 *VectorClock)
-	MaxClock(vclist []VectorClock)
+	MaxClock(vclist []*VectorClock) string
 }
 
 func NewVectorClockStore(dal DataAccessLayer) *Store {

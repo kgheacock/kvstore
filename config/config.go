@@ -50,8 +50,8 @@ func GenerateConfig() {
 	log.Println(Config.Shards)
 }
 
-func CurrentShard() *shard.Shard {
-	return Config.Shards[Config.CurrentShardID]
+func (config cfg) CurrentShard() *shard.Shard {
+	return config.Shards[config.CurrentShardID]
 }
 
 func contains(servers []string, ip string) bool {

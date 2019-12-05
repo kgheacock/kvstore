@@ -5,6 +5,9 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/colbyleiske/cse138_assignment2/ctx"
+	"github.com/colbyleiske/cse138_assignment2/vectorclock"
+
 	"github.com/colbyleiske/cse138_assignment2/config"
 	"github.com/gorilla/mux"
 )
@@ -17,13 +20,13 @@ func (s *Store) DeleteHandler(w http.ResponseWriter, r *http.Request) {
 		addr = config.Config.Address
 	}
 	if err := s.DAL().Delete(key); err != nil {
-		resp := DeleteResponse{ResponseMessage{"Key does not exist", "Error in DELETE", "", addr}, false}
+		resp := DeleteResponse{ResponseMessage{"Key does not exist", "Error in DELETE", "", addr, config.Config.CurrentShard().VectorClock}, false}
 		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(resp)
 		return
 	}
 
-	resp := DeleteResponse{ResponseMessage{"", "Deleted successfully", "", addr}, true}
+	resp := DeleteResponse{ResponseMessage{"", "Deleted successfully", "", addr, config.Config.CurrentShard().VectorClock}, true}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
 }
@@ -49,7 +52,7 @@ func (s *Store) PutHandler(w http.ResponseWriter, r *http.Request) {
 
 	var data Data
 	if err := decoder.Decode(&data); err != nil || data.Value == "" {
-		resp := ResponseMessage{Error: "Value is missing", Message: "Error in PUT", Address: addr}
+		resp := ResponseMessage{Error: "Value is missing", Message: "Error in PUT", Address: addr, CausalContext: config.Config.CurrentShard().VectorClock}
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(resp)
 		return
@@ -62,14 +65,21 @@ func (s *Store) PutHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	incClock, ok := r.Context().Value(ctx.ContextCausalContextKey).(vectorclock.VectorClock)
+	if !ok {
+		log.Println("Could not get context from incoming request")
+		return
+	}
+	config.Config.CurrentShard().VectorClock.ReceiveEvent(&incClock)
+
 	if putResp == ADDED {
-		resp := PutResponse{ResponseMessage{"", "Added successfully", "", addr}, false}
+		resp := PutResponse{ResponseMessage{"", "Added successfully", "", addr, config.Config.CurrentShard().VectorClock}, false}
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(resp)
 		return
 	}
 	if putResp == UPDATED {
-		resp := PutResponse{ResponseMessage{"", "Updated successfully", "", addr}, true}
+		resp := PutResponse{ResponseMessage{"", "Updated successfully", "", addr, config.Config.CurrentShard().VectorClock}, true}
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(resp)
 		return
@@ -86,22 +96,24 @@ func (s *Store) GetHandler(w http.ResponseWriter, r *http.Request) {
 
 	val, err := s.DAL().Get(key)
 	if err != nil {
-		resp := GetResponse{ResponseMessage{"Key does not exist", "Error in GET", "", addr}, false}
+		resp := GetResponse{ResponseMessage{"Key does not exist", "Error in GET", "", addr, config.Config.CurrentShard().VectorClock}, false}
 		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(resp)
 		return
 	}
 
-	resp := GetResponse{ResponseMessage{"", "Retrieved successfully", val, addr}, true}
+	resp := GetResponse{ResponseMessage{"", "Retrieved successfully", val, addr, config.Config.CurrentShard().VectorClock}, true}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
 }
+
 func (s *Store) ReshardCompleteHandler(w http.ResponseWriter, r *http.Request) {
 	respStruct := shard{KeyCount: s.DAL().GetKeyCount(), Address: config.Config.Address}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(respStruct)
 	s.state = NORMAL
 }
+
 func (s *Store) InternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 	// s.state = RECIEVED_INTERNAL_RESHARD
 	// var viewChangeRequest InternalViewChangeRequest

@@ -13,3 +13,7 @@ type Store struct {
 func NewStore(hasher *hasher.Store, kvstore *kvstore.Store) *Store {
 	return &Store{hasher: hasher, kvstore: kvstore}
 }
+
+type CausalContextRequest struct {
+	Clocks map[string]int
+}

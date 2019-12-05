@@ -20,7 +20,7 @@
         "get-shard": {
             "message"       : "Shard information retrieved successfully",
             "shard-id"      : "1",
-            "key-count"     : 4,,
+            "key-count"     : 4,
             "causal-context": {},
 
             "replicas"      : [

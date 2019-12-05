@@ -50,7 +50,7 @@ func (vc *VectorClock) UpdateClocks(incVC *VectorClock) {
 	}
 }
 
-func (vc *VectorClock) HappenedBefore (incVC *VectorClock) bool {
+func (vc *VectorClock) HappenedBefore(incVC *VectorClock) bool {
 	for ip := range vc.Clocks {
 		if vc.Clocks[ip] > incVC.Clocks[ip] {
 			return false

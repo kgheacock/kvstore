@@ -226,13 +226,6 @@ func (s *Store) ExternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (s *Store) GetKeyCountHandler(w http.ResponseWriter, r *http.Request) {
-	count := s.DAL().GetKeyCount()
-	resp := GetKeyCountRepsponse{"Key count retrieved successfully", count}
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(resp)
-}
-
 func (s *Store) DeleteReplHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["key"]
@@ -244,23 +237,6 @@ func (s *Store) DeleteReplHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	resp := DeleteResponse{ResponseMessage{"", "Deleted successfully", "", ""}, true}
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(resp)
-}
-
-func (s *Store) GetReplHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	key := vars["key"]
-
-	val, err := s.DAL().Get(key)
-	if err != nil {
-		resp := GetResponse{ResponseMessage{"Key does not exist", "Error in GET", "", ""}, false}
-		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(resp)
-		return
-	}
-
-	resp := GetResponse{ResponseMessage{"", "Retrieved successfully", val, ""}, true}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
 }

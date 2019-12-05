@@ -44,40 +44,6 @@ func PutQuorum(key string, value string) error {
 	return nil
 }
 
-func GetQuorum(key string) error {
-	thisQuorum := config.Config.ThisQuorom
-	replFactor := config.Config.ReplFactor
-	ch := make(chan kvstore.GetResponse)
-	ips := config.Config.Quoroms[thisQuorum]
-
-	for _, ip := range ips {
-		// read to all quorums
-		if thisQuorum != ip {
-			go func() {
-				resp, err := http.Get(fmt.Sprintf("http://%s/replication/%s", ip, key))
-				decoder := json.NewDecoder(resp.Body)
-				var data kvstore.GetResponse
-				decoder.Decode(&data)
-				ch <- data
-			}()
-		}
-	}
-
-	for len(ch) > replFactor/2 {
-		// wait for N/2 > acks then check for most recent one
-	}
-
-	for len(ch) > 0 {
-		var data kvstore.GetResponse
-		data = <-ch
-		fmt.Println(data.Value)
-	}
-
-	// Get Request with the highest vector clock
-
-	return nil
-}
-
 func DeleteQuorum(key string) error {
 	thisQuorum := config.Config.ThisQuorom
 	replFactor := config.Config.ReplFactor

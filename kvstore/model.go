@@ -2,11 +2,13 @@ package kvstore
 
 import (
 	"github.com/colbyleiske/cse138_assignment2/hasher"
+	"github.com/colbyleiske/cse138_assignment2/vectorclock"
 )
 
 type Store struct {
 	dal    DataAccessLayer
 	hasher *hasher.Store
+	vc     *vectorclock.Store
 	state  nodeState
 }
 type shard struct {
@@ -35,8 +37,8 @@ type DataAccessLayer interface {
 	GetKeyCount() int
 }
 
-func NewStore(dal DataAccessLayer, hasher *hasher.Store) *Store {
-	return &Store{dal: dal, hasher: hasher, state: NORMAL}
+func NewStore(dal DataAccessLayer, hasher *hasher.Store, vectorClock *vectorclock.Store) *Store {
+	return &Store{dal: dal, hasher: hasher, vc: vectorClock, state: NORMAL}
 }
 
 func (s *Store) DAL() DataAccessLayer {
@@ -45,6 +47,9 @@ func (s *Store) DAL() DataAccessLayer {
 
 func (s *Store) Hasher() hasher.Store {
 	return *s.hasher
+}
+func (s *Store) VC() vectorclock.Store {
+	return *s.vc
 }
 func (s *Store) State() nodeState {
 	return s.state

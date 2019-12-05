@@ -12,12 +12,11 @@ import (
 )
 
 type cfg struct {
-	Shards       map[int]shard.Shard
-	CurrentShard shard.Shard
-	VectorClock  *vectorclock.VectorClock
-	Address      string
-	ReplFactor   int
-	Mux          sync.Mutex
+	Shards         map[int]*shard.Shard
+	CurrentShardID int
+	Address        string
+	ReplFactor     int
+	Mux            sync.Mutex
 }
 
 var Config cfg
@@ -33,15 +32,35 @@ func GenerateConfig() {
 
 	log.Printf("ADDR: %v - VIEW: %v - REPL_FACTOR: %v\n", addr, view, replFactorNum)
 
+	//Ideally I move all this shard bullshit over to the shard package later - someone remind me pls <3
+
 	servers := strings.Split(view, ",") // keep all this here lol - we need this to handle making our shards / groups of replicas
 	Config = cfg{Address: addr, ReplFactor: replFactorNum}
-	Config.Shards = make(map[int]shard.Shard)
+	Config.Shards = make(map[int]*shard.Shard)
 
 	for i := 0; i < len(servers)/replFactorNum; i++ {
-		Config.Shards[i] = shard.Shard{ID: i, Nodes: servers[0+(replFactorNum*i) : replFactorNum+(replFactorNum*i)]}
+		Config.Shards[i] = &shard.Shard{ID: i, Nodes: servers[0+(replFactorNum*i) : replFactorNum+(replFactorNum*i)]}
+		if contains(servers[0+(replFactorNum*i):replFactorNum+(replFactorNum*i)], addr) {
+			//Only need to set the vector clock on OUR shard - don't care about the other shards
+			Config.Shards[i].VectorClock = vectorclock.NewVectorClock(Config.Shards[i].Nodes, addr)
+			Config.CurrentShardID = i
+		}
 	}
-	log.Println(Config.Shards)
 
+	log.Println(Config.Shards)
+}
+
+func CurrentShard() *shard.Shard {
+	return Config.Shards[Config.CurrentShardID]
+}
+
+func contains(servers []string, ip string) bool {
+	for _, serverIP := range servers {
+		if serverIP == ip {
+			return true
+		}
+	}
+	return false
 }
 
 func IsIPInternal(unknownIP string) bool {

@@ -1,9 +1,5 @@
 package vectorclock
 
-import (
-	"github.com/colbyleiske/cse138_assignment2/shard"
-)
-
 //VectorClock contains VC a map, and the current servers VC value
 type VectorClock struct {
 	Clocks map[string]int
@@ -14,9 +10,9 @@ type VectorClock struct {
 func (vc *VectorClock) Len() int { return len(vc.Clocks) }
 
 //NewVectorClock creates VectorClock object
-func NewVectorClock(shard shard.Shard, localIP string) *VectorClock {
+func NewVectorClock(ips []string, localIP string) *VectorClock {
 	vc := &VectorClock{ip: localIP}
-	vc.ResetVC(shard.Nodes)
+	vc.ResetVC(ips)
 
 	return vc
 }

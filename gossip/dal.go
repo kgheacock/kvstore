@@ -1,5 +1,6 @@
 package gossip
 
+/*
 import (
 	"bytes"
 	"encoding/json"
@@ -43,3 +44,4 @@ func ShareGossip(s *Store) {
 func ReceivedGossip() {
 
 }
+*/

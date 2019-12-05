@@ -33,6 +33,8 @@ func (vc *VectorClock) IncrementVC() {
 func (vc *VectorClock) CurrentState() int {
 	return vc.VC[config.Config.Address]
 }
+
+//ResetVC resets a VC map to 0
 func (vc *VectorClock) ResetVC(serverList []string) {
 	vc.VC = make(map[string]int)
 	for _, server := range serverList {
@@ -53,25 +55,6 @@ func (vc *VectorClock) UpdateVC(vc2 *VectorClock) {
 			vc.VC[server] = vc2.VC[server]
 		}
 	}
-}
-
-//MaxClock returns IP of max-clock server from slice
-func (vc *VectorClock) MaxClock(vclist []*VectorClock) string {
-	max := 0
-	//If all clocks equal, returns IP of first in slice
-	maxserverIP := vclist[0].IP()
-	for _, item := range vclist {
-		current := 0
-		vcmap := item.VC
-		for _, v := range vcmap {
-			current += v
-		}
-		if max < current {
-			max = current
-			maxserverIP = item.IP()
-		}
-	}
-	return maxserverIP
 }
 
 //Print is a debugging function

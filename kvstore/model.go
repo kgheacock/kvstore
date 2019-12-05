@@ -6,10 +6,10 @@ import (
 )
 
 type Store struct {
-	dal    DataAccessLayer
-	hasher *hasher.Store
-	vc     *vectorclock.Store
-	state  nodeState
+	dal         DataAccessLayer
+	hasher      *hasher.Store
+	vectorClock *vectorclock.Store
+	state       nodeState
 }
 type shard struct {
 	Address  string `json:"address,omitempty"`
@@ -38,7 +38,7 @@ type DataAccessLayer interface {
 }
 
 func NewStore(dal DataAccessLayer, hasher *hasher.Store, vectorClock *vectorclock.Store) *Store {
-	return &Store{dal: dal, hasher: hasher, vc: vectorClock, state: NORMAL}
+	return &Store{dal: dal, hasher: hasher, vectorClock: vectorClock, state: NORMAL}
 }
 
 func (s *Store) DAL() DataAccessLayer {
@@ -47,9 +47,6 @@ func (s *Store) DAL() DataAccessLayer {
 
 func (s *Store) Hasher() hasher.Store {
 	return *s.hasher
-}
-func (s *Store) VC() vectorclock.Store {
-	return *s.vc
 }
 func (s *Store) State() nodeState {
 	return s.state

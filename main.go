@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"os/signal"
@@ -15,14 +16,16 @@ import (
 )
 
 func main() {
+	rand.Seed(4091999) //gonna use my birthdate for deterministic testing
+
 	config.GenerateConfig()
 
 	ringDAL := hasher.NewRing()
 	ring := hasher.NewRingStore(ringDAL)
 
-	//for quoromName := range config.Config.Quoroms {
-	//	ring.DAL().AddServer(quoromName)
-	//}
+	for _, shard := range config.Config.Shards {
+		ringDAL.AddShard(shard)
+	}
 
 	kvDal := kvstore.KVDAL{Store: make(map[string]string)}
 	kvStore := kvstore.NewStore(&kvDal, ring)

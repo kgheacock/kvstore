@@ -2,14 +2,12 @@ package kvstore
 
 import (
 	"github.com/colbyleiske/cse138_assignment2/hasher"
-	"github.com/colbyleiske/cse138_assignment2/vectorclock"
 )
 
 type Store struct {
-	dal         DataAccessLayer
-	hasher      *hasher.Store
-	vectorClock *vectorclock.Store
-	state       nodeState
+	dal    DataAccessLayer
+	hasher *hasher.Store
+	state  nodeState
 }
 type shard struct {
 	Address  string `json:"address,omitempty"`

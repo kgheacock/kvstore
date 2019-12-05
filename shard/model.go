@@ -6,6 +6,6 @@ import (
 
 type Shard struct {
 	ID          string // kept as string for easier consistent hashing sorting
-	Nodes       []string
+	Nodes       []string `json:"-"`
 	VectorClock *vectorclock.VectorClock
 }

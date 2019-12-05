@@ -3,7 +3,7 @@ package vectorclock
 //VectorClock contains VC a map, and the current servers VC value
 type VectorClock struct {
 	Clocks map[string]int
-	ip     string
+	ip     string //our local replicas ip
 }
 
 //Len returns len() of map of a VectorClock

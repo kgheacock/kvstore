@@ -112,6 +112,12 @@ func (s *Store) checkVectorClock(next http.Handler) http.Handler {
 			return
 		}
 
+		if !causalContext.Context.HappenedBefore(config.Config.CurrentShard().VectorClock) {
+			//we received a request from a node that has seen more in the future than us
+			log.Println("doesn't work - too much context")
+			return
+		}
+
 		ctx := context.WithValue(r.Context(), ctx.ContextCausalContextKey, causalContext.Context)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})

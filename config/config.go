@@ -2,31 +2,30 @@ package config
 
 import (
 	"os"
-	"strings"
+	"sync"
 )
 
 type cfg struct {
-	Servers []string
-	Address string
+	Quoroms    map[string][]string
+	ThisQuorom string
+	Address    string
+	ReplFactor int
+	Mux        sync.Mutex
 }
 
 var Config cfg
 
 func GenerateConfig() {
-	view := os.Getenv("VIEW")
 	addr := os.Getenv("ADDRESS")
-
-	servers := strings.Split(view, ",")
-	Config = cfg{
-		Servers: servers,
-		Address: addr,
-	}
+	Config = cfg{Address: addr}
 }
 
 func IsIPInternal(unknownIP string) bool {
-	for _, ip := range Config.Servers {
-		if ip == unknownIP {
-			return true
+	for _, ips := range Config.Quoroms {
+		for _, ip := range ips {
+			if ip == unknownIP {
+				return true
+			}
 		}
 	}
 	return false

@@ -2,13 +2,14 @@ package kvstore
 
 import (
 	"github.com/colbyleiske/cse138_assignment2/hasher"
+	"github.com/colbyleiske/cse138_assignment2/vectorclock"
 )
 
 type Store struct {
-	dal                       DataAccessLayer
-	hasher                    *hasher.Store
-	state                     nodeState
-	ViewChangeFinishedChannel chan bool
+	dal         DataAccessLayer
+	hasher      *hasher.Store
+	vectorClock *vectorclock.Store
+	state       nodeState
 }
 type shard struct {
 	Address  string `json:"address,omitempty"`
@@ -36,8 +37,8 @@ type DataAccessLayer interface {
 	GetKeyCount() int
 }
 
-func NewStore(dal DataAccessLayer, hasher *hasher.Store) *Store {
-	return &Store{dal: dal, hasher: hasher, state: NORMAL, ViewChangeFinishedChannel: make(chan bool, 1)}
+func NewStore(dal DataAccessLayer, hasher *hasher.Store, vectorClock *vectorclock.Store) *Store {
+	return &Store{dal: dal, hasher: hasher, vectorClock: vectorClock, state: NORMAL}
 }
 
 func (s *Store) DAL() DataAccessLayer {
@@ -47,7 +48,6 @@ func (s *Store) DAL() DataAccessLayer {
 func (s *Store) Hasher() hasher.Store {
 	return *s.hasher
 }
-
 func (s *Store) State() nodeState {
 	return s.state
 }
@@ -84,6 +84,12 @@ type GetKeyCountRepsponse struct {
 	KeyCount int    `json:"key-count"`
 }
 
-type ViewChangeRequest struct {
-	View string `json:"view"`
+type ExternalViewChangeRequest struct {
+	View       []string `json:"view"`
+	ReplFactor int      `json:"repl-factor"`
+}
+
+type InternalViewChangeRequest struct {
+	NamedView  map[string][]string `json:"NamedQuorom"`
+	ReplFactor int                 `json:"repl-factor"`
 }

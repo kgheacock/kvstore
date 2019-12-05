@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strconv"
 
+	"github.com/colbyleiske/cse138_assignment2/config"
 	"github.com/colbyleiske/cse138_assignment2/shard"
 )
 
@@ -105,6 +106,9 @@ func (r *Ring) GetServerByKey(key string) (string, error) {
 	}
 	node := r.nodes[location]
 	nodeIP := node.Shard.Nodes[rand.Intn(len(node.Shard.Nodes))] // for now - pick a random replica :)
+	if config.Contains(node.Shard.Nodes, config.Config.Address) {
+		nodeIP = config.Config.Address
+	}
 	return nodeIP, nil
 }
 

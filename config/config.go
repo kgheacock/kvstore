@@ -40,7 +40,7 @@ func GenerateConfig() {
 
 	for i := 0; i < len(servers)/replFactorNum; i++ {
 		Config.Shards[i] = &shard.Shard{ID: strconv.Itoa(i), Nodes: servers[0+(replFactorNum*i) : replFactorNum+(replFactorNum*i)]}
-		if contains(servers[0+(replFactorNum*i):replFactorNum+(replFactorNum*i)], addr) {
+		if Contains(servers[0+(replFactorNum*i):replFactorNum+(replFactorNum*i)], addr) {
 			//Only need to set the vector clock on OUR shard - don't care about the other shards
 			Config.Shards[i].VectorClock = vectorclock.NewVectorClock(Config.Shards[i].Nodes, addr)
 			Config.CurrentShardID = i
@@ -54,7 +54,7 @@ func (config cfg) CurrentShard() *shard.Shard {
 	return config.Shards[config.CurrentShardID]
 }
 
-func contains(servers []string, ip string) bool {
+func Contains(servers []string, ip string) bool {
 	for _, serverIP := range servers {
 		if serverIP == ip {
 			return true

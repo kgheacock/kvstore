@@ -50,6 +50,16 @@ func (vc *VectorClock) UpdateClocks(incVC *VectorClock) {
 	}
 }
 
+func (vc *VectorClock) HappenedBefore (incVC *VectorClock) bool {
+	for ip := range vc.Clocks {
+		if vc.Clocks[ip] > incVC.Clocks[ip] {
+			return false
+		}
+	}
+
+	return true
+}
+
 //ReceiveEvent is called whenever an event is delivered and we need to tick + update our clock.
 func (vc *VectorClock) ReceiveEvent(incVC *VectorClock) {
 	vc.IncrementNodeClock()

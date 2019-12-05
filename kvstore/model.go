@@ -37,8 +37,8 @@ type DataAccessLayer interface {
 	GetKeyCount() int
 }
 
-func NewStore(dal DataAccessLayer, hasher *hasher.Store, vectorClock *vectorclock.Store) *Store {
-	return &Store{dal: dal, hasher: hasher, vectorClock: vectorClock, state: NORMAL}
+func NewStore(dal DataAccessLayer, hasher *hasher.Store) *Store {
+	return &Store{dal: dal, hasher: hasher, state: NORMAL}
 }
 
 func (s *Store) DAL() DataAccessLayer {
@@ -62,6 +62,7 @@ type ResponseMessage struct {
 	Message string `json:"message,omitempty"`
 	Value   string `json:"value,omitempty"`
 	Address string `json:"address,omitempty"`
+	// CausalContext vectorclock.VectorClock `json:"causal-context"`
 }
 
 type DeleteResponse struct {

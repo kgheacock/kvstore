@@ -5,10 +5,11 @@ type Store struct {
 }
 
 type DataAccessLayer interface {
-	IncrementVC()
-	CurrentState() int
+	IncrementNodeClock()
+	CurrentServerClock() int
 	ResetVC(serverList []string)
 	UpdateVC(vc2 *VectorClock)
+	ReceiveEvent(incVC *VectorClock) //calls incrementlocal, then updates our VC with the incVC
 }
 
 func NewVectorClockStore(dal DataAccessLayer) *Store {

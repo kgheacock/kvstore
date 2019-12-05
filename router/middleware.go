@@ -94,6 +94,15 @@ func (s *Store) checkSourceMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+// func (s *Store) checkVectorClock(next http.Handler) http.Handler {
+// 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		
+
+// 		ctx := context.WithValue(r.Context(), ctx.ContextSourceKey, source)
+// 		next.ServeHTTP(w, r.WithContext(ctx))
+// 	})
+// }
+
 func (s *Store) forwardMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)

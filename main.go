@@ -12,7 +12,6 @@ import (
 	"github.com/colbyleiske/cse138_assignment2/hasher"
 	"github.com/colbyleiske/cse138_assignment2/kvstore"
 	"github.com/colbyleiske/cse138_assignment2/router"
-	"github.com/colbyleiske/cse138_assignment2/vectorclock"
 )
 
 func main() {
@@ -20,15 +19,13 @@ func main() {
 
 	ringDAL := hasher.NewRing()
 	ring := hasher.NewRingStore(ringDAL)
-	vcDAL := vectorclock.NewVectorClock()
-	vc := vectorclock.NewVectorClockStore(vcDAL)
 
 	//for quoromName := range config.Config.Quoroms {
 	//	ring.DAL().AddServer(quoromName)
 	//}
 
 	kvDal := kvstore.KVDAL{Store: make(map[string]string)}
-	kvStore := kvstore.NewStore(&kvDal, ring, vc)
+	kvStore := kvstore.NewStore(&kvDal, ring)
 
 	router := router.CreateRouter(kvStore, ring)
 

@@ -3,38 +3,32 @@ package gossip
 import (
 	"bytes"
 	"encoding/json"
+	"math/rand"
 	"net/http"
-	"sync"
 	"time"
 
 	"github.com/colbyleiske/cse138_assignment2/config"
-	"github.com/colbyleiske/cse138_assignment2/vectorclock"
 )
-
-//*************** GossipData ***************\\
 
 //GossipData is the data to be sent to another server, key, value, and clock of that request
 type GossipData struct {
-	VC    map[string]int `json:"vc"`
-	Key   string         `json:"key"`
-	Value string         `json:"value"`
+	vc    map[string]int `json:"vc"`
+	key   string         `json:"key"`
+	value string         `json:"value"`
 }
 
-//NewGossipData contains neccessary gossip info
-func NewGossipData(key, val string, clock *vectorclock.VectorClock) *GossipData {
-	return &GossipData{VC: clock.Clocks, Key: key, Value: val}
+func NewGossipData(k, val, string, clock VectorClock) GossipData {
+	return &GossipData{vc: clock, key: k, value: val}
 }
-
-//*************** GossipQueue ***************\\
 
 //GossipQueue holds queue for requests
 type GossipQueue struct {
 	Queue []GossipData
-	Mux   sync.Mutex
 }
 
 //NewGossipQueue returns GossipState object
 func NewGossipQueue() *GossipQueue {
+	//Len of 0, arbitrary capacity of 10
 	q := make([]GossipData, 0, 10)
 	return &GossipQueue{Queue: q}
 }
@@ -71,28 +65,19 @@ func (t *AckTable) receivedAllAcks() bool {
 
 //WakeUp starts a ShareGossip request in a bounded time range, forever
 func (q *GossipQueue) WakeUp() {
-	//min := 500
-	//max := 2000
-	ackTable := NewAckTable()
-	//Create temp Q that will stay while WakeUp Runs
-	//But allows things to continue to be written to the main queue
-	tempQueue := NewGossipQueue()
-	tempQueue = q
+	min := 500
+	max := 2000
+	//To always be listening
+	for {
+		rand := rand.Intn(max-min) + min
+		time.Sleep(time.Duration(rand) * time.Millisecond)
+		//To be killed on ACK
+		for {
+			if len(q.Queue) > 0 {
+				x, q := (q.Queue)[0], (q.Queue)[1:]
+				ShareGossip(x)
+			}
 
-	q.Mux.Lock()
-	for len(q.Queue) > 0 {
-		//Pop off the queue
-		q.Queue = (q.Queue)[1:]
-	}
-	q.Mux.Unlock()
-
-	for !ackTable.receivedAllAcks() {
-		//rand := rand.Intn(max-min) + min
-		//time.Sleep(time.Duration(rand) * time.Millisecond)
-
-		if len(tempQueue.Queue) > 0 {
-			data := (tempQueue.Queue)[0]
-			ackTable.shareGossip(data)
 		}
 	}
 
@@ -100,42 +85,30 @@ func (q *GossipQueue) WakeUp() {
 	ackTable.table = nil
 }
 
-//PrepareForGossip called at PUT endpoint, adds request to GossipQueue
-func (q *GossipQueue) PrepareForGossip(key, value string, vc *vectorclock.VectorClock) {
-	datagram := NewGossipData(key, value, vc)
-	q.Queue = append(q.Queue, *datagram)
-	go q.WakeUp()
-}
-
 //ShareGossip sends key, val, vectorclock to internal endpoint
-func (t *AckTable) shareGossip(datagram GossipData) {
-	for _, server := range config.Config.CurrentShard().Nodes {
-		payload, _ := json.Marshal(datagram)
-		//Times out after 500 ms
-		client := &http.Client{Timeout: 500 * time.Millisecond}
-		req, _ := http.NewRequest("POST", server, bytes.NewBuffer(payload))
-		req.Header.Set("Content-Type", "application/json")
-		req.Header.Set("X-Real-Ip", config.Config.Address)
-		resp, _ := client.Do(req)
-		if resp.StatusCode == 200 {
-			t.table[server]++
-		}
-	}
-
+func ShareGossip(datagram GossipData) {
+	gd := GossipData{vc: s.vectorClock().DAL().VC, data: s.DAL().Store}
+	payload, _ := json.Marshal(gd)
+	client := &http.Clinet{}
+	serverIp := config.Config.Address
+	req, _ := http.NewRequest("POST", serverIP, bytes.NewBuffer(payload))
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Real-Ip", config.Config.Address)
+	resp, err := client.Do(req)
 }
 
-//ReceivedGossip handles receiving gossip from another server
-func (s *Store) receivedGossip(w http.ResponseWriter, r *http.Request, incomingLC *vectorclock.VectorClock) {
-	//Outline:
+//ReceivedGossip handles receiving ONLY gossip from another server
+func ReceivedGossip() {
 	//Grab received data
-	//Check against ours if its newer lamport clock
-	//Update kvstore value or dont do anything
+	//Check against ours if its newer
+	//Update or dont do anything
+	//Send an ACK
+}
 
-	if incomingLC < config.Config.myLC {
-		//Replace value
-		s.DAL().Put(key, value)
-	}
-	//Send an ACK back
-	w.WriteHeader(http.StatusOK)
-
+//PrepareForGossip called at endpoint on a Put to server, add to GossipQueue
+func (q *GossipQueue) PrepareForGossip(key, value string, vc *VectorClock) {
+	//Package up DataEngram
+	datagram := NewGossipData(key, value, vc)
+	//Add to Queue of requests
+	q.Queue = append(q.Queue, datagram)
 }

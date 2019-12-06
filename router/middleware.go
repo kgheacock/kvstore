@@ -104,7 +104,7 @@ func (s *Store) checkVectorClock(next http.Handler) http.Handler {
 		r.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 
 		causalContext := struct {
-			Context vectorclock.VectorClock `json:"causal-context"`
+			Contexts map[int]vectorclock.VectorClock `json:"causal-context"`
 		}{}
 
 		if err := json.Unmarshal(bodyBytes, &causalContext); err != nil {
@@ -112,18 +112,19 @@ func (s *Store) checkVectorClock(next http.Handler) http.Handler {
 			return
 		}
 
-		if len(causalContext.Context.Clocks) == 0 {
+		incContext := causalContext.Contexts[config.Config.CurrentShardID]
+		if len(incContext.Clocks) == 0 {
 			//Treat empty causal-context as all 0s across our shard
-			causalContext.Context.ResetVC(config.Config.CurrentShard().Nodes)	
+			incContext.ResetVC(config.Config.CurrentShard().Nodes)	
 		}
 
-		if !causalContext.Context.HappenedBefore(config.Config.CurrentShard().VectorClock) {
+		if !incContext.HappenedBefore(config.Config.CurrentShard().VectorClock) {
 			//we received a request from a node that has seen more in the future than us
 			log.Println("doesn't work - too much context")
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), ctx.ContextCausalContextKey, causalContext.Context)
+		ctx := context.WithValue(r.Context(), ctx.ContextCausalContextKey, causalContext.Contexts)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

@@ -40,10 +40,13 @@ type AckTable struct {
 
 //NewAckTable creates an AckTable object
 func NewAckTable() *AckTable {
-	//get num of servers in shard
 	numServers := len(config.Config.CurrentShard().Nodes)
+	servers := config.Config.CurrentShard().Nodes
 	m := make(map[string]int, numServers)
-	return &AckTable{}
+	for _, server := range servers {
+		m[server] = 0
+	}
+	return &AckTable{table: m}
 }
 
 //WakeUp starts a ShareGossip request in a bounded time range, forever
@@ -56,10 +59,11 @@ func (q *GossipQueue) WakeUp() {
 		time.Sleep(time.Duration(rand) * time.Millisecond)
 
 		if len(q.Queue) > 0 {
+			ackTable := NewAckTable()
 			data := (q.Queue)[0]
 			ShareGossip(data)
 			//Pop once we received all ACKS
-			if receivedAllAcks() {
+			if ackTable.receivedAllAcks() {
 				x, q := (q.Queue)[0], (q.Queue)[1:]
 			}
 
@@ -69,8 +73,13 @@ func (q *GossipQueue) WakeUp() {
 }
 
 //receivedAllAcks keeps track of ACK's recieved by the servers
-func receivedAllAcks() bool {
-
+func (t *AckTable) receivedAllAcks() bool {
+	for _, v := range t.table {
+		if v == 0 {
+			return false
+		}
+	}
+	return true
 }
 
 //PrepareForGossip called at put endpoint, adds request to GossipQueue

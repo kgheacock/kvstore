@@ -1,7 +1,11 @@
 package kvstore
 
 import (
+	"sort"
+
+	"github.com/colbyleiske/cse138_assignment2/config"
 	"github.com/colbyleiske/cse138_assignment2/hasher"
+	"github.com/colbyleiske/cse138_assignment2/shard"
 	"github.com/colbyleiske/cse138_assignment2/vectorclock"
 )
 
@@ -9,10 +13,6 @@ type Store struct {
 	dal    DataAccessLayer
 	hasher *hasher.Store
 	state  nodeState
-}
-type shard struct {
-	Address  string `json:"address,omitempty"`
-	KeyCount int    `json:"key-count"`
 }
 type nodeState int
 
@@ -36,6 +36,22 @@ type DataAccessLayer interface {
 	GetKeyCount() int
 }
 
+func makeShards(serverList []string, replFactor int) map[int]*shard.Shard {
+	sort.Strings(serverList)
+	shardList := make(map[int]*shard.Shard)
+	numberOfShards := len(serverList) / replFactor
+	for i := 0; i < numberOfShards; i++ {
+		shardMembers := serverList[i*replFactor : i*replFactor+replFactor]
+		shard := shard.Shard{
+			ID:          string(i),
+			Nodes:       shardMembers,
+			VectorClock: vectorclock.NewVectorClock(shardMembers, config.Config.Address),
+		}
+		shardList[i] = &shard
+	}
+	return shardList
+
+}
 func NewStore(dal DataAccessLayer, hasher *hasher.Store) *Store {
 	return &Store{dal: dal, hasher: hasher, state: NORMAL}
 }
@@ -57,10 +73,10 @@ type Data struct {
 }
 
 type ResponseMessage struct {
-	Error         string                  `json:"error,omitempty"`
-	Message       string                  `json:"message,omitempty"`
-	Value         string                  `json:"value,omitempty"`
-	Address       string                  `json:"address,omitempty"`
+	Error         string                   `json:"error,omitempty"`
+	Message       string                   `json:"message,omitempty"`
+	Value         string                   `json:"value,omitempty"`
+	Address       string                   `json:"address,omitempty"`
 	CausalContext *vectorclock.VectorClock `json:"causal-context"`
 }
 
@@ -84,12 +100,13 @@ type GetKeyCountRepsponse struct {
 	KeyCount int    `json:"key-count"`
 }
 
-type ExternalViewChangeRequest struct {
+type ViewChangeRequest struct {
 	View       []string `json:"view"`
 	ReplFactor int      `json:"repl-factor"`
 }
 
-type InternalViewChangeRequest struct {
-	NamedView  map[string][]string `json:"NamedQuorom"`
-	ReplFactor int                 `json:"repl-factor"`
+type NodeStatus struct {
+	IP       string
+	KeyCount int
+	ShardID  int
 }

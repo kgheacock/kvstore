@@ -79,16 +79,14 @@ func (q *GossipQueue) WakeUp() {
 		time.Sleep(time.Duration(rand) * time.Millisecond)
 
 		if len(q.Queue) > 0 {
-
 			data := (q.Queue)[0]
-			shareGossip(data)
+			ackTable.shareGossip(data)
 			//Pop once we received all ACKS
 			if ackTable.receivedAllAcks() {
-				x, q := (q.Queue)[0], (q.Queue)[1:]
+				q.Queue = (q.Queue)[1:]
 				//Clear table for garbage collection
 				ackTable.table = nil
 			}
-
 		}
 
 	}
@@ -98,20 +96,21 @@ func (q *GossipQueue) WakeUp() {
 func (q *GossipQueue) PrepareForGossip(key, value string, vc *vectorclock.VectorClock) {
 	datagram := NewGossipData(key, value, vc)
 	q.Queue = append(q.Queue, *datagram)
-	go WakeUp()
+	go q.WakeUp()
 }
 
 //ShareGossip sends key, val, vectorclock to internal endpoint
-func shareGossip(datagram GossipData) {
-	//gd := GossipData{vc: s.vectorClock().DAL().VC, data: s.DAL().Store}
+func (t *AckTable) shareGossip(datagram GossipData) {
 	for _, server := range config.Config.CurrentShard().Nodes {
 		payload, _ := json.Marshal(datagram)
-		client := &http.Client{}
+		client := &http.Client{Timeout: 1 * time.Second}
 		req, _ := http.NewRequest("POST", server, bytes.NewBuffer(payload))
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("X-Real-Ip", config.Config.Address)
-		resp, err := client.Do(req)
-		//Google timeouts on an HTTP request
+		resp, _ := client.Do(req)
+		if resp.StatusCode == 200 {
+			t.table[server]++
+		}
 	}
 
 }

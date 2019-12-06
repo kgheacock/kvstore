@@ -11,5 +11,5 @@ type Shard struct {
 }
 
 type CausalContext struct {
-	Context map[string]vectorclock.VectorClock `json:"causal-context"`
+	Context map[string]vectorclock.VectorClock `json:"shards-context"`
 }

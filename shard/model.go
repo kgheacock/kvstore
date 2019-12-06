@@ -9,3 +9,7 @@ type Shard struct {
 	Nodes       []string `json:"-"`
 	VectorClock *vectorclock.VectorClock
 }
+
+type CausalContext struct {
+	Context map[string]vectorclock.VectorClock `json:"causal-context"`
+}

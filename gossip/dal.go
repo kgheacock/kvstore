@@ -4,22 +4,28 @@ import (
 	"bytes"
 	"encoding/json"
 	"math/rand"
+	"net/http"
 	"time"
 
 	"github.com/colbyleiske/cse138_assignment2/config"
+	"github.com/colbyleiske/cse138_assignment2/vectorclock"
 )
+
+//*************** GossipData ***************\\
 
 //GossipData is the data to be sent to another server, key, value, and clock of that request
 type GossipData struct {
-	vc    map[string]int `json:"vc"`
-	key   string         `json:"key"`
-	value string         `json:"value"`
+	VC    map[string]int `json:"vc"`
+	Key   string         `json:"key"`
+	Value string         `json:"value"`
 }
 
 //NewGossipData contains neccessary gossip info
-func NewGossipData(k, val, string, clock VectorClock) *GossipData {
-	return &GossipData{vc: clock, key: k, value: val}
+func NewGossipData(key, val string, clock *vectorclock.VectorClock) *GossipData {
+	return &GossipData{VC: clock.Clocks, Key: key, Value: val}
 }
+
+//*************** GossipQueue ***************\\
 
 //GossipQueue holds queue for requests
 type GossipQueue struct {
@@ -28,10 +34,11 @@ type GossipQueue struct {
 
 //NewGossipQueue returns GossipState object
 func NewGossipQueue() *GossipQueue {
-	//Len of 0, arbitrary capacity of 10
 	q := make([]GossipData, 0, 10)
 	return &GossipQueue{Queue: q}
 }
+
+//*************** AckTable ***************\\
 
 //AckTable holds a map that keeps track of ACK's recieved
 type AckTable struct {
@@ -49,29 +56,6 @@ func NewAckTable() *AckTable {
 	return &AckTable{table: m}
 }
 
-//WakeUp starts a ShareGossip request in a bounded time range, forever
-func (q *GossipQueue) WakeUp() {
-	min := 500
-	max := 2000
-
-	for {
-		rand := rand.Intn(max-min) + min
-		time.Sleep(time.Duration(rand) * time.Millisecond)
-
-		if len(q.Queue) > 0 {
-			ackTable := NewAckTable()
-			data := (q.Queue)[0]
-			ShareGossip(data)
-			//Pop once we received all ACKS
-			if ackTable.receivedAllAcks() {
-				x, q := (q.Queue)[0], (q.Queue)[1:]
-			}
-
-		}
-
-	}
-}
-
 //receivedAllAcks keeps track of ACK's recieved by the servers
 func (t *AckTable) receivedAllAcks() bool {
 	for _, v := range t.table {
@@ -82,26 +66,58 @@ func (t *AckTable) receivedAllAcks() bool {
 	return true
 }
 
-//PrepareForGossip called at put endpoint, adds request to GossipQueue
-func (q *GossipQueue) PrepareForGossip(key, value string, vc *VectorClock) {
+//*************** Main Gossip Functions ***************\\
+
+//WakeUp starts a ShareGossip request in a bounded time range, forever
+func (q *GossipQueue) WakeUp() {
+	min := 500
+	max := 2000
+	ackTable := NewAckTable()
+
+	for {
+		rand := rand.Intn(max-min) + min
+		time.Sleep(time.Duration(rand) * time.Millisecond)
+
+		if len(q.Queue) > 0 {
+
+			data := (q.Queue)[0]
+			shareGossip(data)
+			//Pop once we received all ACKS
+			if ackTable.receivedAllAcks() {
+				x, q := (q.Queue)[0], (q.Queue)[1:]
+				//Clear table for garbage collection
+				ackTable.table = nil
+			}
+
+		}
+
+	}
+}
+
+//PrepareForGossip called at PUT endpoint, adds request to GossipQueue
+func (q *GossipQueue) PrepareForGossip(key, value string, vc *vectorclock.VectorClock) {
 	datagram := NewGossipData(key, value, vc)
 	q.Queue = append(q.Queue, *datagram)
+	go WakeUp()
 }
 
 //ShareGossip sends key, val, vectorclock to internal endpoint
-func ShareGossip(datagram GossipData) {
-	gd := GossipData{vc: s.vectorClock().DAL().VC, data: s.DAL().Store}
-	payload, _ := json.Marshal(gd)
-	client := &http.Clinet{}
-	serverIp := config.Config.Address
-	req, _ := http.NewRequest("POST", serverIP, bytes.NewBuffer(payload))
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("X-Real-Ip", config.Config.Address)
-	resp, err := client.Do(req)
+func shareGossip(datagram GossipData) {
+	//gd := GossipData{vc: s.vectorClock().DAL().VC, data: s.DAL().Store}
+	for _, server := range config.Config.CurrentShard().Nodes {
+		payload, _ := json.Marshal(datagram)
+		client := &http.Client{}
+		req, _ := http.NewRequest("POST", server, bytes.NewBuffer(payload))
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("X-Real-Ip", config.Config.Address)
+		resp, err := client.Do(req)
+		//Google timeouts on an HTTP request
+	}
+
 }
 
 //ReceivedGossip handles receiving ONLY gossip from another server
-func ReceivedGossip() {
+func receivedGossip() {
 	//Grab received data
 	//Check against ours if its newer
 	//Update or dont do anything

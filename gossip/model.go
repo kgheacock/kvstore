@@ -1,6 +1,5 @@
 package gossip
 
-/*
 type Store struct {
 	dal DataAccessLayer
 }
@@ -15,4 +14,3 @@ func NewGossipStore(dal DataAccessLayer) *Store {
 func (s *Store) DAL() DataAccessLayer {
 	return s.dal
 }
-*/

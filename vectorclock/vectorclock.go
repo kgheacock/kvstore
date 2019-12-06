@@ -61,9 +61,9 @@ func (vc *VectorClock) HappenedBefore(incVC *VectorClock) bool {
 }
 
 //ReceiveEvent is called whenever an event is delivered and we need to tick + update our clock.
-func (vc *VectorClock) ReceiveEvent(incVC *VectorClock) {
+func (vc *VectorClock) ReceiveEvent(incVC VectorClock) {
 	vc.IncrementNodeClock()
-	vc.UpdateClocks(incVC)
+	vc.UpdateClocks(&incVC)
 }
 
 // //Print is a debugging function

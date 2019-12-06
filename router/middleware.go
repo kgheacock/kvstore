@@ -13,6 +13,7 @@ import (
 	"github.com/colbyleiske/cse138_assignment2/config"
 	"github.com/colbyleiske/cse138_assignment2/ctx"
 	"github.com/colbyleiske/cse138_assignment2/kvstore"
+	"github.com/colbyleiske/cse138_assignment2/shard"
 	"github.com/colbyleiske/cse138_assignment2/vectorclock"
 	"github.com/gorilla/mux"
 )
@@ -36,13 +37,18 @@ func (s *Store) validateParametersMiddleware(next http.Handler) http.Handler {
 		if len(r.Header.Get("X-Real-Ip")) != 0 {
 			addr = config.Config.Address
 		}
+		incClock, ok := r.Context().Value(ctx.ContextCausalContextKey).(shard.CausalContext)
+		if !ok {
+			log.Println("Could not get context from incoming request")
+			return
+		}
 
 		if !ok {
 			resp := struct {
 				kvstore.ResponseMessage
 				Exists bool `json:"doesExist"`
 			}{
-				kvstore.ResponseMessage{"No key", fmt.Sprintf("Error in %s", r.Method), "", addr, config.Config.CurrentShard().VectorClock}, false,
+				kvstore.ResponseMessage{"No key", fmt.Sprintf("Error in %s", r.Method), "", addr, incClock}, false,
 			}
 			w.WriteHeader(http.StatusNotFound)
 			json.NewEncoder(w).Encode(resp)
@@ -50,7 +56,7 @@ func (s *Store) validateParametersMiddleware(next http.Handler) http.Handler {
 		}
 
 		if len(key) > 50 {
-			resp := kvstore.ResponseMessage{"Key is too long", fmt.Sprintf("Error in %s", r.Method), "", addr, config.Config.CurrentShard().VectorClock}
+			resp := kvstore.ResponseMessage{"Key is too long", fmt.Sprintf("Error in %s", r.Method), "", addr, incClock}
 			w.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(w).Encode(resp)
 			return
@@ -103,19 +109,17 @@ func (s *Store) checkVectorClock(next http.Handler) http.Handler {
 		}
 		r.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 
-		causalContext := struct {
-			Contexts map[int]vectorclock.VectorClock `json:"causal-context"`
-		}{}
+		var causalContext shard.CausalContext
 
 		if err := json.Unmarshal(bodyBytes, &causalContext); err != nil {
 			log.Println("some error here about failing to get json read")
 			return
 		}
 
-		incContext := causalContext.Contexts[config.Config.CurrentShardID]
-		if len(incContext.Clocks) == 0 {
-			//Treat empty causal-context as all 0s across our shard
-			incContext.ResetVC(config.Config.CurrentShard().Nodes)	
+		incContext := causalContext.Context[config.Config.CurrentShardID]
+		//Given a map of shards -> Vector clcoks, check if our clock is populated... If it is not present or empty, we set it to all 0
+		if _, ok := incContext.Clocks[config.Config.CurrentShardID]; !ok || len(incContext.Clocks) == 0 {
+			incContext = *vectorclock.NewVectorClock(config.Config.CurrentShard().Nodes, config.Config.Address)
 		}
 
 		if !incContext.HappenedBefore(config.Config.CurrentShard().VectorClock) {
@@ -124,7 +128,7 @@ func (s *Store) checkVectorClock(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), ctx.ContextCausalContextKey, causalContext.Contexts)
+		ctx := context.WithValue(r.Context(), ctx.ContextCausalContextKey, causalContext.Context)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

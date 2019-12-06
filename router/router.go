@@ -27,9 +27,9 @@ func CreateRouter(s *kvstore.Store, h *hasher.Store) *mux.Router {
 	router.Use(middlewareStore.loggingMiddleware)
 	router.Use(middlewareStore.checkSourceMiddleware)
 	router.Use(middlewareStore.bufferRequestMiddleware)
+	storeRouter.Use(middlewareStore.checkVectorClock)
 	storeRouter.Use(middlewareStore.validateParametersMiddleware)
 	storeRouter.Use(middlewareStore.forwardMiddleware)
-	storeRouter.Use(middlewareStore.checkVectorClock)
 
 	return router
 }

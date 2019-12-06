@@ -258,7 +258,14 @@ func (s *Store) ExternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *Store) GetKeyCountHandler(w http.ResponseWriter, r *http.Request) {
 	count := s.DAL().GetKeyCount()
-	resp := GetKeyCountRepsponse{"Key count retrieved successfully", count, strconv.Atoi(config.Config.CurrentShardID)}
+	
+	cc, ok := r.Context().Value(ctx.ContextCausalContextKey).(shard.CausalContext)
+
+	if !ok {
+		log.Println("Could not get context from incoming request")
+		return
+	}
+	resp := GetKeyCountRepsponse{ Message: "Key count retrieved successfully", KeyCount: count, ShardID strconv.Atoi(config.Config.CurrentShardID), CausalContext: cc}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
 }

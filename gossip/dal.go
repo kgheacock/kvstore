@@ -88,7 +88,6 @@ func (q *GossipQueue) WakeUp() {
 				ackTable.table = nil
 			}
 		}
-
 	}
 
 	//Clear table for garbage collection
@@ -106,7 +105,7 @@ func (q *GossipQueue) PrepareForGossip(key, value string, vc *vectorclock.Vector
 func (t *AckTable) shareGossip(datagram GossipData) {
 	for _, server := range config.Config.CurrentShard().Nodes {
 		payload, _ := json.Marshal(datagram)
-		client := &http.Client{Timeout: 1 * time.Second}
+		client := &http.Client{Timeout: 500 * time.Millisecond}
 		req, _ := http.NewRequest("POST", server, bytes.NewBuffer(payload))
 		req.Header.Set("Content-Type", "application/json")
 		req.Header.Set("X-Real-Ip", config.Config.Address)
@@ -118,7 +117,7 @@ func (t *AckTable) shareGossip(datagram GossipData) {
 
 }
 
-//ReceivedGossip handles receiving ONLY gossip from another server
+//ReceivedGossip handles receiving gossip from another server
 func receivedGossip() {
 	//Grab received data
 	//Check against ours if its newer

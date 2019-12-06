@@ -3,7 +3,7 @@ package vectorclock
 //VectorClock contains VC a map, and the current servers VC value
 type VectorClock struct {
 	Clocks map[string]int
-	ip     string
+	ip     string //our local replicas ip
 }
 
 //Len returns len() of map of a VectorClock
@@ -50,7 +50,7 @@ func (vc *VectorClock) UpdateClocks(incVC *VectorClock) {
 	}
 }
 
-func (vc *VectorClock) HappenedBefore (incVC *VectorClock) bool {
+func (vc *VectorClock) HappenedBefore(incVC *VectorClock) bool {
 	for ip := range vc.Clocks {
 		if vc.Clocks[ip] > incVC.Clocks[ip] {
 			return false
@@ -61,9 +61,9 @@ func (vc *VectorClock) HappenedBefore (incVC *VectorClock) bool {
 }
 
 //ReceiveEvent is called whenever an event is delivered and we need to tick + update our clock.
-func (vc *VectorClock) ReceiveEvent(incVC *VectorClock) {
+func (vc *VectorClock) ReceiveEvent(incVC VectorClock) {
 	vc.IncrementNodeClock()
-	vc.UpdateClocks(incVC)
+	vc.UpdateClocks(&incVC)
 }
 
 // //Print is a debugging function

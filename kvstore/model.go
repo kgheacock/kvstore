@@ -73,11 +73,11 @@ type Data struct {
 }
 
 type ResponseMessage struct {
-	Error         string                   `json:"error,omitempty"`
-	Message       string                   `json:"message,omitempty"`
-	Value         string                   `json:"value,omitempty"`
-	Address       string                   `json:"address,omitempty"`
-	CausalContext *vectorclock.VectorClock `json:"causal-context"`
+	Error         string              `json:"error,omitempty"`
+	Message       string              `json:"message,omitempty"`
+	Value         string              `json:"value,omitempty"`
+	Address       string              `json:"address,omitempty"`
+	CausalContext shard.CausalContext `json:"causal-context"`
 }
 
 type DeleteResponse struct {

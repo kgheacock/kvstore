@@ -6,6 +6,10 @@ import (
 
 type Shard struct {
 	ID          string // kept as string for easier consistent hashing sorting
-	Nodes       []string
+	Nodes       []string `json:"-"`
 	VectorClock *vectorclock.VectorClock
+}
+
+type CausalContext struct {
+	Context map[string]vectorclock.VectorClock `json:"shards-context"`
 }

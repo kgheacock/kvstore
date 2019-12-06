@@ -13,7 +13,7 @@ import (
 
 type cfg struct {
 	Shards         map[int]*shard.Shard
-	CurrentShardID int
+	CurrentShardID string
 	Address        string
 	ReplFactor     int
 	Mux            sync.Mutex
@@ -43,15 +43,14 @@ func GenerateConfig() {
 		if Contains(servers[0+(replFactorNum*i):replFactorNum+(replFactorNum*i)], addr) {
 			//Only need to set the vector clock on OUR shard - don't care about the other shards
 			Config.Shards[i].VectorClock = vectorclock.NewVectorClock(Config.Shards[i].Nodes, addr)
-			Config.CurrentShardID = i
+			Config.CurrentShardID = strconv.Itoa(i)
 		}
 	}
-
-	log.Println(Config.Shards)
 }
 
 func (config cfg) CurrentShard() *shard.Shard {
-	return config.Shards[config.CurrentShardID]
+	id , _ := strconv.Atoi(config.CurrentShardID)
+	return config.Shards[id]
 }
 
 func Contains(servers []string, ip string) bool {

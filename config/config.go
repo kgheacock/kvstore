@@ -46,8 +46,6 @@ func GenerateConfig() {
 			Config.CurrentShardID = strconv.Itoa(i)
 		}
 	}
-
-	log.Println(Config.Shards)
 }
 
 func (config cfg) CurrentShard() *shard.Shard {

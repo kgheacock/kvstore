@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/colbyleiske/cse138_assignment2/ctx"
 	"github.com/colbyleiske/cse138_assignment2/vectorclock"
@@ -248,7 +249,7 @@ func (s *Store) ExternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *Store) GetKeyCountHandler(w http.ResponseWriter, r *http.Request) {
 	count := s.DAL().GetKeyCount()
-	resp := GetKeyCountRepsponse{"Key count retrieved successfully", count}
+	resp := GetKeyCountRepsponse{"Key count retrieved successfully", count, strconv.Atoi(config.Config.CurrentShardID)}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
 }

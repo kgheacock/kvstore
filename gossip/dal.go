@@ -17,7 +17,8 @@ type GossipData struct {
 	value string         `json:"value"`
 }
 
-func NewGossipData(k, val, string, clock VectorClock) GossipData {
+//NewGossipData contains neccessary gossip info
+func NewGossipData(k, val, string, clock VectorClock) *GossipData {
 	return &GossipData{vc: clock, key: k, value: val}
 }
 
@@ -33,8 +34,6 @@ func NewGossipQueue() *GossipQueue {
 	return &GossipQueue{Queue: q}
 }
 
-//*************** AckTable ***************\\
-
 //AckTable holds a map that keeps track of ACK's recieved
 type AckTable struct {
 	table map[string]int
@@ -42,47 +41,46 @@ type AckTable struct {
 
 //NewAckTable creates an AckTable object
 func NewAckTable() *AckTable {
+	//get num of servers in shard
 	numServers := len(config.Config.CurrentShard().Nodes)
-	servers := config.Config.CurrentShard().Nodes
 	m := make(map[string]int, numServers)
-	for _, server := range servers {
-		m[server] = 0
-	}
-	return &AckTable{table: m}
+	return &AckTable{}
 }
-
-//receivedAllAcks keeps track of ACK's recieved by the servers
-func (t *AckTable) receivedAllAcks() bool {
-	for _, v := range t.table {
-		if v == 0 {
-			return false
-		}
-	}
-	return true
-}
-
-//*************** Main Gossip Functions ***************\\
 
 //WakeUp starts a ShareGossip request in a bounded time range, forever
 func (q *GossipQueue) WakeUp() {
 	min := 500
 	max := 2000
-	//To always be listening
+
 	for {
 		rand := rand.Intn(max-min) + min
 		time.Sleep(time.Duration(rand) * time.Millisecond)
-		//To be killed on ACK
-		for {
-			if len(q.Queue) > 0 {
+
+		if len(q.Queue) > 0 {
+			data := (q.Queue)[0]
+			ShareGossip(data)
+			//Pop once we received all ACKS
+			if receivedAllAcks() {
 				x, q := (q.Queue)[0], (q.Queue)[1:]
-				ShareGossip(x)
 			}
 
 		}
+
 	}
 
 	//Clear table for garbage collection
 	ackTable.table = nil
+}
+
+//receivedAllAcks keeps track of ACK's recieved by the servers
+func receivedAllAcks() bool {
+
+}
+
+//PrepareForGossip called at put endpoint, adds request to GossipQueue
+func (q *GossipQueue) PrepareForGossip(key, value string, vc *VectorClock) {
+	datagram := NewGossipData(key, value, vc)
+	q.Queue = append(q.Queue, *datagram)
 }
 
 //ShareGossip sends key, val, vectorclock to internal endpoint
@@ -103,12 +101,4 @@ func ReceivedGossip() {
 	//Check against ours if its newer
 	//Update or dont do anything
 	//Send an ACK
-}
-
-//PrepareForGossip called at endpoint on a Put to server, add to GossipQueue
-func (q *GossipQueue) PrepareForGossip(key, value string, vc *VectorClock) {
-	//Package up DataEngram
-	datagram := NewGossipData(key, value, vc)
-	//Add to Queue of requests
-	q.Queue = append(q.Queue, datagram)
 }

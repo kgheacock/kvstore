@@ -164,3 +164,10 @@ func (i *GossipItem) AttemptRequest(node string) {
 		i.CountMutex.Unlock()
 	}
 }
+
+func (gc *GossipController) IsGossiping() (running bool) {
+	gc.RunningMutex.Lock()
+	running = gc.IsRunning
+	gc.RunningMutex.Unlock()
+	return running
+}

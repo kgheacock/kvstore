@@ -171,7 +171,7 @@ func (s *Store) InternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println("ERROR: 13", err)
 		}
 		if serverIP != config.Config.Address {
-			url := fmt.Sprintf("http://%s/internal/gossip-put/%s", serverIP, key)
+			url := fmt.Sprintf("http://%s/internal/reshard-put/%s", serverIP, key)
 			value, _ := s.DAL().Get(key)
 			data := Data{Value: value.value}
 			payload, err := json.Marshal(data)

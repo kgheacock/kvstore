@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/colbyleiske/cse138_assignment2/shard"
 	"github.com/colbyleiske/cse138_assignment2/vectorclock"
@@ -16,6 +17,7 @@ type cfg struct {
 	CurrentShardID int
 	Address        string
 	ReplFactor     int
+	TimeOut        time.Duration
 	Mux            sync.Mutex
 }
 
@@ -35,7 +37,7 @@ func GenerateConfig() {
 	//Ideally I move all this shard bullshit over to the shard package later - someone remind me pls <3
 
 	servers := strings.Split(view, ",") // keep all this here lol - we need this to handle making our shards / groups of replicas
-	Config = cfg{Address: addr, ReplFactor: replFactorNum}
+	Config = cfg{Address: addr, ReplFactor: replFactorNum, TimeOut: 5 * time.Second}
 	Config.Shards = make(map[int]*shard.Shard)
 
 	for i := 0; i < len(servers)/replFactorNum; i++ {

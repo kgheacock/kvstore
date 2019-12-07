@@ -22,6 +22,7 @@ func CreateRouter(s *kvstore.Store, h *hasher.Store) *mux.Router {
 	router.Handle("/kv-store/view-change", wrap(s.ExternalReshardHandler)).Methods("PUT")
 	router.Handle("/internal/vc-complete", wrap(s.ReshardCompleteHandler)).Methods("GET")
 	router.Handle("/internal/view-change", wrap(s.InternalReshardHandler)).Methods("PUT")
+	router.Handle("/internal/prepare-for-vc", wrap(s.PrepareReshardHandler)).Methods("PUT")
 
 	middlewareStore := NewStore(h, s)
 	router.Use(middlewareStore.loggingMiddleware)

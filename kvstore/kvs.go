@@ -2,6 +2,7 @@ package kvstore
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -109,6 +110,12 @@ func (s *Store) GetHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(resp)
 }
 
+func (s *Store) PrepareReshardHandler(w http.ResponseWriter, r *http.Request) {
+	s.state = PREPARE_FOR_RESHARD
+	//Gossip to all nodes
+	w.WriteHeader(http.StatusOK)
+}
+
 func (s *Store) ReshardCompleteHandler(w http.ResponseWriter, r *http.Request) {
 	respStruct := NodeStatus{KeyCount: s.DAL().GetKeyCount(), IP: config.Config.Address, ShardID: config.Config.CurrentShardID}
 	w.WriteHeader(http.StatusOK)
@@ -169,8 +176,42 @@ func (s *Store) InternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+func BroadcastMessageAndWait(serverList []string, data []byte, urlFmtString string, ctx context.Context) bool {
+	acksRecieved := make(chan bool, len(serverList))
+	for _, server := range serverList {
+		go func() {
+			client := &http.Client{}
+			url := fmt.Sprintf(urlFmtString, server)
+			req, err := http.NewRequest("PUT", url, bytes.NewReader(data))
+			if err != nil {
+				log.Println("ERROR: 2", err)
+				acksRecieved <- false
+				return
+			}
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Set("X-Real-Ip", config.Config.Address)
+			req = req.WithContext(ctx)
+			resp, err := client.Do(req)
+			if err != nil {
+				log.Println(err)
+				acksRecieved <- false
+				return
+			}
+			resp.Body.Close()
+			acksRecieved <- true
+		}()
+	}
+	retVal := true
+	for _, server := range serverList {
+		ack := <-acksRecieved
+		if !ack {
+			log.Printf("Recieved an error response from server %s", server)
+			retVal = false
+		}
+	}
+	return retVal
+}
 func (s *Store) ExternalReshardHandler(w http.ResponseWriter, r *http.Request) {
-	//First to recieve. We must forward to everyone
 	var viewChangeRequest ViewChangeRequest
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&viewChangeRequest); err != nil || viewChangeRequest.ReplFactor == 0 {
@@ -179,46 +220,28 @@ func (s *Store) ExternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	viewChangeSentChannel := make(chan bool, len(viewChangeRequest.View))
-	viewChangeReqBytes, err := json.Marshal(viewChangeRequest)
+	//First to recieve. We must first prepare everyone
+	ctx := context.Background()
+	ctx, _ = context.WithTimeout(ctx, config.Config.TimeOut)
+	ack := BroadcastMessageAndWait(viewChangeRequest.View, nil, "http://%s/internal/prepare-for-vc", ctx)
+	if !ack {
+		log.Println("Recieved 1 or more nacks to prepare-view-change")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	vcBytes, err := json.Marshal(viewChangeRequest)
 	if err != nil {
-		log.Println("ERROR: 10", err)
+		log.Printf("ERROR: 33", err)
 	}
-	for _, server := range viewChangeRequest.View {
-		go func() {
-			client := &http.Client{}
-			url := fmt.Sprintf("http://%s/internal/view-change", server)
-			req, err := http.NewRequest("PUT", url, bytes.NewReader(viewChangeReqBytes))
-			if err != nil {
-				log.Println("ERROR: 2", err)
-				w.WriteHeader(http.StatusInternalServerError)
-				viewChangeSentChannel <- false
-				return
-			}
-			req.Header.Set("Content-Type", "application/json")
-			req.Header.Set("X-Real-Ip", config.Config.Address)
-			resp, err := client.Do(req)
-			if err != nil {
-				log.Println(err)
-				w.WriteHeader(http.StatusInternalServerError)
-				viewChangeSentChannel <- false
-				return
-			}
-			resp.Body.Close()
-			viewChangeSentChannel <- true
-		}()
-	}
-	for _, server := range viewChangeRequest.View {
-		vcAck := <-viewChangeSentChannel
-		if !vcAck {
-			log.Printf("Recieved an error response from server %s", server)
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
+	ctx = context.Background()
+	ctx, _ = context.WithTimeout(ctx, config.Config.TimeOut)
+	ack = BroadcastMessageAndWait(viewChangeRequest.View, vcBytes, "http://%s/internal/view-change", ctx)
+	if !ack {
+		log.Println("Recieved 1 or more nacks to view-change request")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 	// //TODO package up the key counts
-
-	//clusterStatus := make(map[int][]NodeS)
 
 	for _, server := range viewChangeRequest.View {
 		client := &http.Client{}

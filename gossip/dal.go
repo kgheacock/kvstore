@@ -44,7 +44,6 @@ func NewGossipQueue() *GossipQueue {
 //AckTable holds a map that keeps track of ACK's recieved
 type AckTable struct {
 	table map[string]int
-	Mux   sync.Mutex
 }
 
 //NewAckTable creates an AckTable object

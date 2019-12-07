@@ -65,16 +65,16 @@ func (s *Store) PutHandler(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(resp)
 		return
 	}
-	curClock, ok  := s.DAL().MapKeyToClock()[key]
+	curClock, ok := s.DAL().MapKeyToClock()[key]
 	if !ok {
 		curClock = 0
 	}
 	if incClock[key] > curClock {
 		curClock = incClock[key]
 	}
-	
-	putResp := s.DAL().Put(key, StoredValue{data.Value, curClock+1})
-	incClock[key] = curClock+1
+
+	putResp := s.DAL().Put(key, StoredValue{data.Value, curClock + 1})
+	incClock[key] = curClock + 1
 
 	if putResp == ADDED {
 		resp := PutResponse{ResponseMessage{"", "Added successfully", "", addr, incClock}, false}
@@ -107,7 +107,7 @@ func (s *Store) GetHandler(w http.ResponseWriter, r *http.Request) {
 	val, err := s.DAL().Get(key)
 	if err != nil {
 		if incClock[key] == 0 {
-			delete (incClock,key)
+			delete(incClock, key)
 		}
 		resp := GetResponse{ResponseMessage{"Key does not exist", "Error in GET", "", addr, incClock}, false}
 		w.WriteHeader(http.StatusNotFound)
@@ -168,7 +168,7 @@ func (s *Store) InternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println("ERROR: 13", err)
 		}
 		if serverIP != config.Config.Address {
-			url := fmt.Sprintf("http://%s/kv-store/keys/%s", serverIP, key)
+			url := fmt.Sprintf("http://%s/internal/gossip-put/%s", serverIP, key)
 			value, _ := s.DAL().Get(key)
 			data := Data{Value: value.value}
 			payload, err := json.Marshal(data)
@@ -227,7 +227,6 @@ func (s *Store) ExternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 	var viewChangeRequest ViewChangeRequest
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&viewChangeRequest); err != nil || viewChangeRequest.ReplFactor == 0 {
-		log.Println()
 		log.Println("ERROR: 1", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -245,6 +244,7 @@ func (s *Store) ExternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("ERROR: 33", err)
 	}
+	//After everyone is prepare then we send out the request
 	ctx = context.Background()
 	ctx, _ = context.WithTimeout(ctx, config.Config.TimeOut)
 	ack = BroadcastMessageAndWait(viewChangeRequest.View, vcBytes, "http://%s/internal/view-change", ctx)
@@ -253,8 +253,18 @@ func (s *Store) ExternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	// //TODO package up the key counts
-
+	//Finally we pack up all responses and send as a response
+	type shardStatus struct {
+		shardID  int
+		keyCount int
+		replicas []string
+	}
+	type vcResponse struct {
+		shards        []shardStatus  `json:"shards"`
+		message       string         `json:"message"`
+		CausalContext map[string]int `json:"causal-context"`
+	}
+	shardMap := make(map[int]shardStatus)
 	for _, server := range viewChangeRequest.View {
 		client := &http.Client{}
 		url := fmt.Sprintf("http://%s/internal/vc-complete", server)
@@ -270,14 +280,26 @@ func (s *Store) ExternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println("ERROR: 9", err, " ", resp)
 		}
-		//var status NodeStatus
-		//decoder := json.NewDecoder(resp.Body)
-		//err = decoder.Decode(status)
+
 		if err != nil {
 			log.Println("Error: 22", err)
 		}
-		//clusterStatus[status.ShardID] = append(clusterStatus[status.ShardID], status)
+		var ns NodeStatus
+		decode := json.NewDecoder(resp.Body)
+		decode.Decode(ns)
+		currentShardStatus := shardMap[ns.ShardID]
+		currentShardStatus.replicas = append(currentShardStatus.replicas, ns.IP)
+		currentShardStatus.keyCount = ns.KeyCount
+		currentShardStatus.shardID = ns.ShardID
+		shardMap[ns.ShardID] = currentShardStatus
 	}
+	vcResp := vcResponse{message: "View change successful", CausalContext: make(map[string]int), shards: []shardStatus{}}
+	for _, value := range shardMap {
+		vcResp.shards = append(vcResp.shards, value)
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(vcResp)
+	return
 
 }
 
@@ -294,8 +316,8 @@ func (s *Store) GossipPutHandler(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 
 	data := struct {
-		Value string `json:"value"`
-		LamportClock int `json:"lamportclock"`
+		Value        string `json:"value"`
+		LamportClock int    `json:"lamportclock"`
 	}{}
 
 	if err := decoder.Decode(&data); err != nil || data.Value == "" {
@@ -312,5 +334,5 @@ func (s *Store) GossipPutHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
 	return
-	
+
 }

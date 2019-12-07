@@ -26,6 +26,9 @@ func GenerateConfig() {
 	addr := os.Getenv("ADDRESS")
 	view := os.Getenv("VIEW")
 	replFactor := os.Getenv("REPL_FACTOR")
+	if replFactor == "" {
+		replFactor = "1"
+	}
 	replFactorNum, err := strconv.Atoi(replFactor)
 	if err != nil {
 		log.Fatal("Could not parse replication factor:", replFactor)

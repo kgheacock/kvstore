@@ -35,8 +35,7 @@ type GossipQueue struct {
 
 //NewGossipQueue returns GossipState object
 func NewGossipQueue() *GossipQueue {
-	q := make([]GossipData, 0, 10)
-	return &GossipQueue{Queue: q}
+	return &GossipQueue{Queue: []GossipData{}}
 }
 
 //*************** AckTable ***************\\

@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/colbyleiske/cse138_assignment2/config"
 	"github.com/colbyleiske/cse138_assignment2/ctx"
@@ -76,6 +77,12 @@ func (s *Store) bufferRequestMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
+		if strings.Contains(r.RequestURI, "internal") {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		log.Println("buffering sorry")
 		w.Write([]byte("Resharding in progress"))
 		w.WriteHeader(http.StatusInternalServerError)
 

@@ -3,14 +3,16 @@ package kvstore
 import (
 	"sort"
 
+	"github.com/colbyleiske/cse138_assignment2/gossip"
 	"github.com/colbyleiske/cse138_assignment2/hasher"
 	"github.com/colbyleiske/cse138_assignment2/shard"
 )
 
 type Store struct {
-	dal    DataAccessLayer
-	hasher *hasher.Store
-	state  nodeState
+	dal              DataAccessLayer
+	hasher           *hasher.Store
+	state            nodeState
+	gossipController *gossip.GossipController
 }
 type nodeState int
 
@@ -35,7 +37,7 @@ type DataAccessLayer interface {
 	GetKeyCount() int
 	MapKeyToClock() (keyClock map[string]int)
 	IncrementClock(key string) int //returns new clock value
-	SetClock(key string, newClock int) 
+	SetClock(key string, newClock int)
 }
 
 func makeShards(serverList []string, replFactor int) map[int]*shard.Shard {
@@ -57,8 +59,9 @@ func makeShards(serverList []string, replFactor int) map[int]*shard.Shard {
 	return shardList
 
 }
+
 func NewStore(dal DataAccessLayer, hasher *hasher.Store) *Store {
-	return &Store{dal: dal, hasher: hasher, state: NORMAL}
+	return &Store{dal: dal, hasher: hasher, state: NORMAL, gossipController: gossip.NewGossipController()}
 }
 
 func (s *Store) DAL() DataAccessLayer {
@@ -76,6 +79,14 @@ func (s *Store) State() nodeState {
 type StoredValue struct {
 	value        string
 	lamportclock int
+}
+
+func (s StoredValue) Value() string {
+	return s.value
+}
+
+func (s StoredValue) LamportClock() int {
+	return s.lamportclock
 }
 
 //Holds incoming PUT request body

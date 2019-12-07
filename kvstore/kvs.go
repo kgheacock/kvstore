@@ -54,6 +54,7 @@ func (s *Store) PutHandler(w http.ResponseWriter, r *http.Request) {
 
 	incClock, ok := r.Context().Value(ctx.ContextCausalContextKey).(map[string]int)
 	if !ok {
+		log.Println("test")
 		log.Println("Could not get context from incoming request")
 		return
 	}
@@ -75,6 +76,8 @@ func (s *Store) PutHandler(w http.ResponseWriter, r *http.Request) {
 
 	putResp := s.DAL().Put(key, StoredValue{data.Value, curClock + 1})
 	incClock[key] = curClock + 1
+
+	s.gossipController.AddGossipItem(key, data.Value, incClock[key])
 
 	if putResp == ADDED {
 		resp := PutResponse{ResponseMessage{"", "Added successfully", "", addr, incClock}, false}
@@ -310,7 +313,7 @@ func (s *Store) GetKeyCountHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(resp)
 }
 
-func (s *Store) GossipPutHandler(w http.ResponseWriter, r *http.Request) {
+func (s *Store) ReshardPutHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["key"]
 	decoder := json.NewDecoder(r.Body)
@@ -334,5 +337,48 @@ func (s *Store) GossipPutHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
 	return
+}
 
+func (s *Store) GossipPutHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	key := vars["key"]
+	decoder := json.NewDecoder(r.Body)
+
+	data := struct {
+		Value        string `json:"value"`
+		LamportClock int    `json:"lamportclock"`
+	}{}
+
+	if err := decoder.Decode(&data); err != nil || data.Value == "" {
+		//Don't need real formatted response since its all internal
+		resp := ResponseMessage{Error: "Value is missing", Message: "Error in PUT"}
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(resp)
+		return
+	}
+
+	log.Println("received gossip put for", key, data.Value, data.LamportClock)
+	proposedKeyClock, ok := s.DAL().MapKeyToClock()[key]
+	if !ok {
+		proposedKeyClock = 0 //just incase we do not have this value
+	}
+
+	if data.LamportClock > proposedKeyClock {
+		s.DAL().Put(key, StoredValue{data.Value, data.LamportClock})
+	}
+
+	if data.LamportClock == proposedKeyClock {
+		newVal := data.Value
+		if val, _ := s.DAL().Get(key); val.Value() < newVal { //just arbitrarily pick lower val
+			newVal = val.Value()
+		}
+		s.DAL().Put(key, StoredValue{newVal, data.LamportClock})
+	}
+
+	//if the incoming clock for our key is LOWER , we send a 200 and do not operate. We have more context in this case.
+
+	resp := ResponseMessage{Message: "Updated successfully"}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(resp)
+	return
 }

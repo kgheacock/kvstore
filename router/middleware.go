@@ -170,6 +170,7 @@ func (s *Store) checkVectorClock(next http.Handler) http.Handler {
 			return
 		}
 
+		log.Println("passing context")
 		ctx := context.WithValue(r.Context(), ctx.ContextCausalContextKey, cc.Causalcontext)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})

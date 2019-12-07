@@ -54,7 +54,7 @@ func main() {
 
 	<-c
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*15)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
 	defer cancel()
 	srv.Shutdown(ctx)
 	log.Println("shutting down")

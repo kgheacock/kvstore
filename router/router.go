@@ -12,7 +12,7 @@ import (
 func CreateRouter(s *kvstore.Store, h *hasher.Store) *mux.Router {
 	router := mux.NewRouter()
 	nonContextualRouter := router.PathPrefix("/kv-store").Subrouter()
-	storeRouter := router.PathPrefix("/kv-store/keys").Subrouter()
+	storeRouter := nonContextualRouter.PathPrefix("/keys").Subrouter()
 	//route registration
 	// storeRouter.Handle("/{key}", wrap(s.DeleteHandler)).Methods("DELETE")
 	storeRouter.Handle("/{key}", wrap(s.PutHandler)).Methods("PUT")
@@ -24,6 +24,7 @@ func CreateRouter(s *kvstore.Store, h *hasher.Store) *mux.Router {
 	router.Handle("/internal/vc-complete", wrap(s.ReshardCompleteHandler)).Methods("GET")
 	router.Handle("/internal/view-change", wrap(s.InternalReshardHandler)).Methods("PUT")
 	router.Handle("/internal/prepare-for-vc", wrap(s.PrepareReshardHandler)).Methods("PUT")
+	router.Handle("/internal/reshard-put/{key}", wrap(s.ReshardPutHandler)).Methods("PUT")
 	router.Handle("/internal/gossip-put/{key}", wrap(s.GossipPutHandler)).Methods("PUT")
 
 	middlewareStore := NewStore(h, s)

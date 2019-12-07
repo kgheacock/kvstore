@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/colbyleiske/cse138_assignment2/ctx"
 
@@ -308,7 +309,27 @@ func (s *Store) ExternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *Store) GetKeyCountHandler(w http.ResponseWriter, r *http.Request) {
 	count := s.DAL().GetKeyCount()
-	resp := GetKeyCountRepsponse{"Key count retrieved successfully", count}
+	cc, ok := r.Context().Value(ctx.ContextCausalContextKey).(map[string]int)
+
+	if !ok {
+		errResp := ResponseMessage{Message: "Error in GET", Error: "Can't recieve Causal Context", CausalContext: cc}
+		w.WriteHeader(http.StatusServiceUnavailable)
+		json.NewEncoder(w).Encode(errResp)
+		return
+	}
+
+	for k, v := range cc {
+		val, err := s.DAL().Get(k)
+
+		if err != nil && val.lamportclock < v {
+			errResp := ResponseMessage{Message: "Error in GET", Error: "Unable to satisfy request", CausalContext: cc}
+			w.WriteHeader(http.StatusServiceUnavailable)
+			json.NewEncoder(w).Encode(errResp)
+			return
+		}
+	}
+
+	resp := GetKeyCountRepsponse{"Key count retrieved successfully", count, config.Config.CurrentShardID, cc}
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
 }
@@ -381,4 +402,77 @@ func (s *Store) GossipPutHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
 	return
+}
+
+func (s *Store) GetShardByIdHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	checkID := vars["id"]
+	shardID, err := strconv.Atoi(checkID)
+
+	cc := make(map[string]int)
+
+	if err != nil {
+		errResp := ResponseMessage{
+			Message:       "Error in GET",
+			Error:         "Can't parse Id",
+			CausalContext: cc,
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errResp)
+		return
+	}
+
+	replicas, ok := config.Config.Shards[shardID]
+
+	if !ok {
+		errResp := ResponseMessage{
+			Message:       "Error in GET",
+			Error:         "ID not found",
+			CausalContext: cc,
+		}
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errResp)
+		return
+	}
+
+	count := s.DAL().GetKeyCount()
+
+	resp := GetShardByIdResponse{
+		ResponseMessage{
+			Message:       "Shard information retrieved successfully",
+			CausalContext: cc,
+		},
+		checkID,
+		count,
+		replicas.Nodes,
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(resp)
+}
+
+func (s *Store) GetShardHandler(w http.ResponseWriter, r *http.Request) {
+	shards := make([]int, 0)
+	cc, ok := r.Context().Value(ctx.ContextCausalContextKey).(map[string]int)
+
+	if !ok {
+		fmt.Println("No clocks")
+		errResp := ResponseMessage{Message: "Error in GET", Error: "Can't recieve Causal Context", CausalContext: cc}
+		w.WriteHeader(http.StatusServiceUnavailable)
+		json.NewEncoder(w).Encode(errResp)
+	}
+
+	for key := range config.Config.Shards {
+		shards = append(shards, key)
+	}
+
+	resp := GetShardResponse{
+		ResponseMessage{
+			Message:       "Shard membership retrieved successfully",
+			CausalContext: cc,
+		},
+		shards,
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(resp)
+
 }

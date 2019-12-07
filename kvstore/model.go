@@ -118,8 +118,10 @@ type GetResponse struct {
 }
 
 type GetKeyCountRepsponse struct {
-	Message  string `json:"message"`
-	KeyCount int    `json:"key-count"`
+	Message       string         `json:"message"`
+	KeyCount      int            `json:"key-count"`
+	ShardID       int            `json:"shard-id"`
+	CausalContext map[string]int `json:"causal-context"`
 }
 
 type ViewChangeRequest struct {
@@ -131,4 +133,16 @@ type NodeStatus struct {
 	IP       string
 	KeyCount int
 	ShardID  int
+}
+
+type GetShardResponse struct {
+	ResponseMessage
+	Shards []int `json:"shards"`
+}
+
+type GetShardByIdResponse struct {
+	ResponseMessage
+	ShardID  string   `json:"shard-id,omitempty"`
+	KeyCount int      `json:"key-count,omitempty"`
+	Replicas []string `json:"replicas,omitempty"`
 }

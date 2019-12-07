@@ -100,6 +100,27 @@ func (s *Store) checkSourceMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+func (s *Store) passthroughCausalContext(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var bodyBytes []byte
+		if r.Body != nil {
+			bodyBytes, _ = ioutil.ReadAll(r.Body)
+		}
+		r.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+
+		cc := struct {
+			Causalcontext map[string]int `json:"causal-context"`
+		}{}
+
+		if err := json.Unmarshal(bodyBytes, &cc); err != nil {
+			log.Println(err)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), ctx.ContextCausalContextKey, cc.Causalcontext)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
 func (s *Store) checkVectorClock(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var bodyBytes []byte

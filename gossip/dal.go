@@ -3,7 +3,6 @@ package gossip
 import (
 	"bytes"
 	"encoding/json"
-	"math/rand"
 	"net/http"
 	"sync"
 	"time"
@@ -73,8 +72,8 @@ func (t *AckTable) receivedAllAcks() bool {
 
 //WakeUp starts a ShareGossip request in a bounded time range, forever
 func (q *GossipQueue) WakeUp() {
-	min := 500
-	max := 2000
+	//min := 500
+	//max := 2000
 	ackTable := NewAckTable()
 	//Create temp Q that will stay while WakeUp Runs
 	//But allows things to continue to be written to the main queue
@@ -89,8 +88,8 @@ func (q *GossipQueue) WakeUp() {
 	q.Mux.Unlock()
 
 	for !ackTable.receivedAllAcks() {
-		rand := rand.Intn(max-min) + min
-		time.Sleep(time.Duration(rand) * time.Millisecond)
+		//rand := rand.Intn(max-min) + min
+		//time.Sleep(time.Duration(rand) * time.Millisecond)
 
 		if len(tempQueue.Queue) > 0 {
 			data := (tempQueue.Queue)[0]

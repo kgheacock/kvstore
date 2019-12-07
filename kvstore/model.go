@@ -3,10 +3,8 @@ package kvstore
 import (
 	"sort"
 
-	"github.com/colbyleiske/cse138_assignment2/config"
 	"github.com/colbyleiske/cse138_assignment2/hasher"
 	"github.com/colbyleiske/cse138_assignment2/shard"
-	"github.com/colbyleiske/cse138_assignment2/vectorclock"
 )
 
 type Store struct {
@@ -31,24 +29,30 @@ const (
 
 type DataAccessLayer interface {
 	Delete(key string) error
-	Get(key string) (string, error)
-	Put(key string, value string) (int, error)
+	Get(key string) (StoredValue, error)
+	Put(key string, value StoredValue) int
 	KeyList() []string
 	GetKeyCount() int
+	MapKeyToClock() (keyClock map[string]int)
+	IncrementClock(key string) int //returns new clock value
+	SetClock(key string, newClock int) 
 }
 
 func makeShards(serverList []string, replFactor int) map[int]*shard.Shard {
+	//warning - does not set our current shard ID
 	sort.Strings(serverList)
 	shardList := make(map[int]*shard.Shard)
 	numberOfShards := len(serverList) / replFactor
 	for i := 0; i < numberOfShards; i++ {
 		shardMembers := serverList[i*replFactor : i*replFactor+replFactor]
 		shard := shard.Shard{
-			ID:          string(i),
-			Nodes:       shardMembers,
-			VectorClock: vectorclock.NewVectorClock(shardMembers, config.Config.Address),
+			ID:    string(i),
+			Nodes: shardMembers,
 		}
 		shardList[i] = &shard
+		// if config.Contains(servers[0+(replFactorNum*i):replFactorNum+(replFactorNum*i)], addr) {
+		// 	config.Config.CurrentShardID = i
+		// }
 	}
 	return shardList
 
@@ -64,8 +68,14 @@ func (s *Store) DAL() DataAccessLayer {
 func (s *Store) Hasher() hasher.Store {
 	return *s.hasher
 }
+
 func (s *Store) State() nodeState {
 	return s.state
+}
+
+type StoredValue struct {
+	value        string
+	lamportclock int
 }
 
 //Holds incoming PUT request body
@@ -74,11 +84,11 @@ type Data struct {
 }
 
 type ResponseMessage struct {
-	Error         string                   `json:"error,omitempty"`
-	Message       string                   `json:"message,omitempty"`
-	Value         string                   `json:"value,omitempty"`
-	Address       string                   `json:"address,omitempty"`
-	CausalContext *vectorclock.VectorClock `json:"causal-context"`
+	Error         string         `json:"error,omitempty"`
+	Message       string         `json:"message,omitempty"`
+	Value         string         `json:"value,omitempty"`
+	Address       string         `json:"address,omitempty"`
+	CausalContext map[string]int `json:"causal-context"`
 }
 
 type DeleteResponse struct {

@@ -7,8 +7,9 @@ import (
 )
 
 //KVDAL is a key value data-access layer
+
 type KVDAL struct {
-	Store   map[string]string // data structure
+	Store   map[string]StoredValue // data structure
 	keyList []string
 }
 
@@ -38,38 +39,60 @@ var (
 )
 
 //Put function stores value into map based on key
-func (k *KVDAL) Put(key string, value string) (int, error) {
+func (k *KVDAL) Put(key string, value StoredValue) int {
 	log.Println("PUT", key)
 	_, ok := k.Store[key]
 	k.Store[key] = value
 	if ok {
-		return UPDATED, nil
+		return UPDATED
 	}
-	return ADDED, nil
+	return ADDED
 }
 
 //Get function retrieves value from map if it exists
-func (k *KVDAL) Get(key string) (string, error) {
+func (k *KVDAL) Get(key string) (StoredValue, error) {
 	log.Println("GET", key)
 	value, ok := k.Store[key]
 	if !ok {
-		return "", ErrKeyNotFound
+		return StoredValue{}, ErrKeyNotFound
 	}
 	return value, nil
 }
 
 //Delete function removes key-value from map if it exists
 func (k *KVDAL) Delete(key string) error {
-	log.Println("DEL", key)
-	if _, ok := k.Store[key]; !ok {
-		log.Printf("%s not found\n", key)
-		return ErrKeyNotFound
-	}
-	delete(k.Store, key)
+	// log.Println("DEL", key)
+	// if _, ok := k.Store[key]; !ok {
+	// 	log.Printf("%s not found\n", key)
+	// 	return ErrKeyNotFound
+	// }
+	// delete(k.Store, key)
 	return nil
+}
+
+func (k *KVDAL) IncrementClock(key string) int {
+	if val, ok := k.Store[key]; ok {
+		val.lamportclock++
+		k.Store[key] = val
+		return val.lamportclock
+	}
+	// if we do not have a clock value - this means we are adding it for t he first time... start with 1 on context
+	return 1
+}
+
+func (k *KVDAL) SetClock(key string, newClock int) {
+
 }
 
 //GetKeyCount gets the number of keys in the map
 func (k *KVDAL) GetKeyCount() int {
 	return len(k.Store)
+}
+
+func (k *KVDAL) MapKeyToClock() (map[string]int) {
+	keyClock := make(map[string]int)
+	for k, v := range k.Store {
+		keyClock[k] = v.lamportclock
+	}
+	return keyClock
 }

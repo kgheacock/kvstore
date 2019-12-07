@@ -27,7 +27,7 @@ func main() {
 		ringDAL.AddShard(shard)
 	}
 
-	kvDal := kvstore.KVDAL{Store: make(map[string]string)}
+	kvDal := kvstore.KVDAL{Store: make(map[string]kvstore.StoredValue)}
 	kvStore := kvstore.NewStore(&kvDal, ring)
 
 	router := router.CreateRouter(kvStore, ring)

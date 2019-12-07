@@ -13,7 +13,6 @@ import (
 	"github.com/colbyleiske/cse138_assignment2/config"
 	"github.com/colbyleiske/cse138_assignment2/ctx"
 	"github.com/colbyleiske/cse138_assignment2/kvstore"
-	"github.com/colbyleiske/cse138_assignment2/vectorclock"
 	"github.com/gorilla/mux"
 )
 
@@ -37,12 +36,18 @@ func (s *Store) validateParametersMiddleware(next http.Handler) http.Handler {
 			addr = config.Config.Address
 		}
 
+		incClock, ok := r.Context().Value(ctx.ContextCausalContextKey).(map[string]int)
+		if !ok {
+			log.Println("Could not get context from incoming request")
+			return
+		}
+
 		if !ok {
 			resp := struct {
 				kvstore.ResponseMessage
 				Exists bool `json:"doesExist"`
 			}{
-				kvstore.ResponseMessage{"No key", fmt.Sprintf("Error in %s", r.Method), "", addr, config.Config.CurrentShard().VectorClock}, false,
+				kvstore.ResponseMessage{"No key", fmt.Sprintf("Error in %s", r.Method), "", addr, incClock}, false,
 			}
 			w.WriteHeader(http.StatusNotFound)
 			json.NewEncoder(w).Encode(resp)
@@ -50,7 +55,7 @@ func (s *Store) validateParametersMiddleware(next http.Handler) http.Handler {
 		}
 
 		if len(key) > 50 {
-			resp := kvstore.ResponseMessage{"Key is too long", fmt.Sprintf("Error in %s", r.Method), "", addr, config.Config.CurrentShard().VectorClock}
+			resp := kvstore.ResponseMessage{"Key is too long", fmt.Sprintf("Error in %s", r.Method), "", addr, incClock}
 			w.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(w).Encode(resp)
 			return
@@ -102,17 +107,49 @@ func (s *Store) checkVectorClock(next http.Handler) http.Handler {
 			bodyBytes, _ = ioutil.ReadAll(r.Body)
 		}
 		r.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
-
-		causalContext := struct {
-			Context vectorclock.VectorClock `json:"causal-context"`
+		log.Println(string(bodyBytes))
+		vars := mux.Vars(r)
+		key, ok := vars["key"]
+		if !ok {
+			log.Println("key was not provided in call")
+			return
+		}
+		//get the value of the key we want
+		cc := struct {
+			Causalcontext map[string]int `json:"causal-context"`
 		}{}
 
-		if err := json.Unmarshal(bodyBytes, &causalContext); err != nil {
-			log.Println("some error here about failing to get json read")
+		if err := json.Unmarshal(bodyBytes, &cc); err != nil {
+			log.Println(err)
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), ctx.ContextCausalContextKey, causalContext.Context)
+		//Map doesn't exists, they sent empty causal context
+		if cc.Causalcontext == nil {
+			cc.Causalcontext = make(map[string]int)
+		}
+
+		//Guaranteed to have non-nil map - check if key exists
+		if _, ok := cc.Causalcontext[key]; !ok {
+			cc.Causalcontext[key] = 0 // make a 0 clock if not provided
+		}
+
+		//Check if we have a clock value for incoming key
+		proposedClock, ok := s.kvstore.DAL().MapKeyToClock()[key]
+		if !ok {
+			proposedClock = 0 // key does not exist - set to 0
+		}
+
+		//Only a read with a newer value is not allowed
+		if r.Method == "GET" && cc.Causalcontext[key] > proposedClock {
+			log.Println("doesn't work - too much context")
+			resp := kvstore.ResponseMessage{"Unable to satisfy request", fmt.Sprintf("Error in %s", r.Method), "", "", cc.Causalcontext}
+			w.WriteHeader(http.StatusServiceUnavailable)
+			json.NewEncoder(w).Encode(resp)
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), ctx.ContextCausalContextKey, cc.Causalcontext)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }

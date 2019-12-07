@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/colbyleiske/cse138_assignment2/shard"
-	"github.com/colbyleiske/cse138_assignment2/vectorclock"
 )
 
 type cfg struct {
@@ -43,8 +42,6 @@ func GenerateConfig() {
 	for i := 0; i < len(servers)/replFactorNum; i++ {
 		Config.Shards[i] = &shard.Shard{ID: strconv.Itoa(i), Nodes: servers[0+(replFactorNum*i) : replFactorNum+(replFactorNum*i)]}
 		if Contains(servers[0+(replFactorNum*i):replFactorNum+(replFactorNum*i)], addr) {
-			//Only need to set the vector clock on OUR shard - don't care about the other shards
-			Config.Shards[i].VectorClock = vectorclock.NewVectorClock(Config.Shards[i].Nodes, addr)
 			Config.CurrentShardID = i
 		}
 	}

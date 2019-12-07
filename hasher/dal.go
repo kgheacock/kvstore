@@ -61,7 +61,7 @@ func (r *Ring) AddShard(newShard *shard.Shard) {
 	newVirNodes := make(nodes, 0, numVirtualNodes)
 	//Creates virtualized nodes for ring
 	for i := 0; i < numVirtualNodes; i++ {
-		virtualShard := shard.Shard{Nodes: newShard.Nodes, ID: newShard.ID + "$" + strconv.Itoa(i), VectorClock: newShard.VectorClock}
+		virtualShard := shard.Shard{Nodes: newShard.Nodes, ID: newShard.ID + "$" + strconv.Itoa(i)}
 		node := r.newNode(virtualShard)
 		newVirNodes = append(newVirNodes, node)
 	}

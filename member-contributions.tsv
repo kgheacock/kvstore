@@ -8,7 +8,7 @@ kgheacoc	implemented reshard protocol
 Chanorti	Responsible for key count and testing
 bzwier	Responsible for consistent hashing library and some functions in kvstore
 cleiske	handled proxy, middleware, general architecture and glueing her together :))
-Assignment 4
+Assignment	4
 kgheacoc	Fill in
 Chanorti	Fill in
 bzwier	Did Vector Clock library, laid foundation for gossiping

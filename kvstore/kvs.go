@@ -287,3 +287,30 @@ func (s *Store) GetKeyCountHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
 }
+
+func (s *Store) GossipPutHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	key := vars["key"]
+	decoder := json.NewDecoder(r.Body)
+
+	data := struct {
+		Value string `json:"value"`
+		LamportClock int `json:"lamportclock"`
+	}{}
+
+	if err := decoder.Decode(&data); err != nil || data.Value == "" {
+		//Don't need real formatted response since its all internal
+		resp := ResponseMessage{Error: "Value is missing", Message: "Error in PUT"}
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(resp)
+		return
+	}
+
+	s.DAL().Put(key, StoredValue{data.Value, data.LamportClock})
+
+	resp := ResponseMessage{Message: "Updated successfully"}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(resp)
+	return
+	
+}

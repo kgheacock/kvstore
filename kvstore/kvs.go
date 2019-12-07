@@ -256,16 +256,38 @@ func (s *Store) ExternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+type NestedElement struct {
+	CausalContext map[string]int
+}
+
+type BaseElement struct {
+	NestedElement `json:"causal-context"`
+}
+
 func (s *Store) GetKeyCountHandler(w http.ResponseWriter, r *http.Request) {
 	count := s.DAL().GetKeyCount()
-	
-	cc, ok := r.Context().Value(ctx.ContextCausalContextKey).(shard.CausalContext)
+	currCC, ok := r.Context().Value(ctx.ContextCausalContextKey).(map[string]int)
+	fmt.Println(currCC, ok)
+	//readCC
 
-	if !ok {
-		log.Println("Could not get context from incoming request")
-		return
+	// compare causal consistency. If current is less than read return 503 and error
+
+	errResp := GetKeyCountRepsponse{
+		Error:   "Error in GET",
+		Message: "Can't service request",
 	}
-	resp := GetKeyCountRepsponse{ Message: "Key count retrieved successfully", KeyCount: count, ShardID strconv.Atoi(config.Config.CurrentShardID), CausalContext: cc}
+
+	if false {
+		w.WriteHeader(http.StatusServiceUnavailable)
+		json.NewEncoder(w).Encode(errResp)
+	}
+
+	resp := GetKeyCountRepsponse{
+		Message:  "Key count retrieved successfully",
+		KeyCount: count,
+		ShardID:  config.Config.CurrentShardID,
+	}
+
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
 }

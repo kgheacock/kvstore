@@ -96,10 +96,11 @@ type GetResponse struct {
 }
 
 type GetKeyCountRepsponse struct {
-	Message       string                   `json:"message"`
-	KeyCount      int                      `json:"key-count"`
-	ShardID       int                      `json:"shard-id"`
-	CausalContext *vectorclock.VectorClock `json:"causal-context"`
+	Error         string         `json:"error,omitempty"`
+	Message       string         `json:"message,omitempty"`
+	KeyCount      int            `json:"key-count,omitempty"`
+	ShardID       string         `json:"shard-id,omitempty"`
+	CausalContext map[string]int `json:"causal-context,omitempty"`
 }
 
 type ViewChangeRequest struct {

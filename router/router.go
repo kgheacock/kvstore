@@ -21,8 +21,8 @@ func CreateRouter(s *kvstore.Store, h *hasher.Store) *mux.Router {
 	nonContextualRouter.Handle("/key-count", wrap(s.GetKeyCountHandler)).Methods("GET")
 	nonContextualRouter.Handle("/view-change", wrap(s.ExternalReshardHandler)).Methods("PUT")
 
-	nonContextualRouter.Handle("/kv-store/shards", wrap(s.GetShardHandler)).Methods("GET")
-	nonContextualRouter.Handle("/kv-store/shards/{id}", wrap(s.GetShardByIdHandler)).Methods("GET")
+	nonContextualRouter.Handle("/shards", wrap(s.GetShardHandler)).Methods("GET")
+	nonContextualRouter.Handle("/shards/{id}", wrap(s.GetShardByIdHandler)).Methods("GET")
 
 	router.Handle("/internal/vc-complete", wrap(s.ReshardCompleteHandler)).Methods("GET")
 	router.Handle("/internal/view-change", wrap(s.InternalReshardHandler)).Methods("PUT")

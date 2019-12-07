@@ -310,18 +310,26 @@ func (s *Store) ExternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 func (s *Store) GetKeyCountHandler(w http.ResponseWriter, r *http.Request) {
 	count := s.DAL().GetKeyCount()
 	cc, ok := r.Context().Value(ctx.ContextCausalContextKey).(map[string]int)
-
 	if !ok {
-		errResp := ResponseMessage{Message: "Error in GET", Error: "Can't recieve Causal Context", CausalContext: cc}
+		errResp := ResponseMessage{Message: "Error in GET", Error: "Can't receive Causal Context", CausalContext: cc}
 		w.WriteHeader(http.StatusServiceUnavailable)
 		json.NewEncoder(w).Encode(errResp)
 		return
 	}
 
-	for k, v := range cc {
-		val, err := s.DAL().Get(k)
+	for key, clock := range cc {
+		ourKey := true
+		proposedClock, err := s.DAL().Get(key)
+		if err != nil { // key does not exist
+			if server, _ := s.hasher.DAL().GetServerByKey(key); server == config.Config.Address {
+				//our key - we don't have it so we are behind
+				proposedClock.lamportclock = 0
+			} else {
+				ourKey = false // not on our shard - don't bother checking
+			}
+		}
 
-		if err != nil && val.lamportclock < v {
+		if ourKey && proposedClock.lamportclock < clock {
 			errResp := ResponseMessage{Message: "Error in GET", Error: "Unable to satisfy request", CausalContext: cc}
 			w.WriteHeader(http.StatusServiceUnavailable)
 			json.NewEncoder(w).Encode(errResp)

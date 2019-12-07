@@ -81,12 +81,10 @@ func (gc *GossipController) StartGossip() {
 		gc.ListMutex.Unlock()
 		wg.Wait()
 
-		removalMutex.Lock()
 		gc.ListMutex.Lock()
 		for _, i := range removalList {
 			delete(gc.GossipList, i)
 		}
-		removalMutex.Unlock()
 
 		hasGossip = !(len(gc.GossipList) == 0)
 		gc.ListMutex.Unlock()

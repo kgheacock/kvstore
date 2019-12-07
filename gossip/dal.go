@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"math/rand"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/colbyleiske/cse138_assignment2/config"
@@ -30,6 +31,7 @@ func NewGossipData(key, val string, clock *vectorclock.VectorClock) *GossipData 
 //GossipQueue holds queue for requests
 type GossipQueue struct {
 	Queue []GossipData
+	Mux   sync.Mutex
 }
 
 //NewGossipQueue returns GossipState object
@@ -43,6 +45,7 @@ func NewGossipQueue() *GossipQueue {
 //AckTable holds a map that keeps track of ACK's recieved
 type AckTable struct {
 	table map[string]int
+	Mux   sync.Mutex
 }
 
 //NewAckTable creates an AckTable object
@@ -73,22 +76,30 @@ func (q *GossipQueue) WakeUp() {
 	min := 500
 	max := 2000
 	ackTable := NewAckTable()
+	//Create temp Q that will stay while WakeUp Runs
+	//But allows things to continue to be written to the main queue
+	tempQueue := NewGossipQueue()
+	tempQueue = q
 
-	for {
+	q.Mux.Lock()
+	for len(q.Queue) > 0 {
+		//Pop off the queue
+		q.Queue = (q.Queue)[1:]
+	}
+	q.Mux.Unlock()
+
+	for !ackTable.receivedAllAcks() {
 		rand := rand.Intn(max-min) + min
 		time.Sleep(time.Duration(rand) * time.Millisecond)
 
-		if len(q.Queue) > 0 {
-			data := (q.Queue)[0]
+		if len(tempQueue.Queue) > 0 {
+			data := (tempQueue.Queue)[0]
 			ackTable.shareGossip(data)
-			//Pop once we received all ACKS
-			if ackTable.receivedAllAcks() {
-				q.Queue = (q.Queue)[1:]
-				//Clear table for garbage collection
-				ackTable.table = nil
-			}
 		}
 	}
+
+	//Clear table for garbage collection
+	ackTable.table = nil
 }
 
 //PrepareForGossip called at PUT endpoint, adds request to GossipQueue
@@ -102,6 +113,7 @@ func (q *GossipQueue) PrepareForGossip(key, value string, vc *vectorclock.Vector
 func (t *AckTable) shareGossip(datagram GossipData) {
 	for _, server := range config.Config.CurrentShard().Nodes {
 		payload, _ := json.Marshal(datagram)
+		//Times out after 500 ms
 		client := &http.Client{Timeout: 500 * time.Millisecond}
 		req, _ := http.NewRequest("POST", server, bytes.NewBuffer(payload))
 		req.Header.Set("Content-Type", "application/json")
@@ -115,9 +127,17 @@ func (t *AckTable) shareGossip(datagram GossipData) {
 }
 
 //ReceivedGossip handles receiving gossip from another server
-func receivedGossip() {
+func (s *Store) receivedGossip(w http.ResponseWriter, r *http.Request, incomingLC *vectorclock.VectorClock) {
+	//Outline:
 	//Grab received data
-	//Check against ours if its newer
-	//Update or dont do anything
-	//Send an ACK
+	//Check against ours if its newer lamport clock
+	//Update kvstore value or dont do anything
+
+	if incomingLC < config.Config.myLC {
+		//Replace value
+		s.DAL().Put(key, value)
+	}
+	//Send an ACK back
+	w.WriteHeader(http.StatusOK)
+
 }

@@ -459,18 +459,17 @@ func (s *Store) GetShardByIdHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Store) GetShardHandler(w http.ResponseWriter, r *http.Request) {
-	shards := make([]int, 0)
+	shards := make([]string, 0)
 	cc, ok := r.Context().Value(ctx.ContextCausalContextKey).(map[string]int)
 
 	if !ok {
-		fmt.Println("No clocks")
 		errResp := ResponseMessage{Message: "Error in GET", Error: "Can't recieve Causal Context", CausalContext: cc}
 		w.WriteHeader(http.StatusServiceUnavailable)
 		json.NewEncoder(w).Encode(errResp)
 	}
 
 	for key := range config.Config.Shards {
-		shards = append(shards, key)
+		shards = append(shards, strconv.Itoa(key))
 	}
 
 	resp := GetShardResponse{

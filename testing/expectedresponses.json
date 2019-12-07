@@ -10,11 +10,7 @@
         "shard-membership": {
             "message"       : "Shard membership retrieved successfully",
             "causal-context": {},
-
-            "shards"        : {
-                "<shard-id>": 4,
-                "<shard-id>": 5
-            }
+            "shards"        : [ "<shard-id>", "<shard-id>" ]
         },
 
         "get-shard": {
@@ -35,12 +31,12 @@
 
             "shards"        : [
                 {
-                    "shard-id" : 1,
+                    "shard-id" : "1",
                     "key-count": 4,
                     "replicas" : [ "10.10.0.2:13800", "10.10.0.3:13800" ]
                 },
                 {
-                    "shard-id" : 2,
+                    "shard-id" : "2",
                     "key-count": 5,
                     "replicas" : [ "10.10.0.4:13800", "10.10.0.5:13800" ]
                 }

@@ -137,12 +137,12 @@ type NodeStatus struct {
 
 type GetShardResponse struct {
 	ResponseMessage
-	Shards []int `json:"shards"`
+	Shards []string `json:"shards"`
 }
 
 type GetShardByIdResponse struct {
 	ResponseMessage
-	ShardID  string   `json:"shard-id,omitempty"`
-	KeyCount int      `json:"key-count,omitempty"`
-	Replicas []string `json:"replicas,omitempty"`
+	ShardID  string   `json:"shard-id"`
+	KeyCount int      `json:"key-count"`
+	Replicas []string `json:"replicas"`
 }

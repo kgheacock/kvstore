@@ -20,7 +20,7 @@ class NetworkPartitionTests(unittest.TestCase):
         """
 
         # TODO: change this or parameterize it
-        cls.image_name = 'cse138/kv-store:4.0'
+        cls.image_name = 'kv-store:4.0'
 
         # clear subnets we want to create in case they exist
         NodeNetwork.remove_subnets_by_name(['kv_subnet', 'partition_subnet'])
@@ -31,6 +31,7 @@ class NetworkPartitionTests(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        return
         cls.kv_subnet.remove()
         cls.partition_subnet.remove()
 
@@ -69,6 +70,7 @@ class NetworkPartitionTests(unittest.TestCase):
             self.__class__.kv_subnet.connect(node_container, ip=node_container.ip)
 
     def tearDown(self):
+        return
         """
         tearDown runs after every test case, so this is where we shutdown nodes.
         """

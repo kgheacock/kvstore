@@ -120,7 +120,7 @@ func (s *Store) passthroughCausalContext(next http.Handler) http.Handler {
 		}{}
 
 		if err := json.Unmarshal(bodyBytes, &cc); err != nil {
-			log.Println(err)
+			log.Println("ABCDEFG", err)
 			return
 		}
 

@@ -63,7 +63,7 @@ func (s *Store) PutHandler(w http.ResponseWriter, r *http.Request) {
 
 	var data Data
 	if err := decoder.Decode(&data); err != nil || data.Value == "" {
-		resp := ResponseMessage{Error: "Value is missing", Message: "Error in PUT", Address: addr, CausalContext: incClock}
+		resp := ResponseMessage{Error: "Value is missing", Message: "Error in PUT", CausalContext: incClock}
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(resp)
 		return
@@ -114,7 +114,7 @@ func (s *Store) GetHandler(w http.ResponseWriter, r *http.Request) {
 		if incClock[key] == 0 {
 			delete(incClock, key)
 		}
-		resp := GetResponse{ResponseMessage{"Key does not exist", "Error in GET", "", addr, incClock}, false}
+		resp := GetResponse{ResponseMessage{Error: "Key does not exist", Message: "Error in GET", Address: addr, CausalContext: incClock}, false}
 		w.WriteHeader(http.StatusNotFound)
 		json.NewEncoder(w).Encode(resp)
 		return
@@ -288,7 +288,7 @@ func (s *Store) ExternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	//Finally we pack up all responses and send as a response
 	type shardStatus struct {
-		ShardID  string      `json:"shard-id"`
+		ShardID  string   `json:"shard-id"`
 		KeyCount int      `json:"key-count"`
 		Replicas []string `json:"replicas"`
 	}

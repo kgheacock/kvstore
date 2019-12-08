@@ -199,6 +199,9 @@ func (s *Store) InternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			resp.Body.Close()
+
+			//remove it from our own store - since we shouldn't have it anyways
+			s.DAL().Delete(key)
 		}
 	}
 
@@ -252,6 +255,13 @@ func (s *Store) ExternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	incClock, ok := r.Context().Value(ctx.ContextCausalContextKey).(map[string]int)
+	if !ok {
+		log.Println("Could not get context from incoming request")
+		return
+	}
+
 	//First to recieve. We must first prepare everyone
 	ack := BroadcastMessageAndWait(viewChangeRequest.View, nil, "http://%s/internal/prepare-for-vc")
 	if !ack {
@@ -278,9 +288,9 @@ func (s *Store) ExternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	//Finally we pack up all responses and send as a response
 	type shardStatus struct {
-		ShardID  int      `json:"shardID"`
-		KeyCount int      `json:"keyCount`
-		Replicas []string `json:"pelicas"`
+		ShardID  string      `json:"shard-id"`
+		KeyCount int      `json:"key-count"`
+		Replicas []string `json:"replicas"`
 	}
 	type vcResponse struct {
 		Shards        []shardStatus  `json:"shards"`
@@ -320,10 +330,11 @@ func (s *Store) ExternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 		currentShardStatus := shardMap[ns.ShardID]
 		currentShardStatus.Replicas = append(currentShardStatus.Replicas, ns.IP)
 		currentShardStatus.KeyCount = ns.KeyCount
-		currentShardStatus.ShardID = ns.ShardID
+		currentShardStatus.ShardID = strconv.Itoa(ns.ShardID)
 		shardMap[ns.ShardID] = currentShardStatus
 	}
-	vcResp := vcResponse{Message: "View change successful", Shards: []shardStatus{}}
+
+	vcResp := vcResponse{Message: "View change successful", Shards: []shardStatus{}, CausalContext: incClock}
 	for _, value := range shardMap {
 		vcResp.Shards = append(vcResp.Shards, value)
 	}

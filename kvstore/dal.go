@@ -61,12 +61,12 @@ func (k *KVDAL) Get(key string) (StoredValue, error) {
 
 //Delete function removes key-value from map if it exists
 func (k *KVDAL) Delete(key string) error {
-	// log.Println("DEL", key)
-	// if _, ok := k.Store[key]; !ok {
-	// 	log.Printf("%s not found\n", key)
-	// 	return ErrKeyNotFound
-	// }
-	// delete(k.Store, key)
+	log.Println("DEL", key)
+	if _, ok := k.Store[key]; !ok {
+		log.Printf("%s not found\n", key)
+		return ErrKeyNotFound
+	}
+	delete(k.Store, key)
 	return nil
 }
 
@@ -89,7 +89,7 @@ func (k *KVDAL) GetKeyCount() int {
 	return len(k.Store)
 }
 
-func (k *KVDAL) MapKeyToClock() (map[string]int) {
+func (k *KVDAL) MapKeyToClock() map[string]int {
 	keyClock := make(map[string]int)
 	for k, v := range k.Store {
 		keyClock[k] = v.lamportclock

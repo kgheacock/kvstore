@@ -188,6 +188,12 @@ func (s *Store) forwardMiddleware(next http.Handler) http.Handler {
 		vars := mux.Vars(r)
 		key := vars["key"]
 
+		incClock, ok := r.Context().Value(ctx.ContextCausalContextKey).(map[string]int)
+		if !ok {
+			log.Println("Could not get context from incoming request")
+			return
+		}
+
 		keyIPLocation, err := s.hasher.DAL().GetServerByKey(key)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -213,7 +219,9 @@ func (s *Store) forwardMiddleware(next http.Handler) http.Handler {
 
 		proxyReq, err := http.NewRequest(r.Method, url.String(), bytes.NewReader(body))
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+			resp := kvstore.ResponseMessage{"Unable to satisfy request", fmt.Sprintf("Error in %s", r.Method), "", "", incClock}
+			w.WriteHeader(http.StatusServiceUnavailable)
+			json.NewEncoder(w).Encode(resp)
 			return
 		}
 
@@ -221,17 +229,24 @@ func (s *Store) forwardMiddleware(next http.Handler) http.Handler {
 		proxyReq.Header.Set("X-Real-Ip", config.Config.Address)
 		proxyReq.Header.Set("X-Forwarded-For", r.RemoteAddr)
 
+		ctx, cancel := context.WithTimeout(context.Background(), config.Config.TimeOut)
+		defer cancel()
+
 		client := &http.Client{}
-		proxyResp, err := client.Do(proxyReq)
+		proxyResp, err := client.Do(proxyReq.WithContext(ctx))
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+			resp := kvstore.ResponseMessage{"Unable to satisfy request", fmt.Sprintf("Error in %s", r.Method), "", "", incClock}
+			w.WriteHeader(http.StatusServiceUnavailable)
+			json.NewEncoder(w).Encode(resp)
 			return
 		}
 		defer proxyResp.Body.Close()
 
 		proxyBody, err := ioutil.ReadAll(proxyResp.Body)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+			resp := kvstore.ResponseMessage{"Unable to satisfy request", fmt.Sprintf("Error in %s", r.Method), "", "", incClock}
+			w.WriteHeader(http.StatusServiceUnavailable)
+			json.NewEncoder(w).Encode(resp)
 			return
 		}
 

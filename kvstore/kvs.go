@@ -203,6 +203,14 @@ func (s *Store) InternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 			//remove it from our own store - since we shouldn't have it anyways
 			s.DAL().Delete(key)
 		}
+		//ensure if we are modifying our own shard we queue up for gossip
+		val, _ := s.DAL().Get(key)
+		s.gossipController.AddGossipItem(key, val.value, val.lamportclock)
+	}
+
+	//wait for our gossip to propogate to all new replicas in shard
+	for s.gossipController.IsGossiping() {
+		time.Sleep(50 * time.Millisecond)
 	}
 
 }

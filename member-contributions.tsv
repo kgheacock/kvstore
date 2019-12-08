@@ -9,7 +9,7 @@ Chanorti	Responsible for key count and testing
 bzwier	Responsible for consistent hashing library and some functions in kvstore
 cleiske	handled proxy, middleware, general architecture and glueing her together :))
 Assignment	4
-kgheacoc	Fill in
+kgheacoc	Updated reshhard protocol to work with replicas. Parallelized broadcasts
 Chanorti	Fill in
 bzwier	Did Vector Clock library, laid foundation for gossiping
 cleiske	Fill in

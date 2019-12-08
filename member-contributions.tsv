@@ -12,4 +12,4 @@ Assignment	4
 kgheacoc	Updated reshhard protocol to work with replicas. Parallelized broadcasts
 Chanorti	Worked on key count, Shard, and Shard by id endpoints 
 bzwier	Did Vector Clock library, laid foundation for gossiping
-cleiske	wrote gossip, sharding, lamport clock, causal-context, eventual consistency, bug fixes
+cleiske	wrote gossip, sharding, lamport clocks, causal-context, eventual consistency, bug fixes

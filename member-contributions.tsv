@@ -10,6 +10,6 @@ bzwier	Responsible for consistent hashing library and some functions in kvstore
 cleiske	handled proxy, middleware, general architecture and glueing her together :))
 Assignment	4
 kgheacoc	Updated reshhard protocol to work with replicas. Parallelized broadcasts
-Chanorti	Fill in
+Chanorti	Worked on key count, Shard, and Shard by id endpoints 
 bzwier	Did Vector Clock library, laid foundation for gossiping
 cleiske	Fill in

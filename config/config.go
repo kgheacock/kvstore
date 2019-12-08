@@ -13,6 +13,7 @@ import (
 
 type cfg struct {
 	Shards         map[int]*shard.Shard
+	RawServers []string
 	CurrentShardID int
 	Address        string
 	ReplFactor     int
@@ -38,13 +39,13 @@ func GenerateConfig() {
 
 	//Ideally I move all this shard bullshit over to the shard package later - someone remind me pls <3
 
-	servers := strings.Split(view, ",") // keep all this here lol - we need this to handle making our shards / groups of replicas
 	Config = cfg{Address: addr, ReplFactor: replFactorNum, TimeOut: 5 * time.Second}
+	Config.RawServers = strings.Split(view, ",") // keep all this here lol - we need this to handle making our shards / groups of replicas
 	Config.Shards = make(map[int]*shard.Shard)
 
-	for i := 0; i < len(servers)/replFactorNum; i++ {
-		Config.Shards[i] = &shard.Shard{ID: strconv.Itoa(i), Nodes: servers[0+(replFactorNum*i) : replFactorNum+(replFactorNum*i)]}
-		if Contains(servers[0+(replFactorNum*i):replFactorNum+(replFactorNum*i)], addr) {
+	for i := 0; i < len(Config.RawServers)/replFactorNum; i++ {
+		Config.Shards[i] = &shard.Shard{ID: strconv.Itoa(i), Nodes: Config.RawServers[0+(replFactorNum*i) : replFactorNum+(replFactorNum*i)]}
+		if Contains(Config.RawServers[0+(replFactorNum*i):replFactorNum+(replFactorNum*i)], addr) {
 			Config.CurrentShardID = i
 		}
 	}

@@ -179,8 +179,15 @@ func (s *Store) InternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 		if serverIP != config.Config.Address {
 			url := fmt.Sprintf("http://%s/internal/reshard-put/%s", serverIP, key)
 			value, _ := s.DAL().Get(key)
-			data := Data{Value: value.value}
-			payload, err := json.Marshal(data)
+			sendData := struct {
+				Value string `json:"value"`
+				Clock int `json:"lamportclock"`
+			}{
+				Value: value.value,
+				Clock: value.lamportclock,
+			}
+			payload, err := json.Marshal(sendData)
+			log.Println(string(payload))
 			if err != nil {
 				log.Println("ERROR: 5", err)
 				w.WriteHeader(http.StatusInternalServerError)
@@ -204,8 +211,10 @@ func (s *Store) InternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 			s.DAL().Delete(key)
 		}
 		//ensure if we are modifying our own shard we queue up for gossip
-		val, _ := s.DAL().Get(key)
-		s.gossipController.AddGossipItem(key, val.value, val.lamportclock)
+		val, err := s.DAL().Get(key)
+		if err == nil { // do this if we have the key - we may have deleted the key
+			s.gossipController.AddGossipItem(key, val.value, val.lamportclock)
+		}
 	}
 
 	//wait for our gossip to propogate to all new replicas in shard
@@ -270,8 +279,16 @@ func (s *Store) ExternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	deletedNodes := Difference(config.Config.RawServers, viewChangeRequest.View)
+	config.Config.RawServers = viewChangeRequest.View
 	//First to recieve. We must first prepare everyone
-	ack := BroadcastMessageAndWait(viewChangeRequest.View, nil, "http://%s/internal/prepare-for-vc")
+	broadcastSet := viewChangeRequest.View
+	for _, node := range deletedNodes {
+		broadcastSet = append(viewChangeRequest.View, node)
+	}
+	log.Println(viewChangeRequest.View)
+	log.Println(broadcastSet)
+	ack := BroadcastMessageAndWait(broadcastSet, nil, "http://%s/internal/prepare-for-vc")
 	if !ack {
 		log.Println("Recieved 1 or more nacks to prepare-view-change")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -288,7 +305,7 @@ func (s *Store) ExternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 
 	//After everyone is prepare then we send out the request
 	log.Println(string(vcBytes))
-	ack = BroadcastMessageAndWait(viewChangeRequest.View, vcBytes, "http://%s/internal/view-change")
+	ack = BroadcastMessageAndWait(broadcastSet, vcBytes, "http://%s/internal/view-change")
 	if !ack {
 		log.Println("Recieved 1 or more nacks to view-change request")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -530,4 +547,20 @@ func (s *Store) GetShardHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resp)
 
+}
+
+// Set Difference: A - B
+func Difference(a, b []string) (diff []string) {
+	m := make(map[string]bool)
+
+	for _, item := range b {
+		m[item] = true
+	}
+
+	for _, item := range a {
+		if _, ok := m[item]; !ok {
+			diff = append(diff, item)
+		}
+	}
+	return
 }

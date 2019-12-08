@@ -168,6 +168,12 @@ func (s *Store) checkVectorClock(next http.Handler) http.Handler {
 			proposedClock = 0 // key does not exist - set to 0
 		}
 
+		if server, _ := s.hasher.DAL().GetServerByKey(key); server != config.Config.Address {
+			ctx := context.WithValue(r.Context(), ctx.ContextCausalContextKey, cc.Causalcontext)
+			next.ServeHTTP(w, r.WithContext(ctx))
+			return
+		}
+
 		//Only a read with a newer value is not allowed
 		if r.Method == "GET" && cc.Causalcontext[key] > proposedClock {
 			log.Println("doesn't work - too much context")

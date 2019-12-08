@@ -10,3 +10,28 @@ Key count just grabs the length of our store.
 
 Proxying is the same as before but we check the keys server location on the ring.
 
+
+---
+
+Assignment 4
+
+Similar to assignment 3, we kept our consistent hashing solution. We decided for this assignment, it would be best for our causal context to be a lamport clock on each key.
+This allows us to not worry what shard a key is on causality wise , especially on a view-change.
+
+Additionally, this made the gossip a lot more straightforward as we could send an operation with the time it happened and let the other node compare clocks to figure out what to do.
+Gossip is an on-demand system that only starts when a PUT operation occurs. 
+It has a list of things it needs to send to every node, and will wait for every node to Ack the change.
+This all runs asynchronously as to not disrupt the client and make them wait.
+If a new operation is committed while we are gossiping, it is added to the list. We accomplish this through locks and the like.
+
+Resharding takes care to gossip if we receive new replicas, as well as allow removal of nodes as replicas or shards entirely.
+
+The system is eventually consistent because of the gossip. We do not remove something from our list until it has been acknowledged by everything in our replica. 
+
+Originally, we had used vector clocks but found them to be a little against the grain for this assignment.
+It would have added complexity, and for gossip to fully work - would have required to store our current clock state for the latest operation on a key anyways.
+
+Space-wise, it felt easier to add lamport clocks, but do believe vector clocks would scale up better.
+
+This was a fun assignment - thanks.
+

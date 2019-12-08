@@ -129,12 +129,8 @@ func (s *Store) GetHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *Store) PrepareReshardHandler(w http.ResponseWriter, r *http.Request) {
 	s.state = PREPARE_FOR_RESHARD
-
 	for s.gossipController.IsGossiping() {
-		log.Println("SHARD", config.Config.CurrentShardID, "is gossiping")
-		//actually garbage code
-		//will exit loop once we aren't gossiping
-		time.Sleep(time.Millisecond * 250) // temp so we don't run this a fuckton
+		time.Sleep(50 * time.Millisecond)
 	}
 
 	w.WriteHeader(http.StatusOK)
@@ -282,13 +278,13 @@ func (s *Store) ExternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	//Finally we pack up all responses and send as a response
 	type shardStatus struct {
-		shardID  int
-		keyCount int
-		replicas []string
+		ShardID  int      `json:"shardID"`
+		KeyCount int      `json:"keyCount`
+		Replicas []string `json:"pelicas"`
 	}
 	type vcResponse struct {
-		shards        []shardStatus  `json:"shards"`
-		message       string         `json:"message"`
+		Shards        []shardStatus  `json:"shards"`
+		Message       string         `json:"message"`
 		CausalContext map[string]int `json:"causal-context"`
 	}
 	shardMap := make(map[int]shardStatus)
@@ -315,21 +311,27 @@ func (s *Store) ExternalReshardHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println("Error: 22", err)
 			return
 		}
-		var ns NodeStatus
-		decode := json.NewDecoder(resp.Body)
-		decode.Decode(ns)
+		ns := NodeStatus{}
+		err = json.NewDecoder(resp.Body).Decode(&ns)
+		resp.Body.Close()
+		if err != nil {
+			log.Println(err)
+		}
 		currentShardStatus := shardMap[ns.ShardID]
-		currentShardStatus.replicas = append(currentShardStatus.replicas, ns.IP)
-		currentShardStatus.keyCount = ns.KeyCount
-		currentShardStatus.shardID = ns.ShardID
+		currentShardStatus.Replicas = append(currentShardStatus.Replicas, ns.IP)
+		currentShardStatus.KeyCount = ns.KeyCount
+		currentShardStatus.ShardID = ns.ShardID
 		shardMap[ns.ShardID] = currentShardStatus
 	}
-	vcResp := vcResponse{message: "View change successful", CausalContext: make(map[string]int), shards: []shardStatus{}}
+	vcResp := vcResponse{Message: "View change successful", Shards: []shardStatus{}}
 	for _, value := range shardMap {
-		vcResp.shards = append(vcResp.shards, value)
+		vcResp.Shards = append(vcResp.Shards, value)
 	}
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(vcResp)
+	err = json.NewEncoder(w).Encode(vcResp)
+	if err != nil {
+		log.Println(err)
+	}
 	return
 
 }
